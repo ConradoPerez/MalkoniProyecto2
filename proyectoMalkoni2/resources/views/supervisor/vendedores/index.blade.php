@@ -24,7 +24,7 @@
                     <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-4">
                         Buscar Vendedores
                     </h2>
-                    <form action="{{ route('vendedores.search') }}" method="GET" class="flex flex-col lg:flex-row gap-4 items-end">
+                    <form action="{{ route('vendedor.search') }}" method="GET" class="flex flex-col lg:flex-row gap-4 items-end">
                         <div class="flex-1">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Por Nombre
@@ -93,12 +93,12 @@
                                     <td class="py-4 px-6 text-gray-600">20-11222333-4</td>
                                     <td class="py-4 px-6">
                                         <div class="flex gap-3">
-                                            <a href="{{ route('vendedores.clientes', ['id' => 1]) }}" 
+                                            <a href="{{ route('vendedor.clientes', ['id' => 1]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
                                                style="border-color: #166379; color: #166379;">
                                                 Ver Clientes
                                             </a>
-                                            <a href="{{ route('vendedores.cotizaciones', ['id' => 1]) }}" 
+                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 1]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
                                                style="background-color: #D88429; border-color: #D88429;">
                                                 Ver Cotizaciones
@@ -111,12 +111,12 @@
                                     <td class="py-4 px-6 text-gray-600">27-22333444-5</td>
                                     <td class="py-4 px-6">
                                         <div class="flex gap-3">
-                                            <a href="{{ route('vendedores.clientes', ['id' => 2]) }}" 
+                                            <a href="{{ route('vendedor.clientes', ['id' => 2]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
                                                style="border-color: #166379; color: #166379;">
                                                 Ver Clientes
                                             </a>
-                                            <a href="{{ route('vendedores.cotizaciones', ['id' => 2]) }}" 
+                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 2]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
                                                style="background-color: #D88429; border-color: #D88429;">
                                                 Ver Cotizaciones
@@ -129,12 +129,12 @@
                                     <td class="py-4 px-6 text-gray-600">20-33444555-6</td>
                                     <td class="py-4 px-6">
                                         <div class="flex gap-3">
-                                            <a href="{{ route('vendedores.clientes', ['id' => 3]) }}" 
+                                            <a href="{{ route('vendedor.clientes', ['id' => 3]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
                                                style="border-color: #166379; color: #166379;">
                                                 Ver Clientes
                                             </a>
-                                            <a href="{{ route('vendedores.cotizaciones', ['id' => 3]) }}" 
+                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 3]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
                                                style="background-color: #D88429; border-color: #D88429;">
                                                 Ver Cotizaciones
@@ -147,12 +147,12 @@
                                     <td class="py-4 px-6 text-gray-600">27-44555666-7</td>
                                     <td class="py-4 px-6">
                                         <div class="flex gap-3">
-                                            <a href="{{ route('vendedores.clientes', ['id' => 4]) }}" 
+                                            <a href="{{ route('vendedor.clientes', ['id' => 4]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
                                                style="border-color: #166379; color: #166379;">
                                                 Ver Clientes
                                             </a>
-                                            <a href="{{ route('vendedores.cotizaciones', ['id' => 4]) }}" 
+                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 4]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
                                                style="background-color: #D88429; border-color: #D88429;">
                                                 Ver Cotizaciones
@@ -165,12 +165,12 @@
                                     <td class="py-4 px-6 text-gray-600">20-55666777-8</td>
                                     <td class="py-4 px-6">
                                         <div class="flex gap-3">
-                                            <a href="{{ route('vendedores.clientes', ['id' => 5]) }}" 
+                                            <a href="{{ route('vendedor.clientes', ['id' => 5]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
                                                style="border-color: #166379; color: #166379;">
                                                 Ver Clientes
                                             </a>
-                                            <a href="{{ route('vendedores.cotizaciones', ['id' => 5]) }}" 
+                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 5]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
                                                style="background-color: #D88429; border-color: #D88429;">
                                                 Ver Cotizaciones
@@ -183,12 +183,12 @@
                                     <td class="py-4 px-6 text-gray-600">27-66777888-9</td>
                                     <td class="py-4 px-6">
                                         <div class="flex gap-3">
-                                            <a href="{{ route('vendedores.clientes', ['id' => 6]) }}" 
+                                            <a href="{{ route('vendedor.clientes', ['id' => 6]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
                                                style="border-color: #166379; color: #166379;">
                                                 Ver Clientes
                                             </a>
-                                            <a href="{{ route('vendedores.cotizaciones', ['id' => 6]) }}" 
+                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 6]) }}" 
                                                class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
                                                style="background-color: #D88429; border-color: #D88429;">
                                                 Ver Cotizaciones

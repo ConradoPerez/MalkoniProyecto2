@@ -19,7 +19,7 @@
         </a>
 
         <!-- Vendedores -->
-        <a href="{{ route('vendedores.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedores.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('vendedor.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedores.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedores.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2z"></path>

@@ -7,7 +7,7 @@
         @include('vendedor.components.sidebar')
 
         <!-- Main content -->
-        <main class="flex-1 lg:ml-48 overflow-y-auto">
+        <main class="flex-1 overflow-y-auto ml-48">
             <div class="p-4 lg:p-8">
                 <!-- Header with Vendor Name and Avatar -->
                 <div class="flex items-center justify-between mb-8">

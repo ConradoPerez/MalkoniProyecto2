@@ -1,5 +1,6 @@
 <!-- Sidebar -->
 <aside class="hidden lg:block w-48 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto">
+
     <!-- Logo -->
     <div class="mb-8">
         <div class="flex items-center justify-center">
@@ -45,6 +46,51 @@
             <span>Grupo de clientes</span>
         </a>
     </nav>
+        <!-- Indicadores (solo vista) -->
+    <div class="mt-6 space-y-8">
+        <!-- Mensajes -->
+        <div class="border border-gray-300 rounded-xl p-4 bg-white">
+            <div class="flex items-center gap-3">
+                <!-- Icono sobre (envelope) -->
+                <div class="w-12 h-12 rounded-md border border-gray-400 grid place-items-center">
+                    <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                              d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div class="text-sm font-semibold">7 Mensajes</div>
+            </div>
+        </div>
+
+        <!-- Clientes -->
+        <div class="border border-gray-300 rounded-xl p-4 bg-white">
+            <div class="flex items-center gap-3">
+                <!-- Icono usuarios -->
+                <div class="w-12 h-12 rounded-md border border-gray-400 grid place-items-center">
+                    <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                              d="M17 20h5v-2a3 3 0 00-5.356-1.857M9 20H4v-2a4 4 0 017.33-2.5M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <div class="text-sm font-semibold">20 clientes</div>
+            </div>
+        </div>
+
+        <!-- Comisiones -->
+        <div class="border border-gray-300 rounded-xl p-4 bg-white">
+            <div class="flex items-center gap-3">
+                <!-- Icono $ -->
+                <div class="w-12 h-12 rounded-md border border-gray-400 grid place-items-center">
+                    <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                              d="M12 8c-3.333 0-3.333-4 0-4s3.333 4 0 4m0 8c3.333 0 3.333 4 0 4s-3.333-4 0-4m0-8v8"/>
+                    </svg>
+                </div>
+                <div class="text-sm font-semibold">$4000 en comisiones</div>
+            </div>
+        </div>
+    </div>
+
 </aside>
 
 <!-- Mobile sidebar toggle button (for future mobile implementation) -->
