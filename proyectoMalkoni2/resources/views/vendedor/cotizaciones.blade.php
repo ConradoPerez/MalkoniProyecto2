@@ -4,7 +4,7 @@
 <div class="min-h-screen bg-background text-gray-900">
     <div class="flex">
         <!-- Include Sidebar Component -->
-        @include('vendedores.components.sidebar')
+        @include('vendedor.components.sidebar')
 
         <!-- Main content -->
         <main class="flex-1 lg:ml-48 overflow-y-auto">
