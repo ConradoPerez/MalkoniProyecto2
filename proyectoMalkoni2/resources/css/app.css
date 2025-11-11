@@ -1,11 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
+/* Tailwind CSS v4 directives - ignore CSS linter warnings */
+/* stylelint-disable-next-line at-rule-no-unknown */
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+/* stylelint-disable-next-line at-rule-no-unknown */
 @source '../../storage/framework/views/*.php';
+/* stylelint-disable-next-line at-rule-no-unknown */
 @source '../**/*.blade.php';
+/* stylelint-disable-next-line at-rule-no-unknown */
 @source '../**/*.js';
 
+/* stylelint-disable-next-line at-rule-no-unknown */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+    --font-syncopate: 'Syncopate', ui-sans-serif, system-ui, sans-serif;
+    
+    /* Colores Malkoni */
+    --color-malkoni: {
+        bg: #E1DFD9;
+        primary: #D88429;
+        secondary: #166379;
+        cancel: #B1B7BB;
+        50: #fef9f3;
+        100: #fef2e6;
+        200: #fce2cc;
+        300: #f9cda8;
+        400: #f5ad73;
+        500: #f19d3e;
+        600: #D88429;
+        700: #b86d21;
+        800: #945720;
+        900: #7a491e;
+    };
+    
+    --color-teal: {
+        50: #f0fdfa;
+        100: #ccfbf1;
+        200: #99f6e4;
+        300: #5eead4;
+        400: #2dd4bf;
+        500: #14b8a6;
+        600: #166379;
+        700: #0f766e;
+        800: #115e59;
+        900: #134e4a;
+    };
+    
+    --color-gray: {
+        50: #f9fafb;
+        100: #f3f4f6;
+        200: #e5e7eb;
+        300: #d1d5db;
+        400: #B1B7BB;
+        500: #6b7280;
+        600: #4b5563;
+        700: #374151;
+        800: #1f2937;
+        900: #111827;
+    };
 }
