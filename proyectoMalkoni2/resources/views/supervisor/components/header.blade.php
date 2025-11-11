@@ -2,7 +2,7 @@
 <div class="hidden lg:flex items-center justify-between mb-8">
     <div>
         <h1 class="text-3xl font-syncopate font-bold text-gray-900">
-            Dashboard
+            DASHBOARD
         </h1>
     </div>
     <div class="flex items-center space-x-3">

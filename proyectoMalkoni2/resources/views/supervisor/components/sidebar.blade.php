@@ -2,9 +2,8 @@
 <aside class="hidden lg:block w-48 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto">
     <!-- Logo -->
     <div class="mb-8">
-        <div class="text-2xl font-bold font-syncopate">
-            <span style="color: #D88429;">malkoni</span>
-            <div class="text-xs font-syncopate font-bold text-gray-900">hnos</div>
+        <div class="flex items-center justify-center">
+            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-12 w-auto">
         </div>
     </div>
 
