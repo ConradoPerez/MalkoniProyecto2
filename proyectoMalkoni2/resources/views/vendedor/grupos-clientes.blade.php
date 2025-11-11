@@ -3,11 +3,7 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 text-gray-900">
     <div class="flex">
-<<<<<<< HEAD
         {{-- Sidebar --}}
-=======
-        <!-- Include Sidebar Component -->
->>>>>>> eb466e76e0bbe6038d7bbbb66071ee2113f2ceb7
         @include('vendedor.components.sidebar')
 
         {{-- Contenido principal --}}
