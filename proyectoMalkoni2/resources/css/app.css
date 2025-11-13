@@ -61,3 +61,14 @@
         900: #111827;
     };
 }
+
+/* Supervisor Sidebar Responsive */
+.desktop-sidebar {
+    display: none !important;
+}
+
+@media (min-width: 1024px) {
+    .desktop-sidebar {
+        display: block !important;
+    }
+}

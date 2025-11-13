@@ -1,5 +1,5 @@
 <!-- Metrics Section -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <!-- Clientes Registrados -->
     <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
         <div class="flex items-start space-x-4">
@@ -9,10 +9,10 @@
                 </svg>
             </div>
             <div>
-                <p class="text-xs lg:text-sm text-gray-600 font-medium">
+                <p class="text-sm text-gray-600 font-medium">
                     Clientes online
                 </p>
-                <p class="text-xl lg:text-2xl font-syncopate font-bold text-gray-900 mt-1">
+                <p class="text-2xl font-syncopate font-bold text-gray-900 mt-1">
                     {{ number_format($metrics['clientes_digitalizados'] ?? 0) }}
                 </p>
             </div>
@@ -28,10 +28,10 @@
                 </svg>
             </div>
             <div>
-                <p class="text-xs lg:text-sm text-gray-600 font-medium">
+                <p class="text-sm text-gray-600 font-medium">
                     Cotizaciones en proceso
                 </p>
-                <p class="text-xl lg:text-2xl font-syncopate font-bold text-gray-900 mt-1">
+                <p class="text-2xl font-syncopate font-bold text-gray-900 mt-1">
                     {{ number_format($metrics['cotizaciones_proceso'] ?? 0) }}
                 </p>
             </div>
@@ -47,10 +47,10 @@
                 </svg>
             </div>
             <div>
-                <p class="text-xs lg:text-sm text-gray-600 font-medium">
+                <p class="text-sm text-gray-600 font-medium">
                     En cotizaciones este mes
                 </p>
-                <p class="text-xl lg:text-2xl font-syncopate font-bold text-gray-900 mt-1">
+                <p class="text-2xl font-syncopate font-bold text-gray-900 mt-1">
                     ${{ number_format($metrics['cotizaciones_este_mes'] ?? 0, 0, ',', '.') }}
                 </p>
             </div>

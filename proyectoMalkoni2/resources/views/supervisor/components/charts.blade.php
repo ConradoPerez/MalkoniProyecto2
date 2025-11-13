@@ -7,7 +7,9 @@
     @if(isset($cotizacionesPorVendedor) && $cotizacionesPorVendedor->count() > 0)
         <!-- Pie Chart Canvas -->
         <div class="flex justify-center mb-4">
-            <canvas id="pieChart" width="300" height="300"></canvas>
+            <div class="w-full max-w-xs" style="height: 200px;">
+                <canvas id="pieChart" class="w-full h-full"></canvas>
+            </div>
         </div>
 
         <!-- Legend -->
@@ -16,7 +18,7 @@
             @foreach($cotizacionesPorVendedor as $index => $vendedor)
                 <div class="flex items-center gap-2">
                     <div class="w-4 h-4 rounded-full" style="background-color: {{ $colors[$index] ?? '#E1DFD9' }};"></div>
-                    <span>{{ $vendedor->nombre }} ({{ $vendedor->cotizaciones_count }})</span>
+                    <span class="whitespace-nowrap">{{ $vendedor->nombre }} ({{ $vendedor->cotizaciones_count }})</span>
                 </div>
             @endforeach
         </div>
@@ -59,13 +61,22 @@
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
                                 display: false
                             }
+                        },
+                        cutout: '60%',
+                        layout: {
+                            padding: 10
                         }
                     }
+                });
+
+                // Resize chart on window resize
+                window.addEventListener('resize', function() {
+                    pieChart.resize();
                 });
             @endif
         }

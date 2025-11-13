@@ -36,15 +36,23 @@
                                         {{ $cotizacion->estado }}
                                     </span>
                                 </td>
-                                <td class="py-3 px-2 text-gray-900">{{ $cotizacion->empresa->nombre ?? 'Sin cliente' }}</td>
-                                <td class="py-3 px-2 text-gray-900">{{ $cotizacion->empleado->nombre ?? 'Sin vendedor' }}</td>
+                                <td class="py-3 px-2 text-gray-900">
+                                    <div class="max-w-[120px] sm:max-w-none truncate">
+                                        {{ $cotizacion->empresa->nombre ?? 'Sin cliente' }}
+                                    </div>
+                                </td>
+                                <td class="py-3 px-2 text-gray-900">
+                                    <div class="max-w-[100px] sm:max-w-none truncate">
+                                        {{ $cotizacion->empleado->nombre ?? 'Sin vendedor' }}
+                                    </div>
+                                </td>
                                 <td class="py-3 px-2 text-gray-900">{{ $cotizacion->numero_formateado }}</td>
                                 <td class="py-3 px-2 text-gray-900">{{ $cotizacion->precio_formateado }}</td>
                             </tr>
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="4" class="py-8 px-2 text-center text-gray-500">
+                            <td colspan="5" class="py-8 px-2 text-center text-gray-500">
                                 No hay cotizaciones registradas
                             </td>
                         </tr>
@@ -96,7 +104,11 @@
                                         {{ $index + 1 }}
                                     @endif
                                 </td>
-                                <td class="py-3 px-2 text-gray-900">{{ $producto->nombre }}</td>
+                                <td class="py-3 px-2 text-gray-900">
+                                    <div class="max-w-[200px] sm:max-w-none truncate">
+                                        {{ $producto->nombre }}
+                                    </div>
+                                </td>
                                 <td class="py-3 px-2 text-gray-900 font-medium">{{ $producto->cant_cotizaciones }}</td>
                             </tr>
                         @endforeach
