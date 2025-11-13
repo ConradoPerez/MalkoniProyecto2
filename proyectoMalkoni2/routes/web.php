@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SupervisorDashboardController;
 use App\Http\Controllers\SupervisorVendedorController;
 use App\Http\Controllers\SupervisorProductoController;
+use App\Http\Controllers\VendedorDashboardController;
+use App\Http\Controllers\VendedorClienteController;
+use App\Http\Controllers\VendedorCotizacionController;
+use App\Http\Controllers\VendedorGrupoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,9 +17,7 @@ Route::get('/', function () {
 Route::get('/supervisor/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
 
 // Dashboard Vendedor
-Route::get('/vendedor/dashboard', function () {
-    return view('vendedor.dashboard');
-})->name('vendedor.dashboard');
+Route::get('/vendedor/dashboard', [VendedorDashboardController::class, 'index'])->name('vendedor.dashboard');
  
 // vendedor
 Route::prefix('supervisor/vendedor')->name('vendedor.')->group(function () {
@@ -35,15 +37,7 @@ Route::prefix('supervisor/productos')->name('productos.')->group(function () {
 
 // Rutas adicionales para el vendedor
 Route::prefix('vendedor')->name('vendedor.app.')->group(function () {
-    Route::get('/clientes', function () {
-        return view('vendedor.clientes.index');
-    })->name('clientes.index');
-
-    Route::get('/cotizaciones', function () {
-        return view('vendedor.cotizaciones.index');
-    })->name('cotizaciones.index');
-
-    Route::get('/grupos', function () {
-        return view('vendedor.grupos.index');
-    })->name('grupos.index');
+    Route::get('/clientes', [VendedorClienteController::class, 'index'])->name('clientes.index');
+    Route::get('/cotizaciones', [VendedorCotizacionController::class, 'index'])->name('cotizaciones.index');
+    Route::get('/grupos', [VendedorGrupoController::class, 'index'])->name('grupos.index');
 });
