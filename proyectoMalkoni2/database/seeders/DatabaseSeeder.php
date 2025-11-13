@@ -15,11 +15,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Ejecutar seeders en orden de dependencias
+        $this->call([
+            RolSeeder::class,
+            EmpleadoSeeder::class,
+            PersonaSeeder::class, 
+            EmpresaSeeder::class,
+            RubroSeeder::class,           // Nuevo: tabla base para jerarquía
+            SubrubroSeeder::class,        // Nuevo: depende de rubros
+            SubdivisionSeeder::class,     // Nuevo: depende de subrubros
+            CategoriaSeeder::class,       // Depende de subdivisions
+            ProductoSeeder::class,        // Depende de categorias
+            EstadoSeeder::class,          // Estados actualizados
+            CotizacionSeeder::class,
+            ItemSeeder::class,
+            CambioSeeder::class,          // Nuevo: registra cambios de estado
         ]);
+
+        $this->command->info('✅ Base de datos poblada exitosamente con datos de Malkoni Hnos.');
+        $this->command->info('📊 Dashboard del vendedor listo para usar con datos realistas.');
     }
 }
