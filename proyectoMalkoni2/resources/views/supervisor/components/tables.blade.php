@@ -31,14 +31,29 @@
                         @foreach($ultimasCotizaciones as $cotizacion)
                             <tr class="border-b border-gray-200 hover:bg-gray-50">
                                 <td class="py-3 px-2">
-                                    <span class="inline-block px-3 py-1 rounded text-xs font-medium text-white {{ $cotizacion->estado_clase }}" 
-                                          style="{{ $cotizacion->estado_estilo }}">
-                                        {{ $cotizacion->estado }}
-                                    </span>
+                                    @if($cotizacion->estado_actual)
+                                        @php
+                                            $estadoColor = match(strtolower($cotizacion->estado_actual->nombre)) {
+                                                'nuevo' => '#D88429',
+                                                'abierto' => '#166379',
+                                                'cotizado' => '#22c55e', 
+                                                'en entrega' => '#B1B7BB',
+                                                default => '#6B7280'
+                                            };
+                                        @endphp
+                                        <span class="inline-block px-3 py-1 rounded text-xs font-medium text-white" 
+                                              style="background-color: {{ $estadoColor }};">
+                                            {{ $cotizacion->estado_actual->nombre }}
+                                        </span>
+                                    @else
+                                        <span class="inline-block px-3 py-1 rounded text-xs font-medium text-white bg-gray-400">
+                                            Sin Estado
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="py-3 px-2 text-gray-900">
                                     <div class="max-w-[120px] sm:max-w-none truncate">
-                                        {{ $cotizacion->empresa->nombre ?? 'Sin cliente' }}
+                                        {{ $cotizacion->cliente_nombre }}
                                     </div>
                                 </td>
                                 <td class="py-3 px-2 text-gray-900">

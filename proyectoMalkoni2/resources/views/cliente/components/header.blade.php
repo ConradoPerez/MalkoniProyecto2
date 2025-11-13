@@ -5,12 +5,12 @@
         </h1>
         
         <div class="flex space-x-4 mt-2">
-            <button class="px-4 py-2 bg-gray-200 text-gray-800 rounded shadow hover:bg-gray-300">
-                Nueva Cotizacion
-            </button>
-            <button class="px-4 py-2 bg-gray-200 text-gray-800 rounded shadow hover:bg-gray-300">
+            <a href="{{ route('cliente.nueva_cotizacion') }}" class="px-4 py-2 bg-[#D88429] text-white rounded shadow hover:bg-[#c7731f] transition-colors font-semibold">
+                Nueva Cotización
+            </a>
+            <a href="{{ route('cliente.opt') }}" class="px-4 py-2 bg-gray-400 text-white rounded shadow hover:bg-gray-500 transition-colors font-semibold">
                 Ir al OPT
-            </button>
+            </a>
         </div>
     </div>
     

@@ -57,6 +57,20 @@ class Producto extends Model
     {
         return $this->hasMany(Item::class, 'id_Producto', 'id_producto');
     }
-    
-    // Aquí puedes añadir o modificar los accessors necesarios para precio_final, etc.
+
+    /**
+     * Scope para buscar por código
+     */
+    public function scopeBuscarPorCodigo($query, $codigo)
+    {
+        return $query->where('id_producto', 'like', "%$codigo%");
+    }
+
+    /**
+     * Scope para buscar por nombre
+     */
+    public function scopeBuscarPorNombre($query, $nombre)
+    {
+        return $query->where('nombre', 'like', "%$nombre%");
+    }
 }

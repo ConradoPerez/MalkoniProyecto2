@@ -16,14 +16,14 @@ class SupervisorProductoController extends Controller
         $estadisticas = [
             'total_productos' => Producto::count(),
             'total_cotizaciones' => Producto::sum('cant_cotizaciones'),
-            'ingresos_totales' => Producto::sum('precio_final'),
+            'ingresos_totales' => Producto::selectRaw('SUM(precio_final * cant_cotizaciones) as total')->value('total') ?? 0,
         ];
 
         // Obtener parámetro de ordenamiento
         $ordenar = $request->get('ordenar', 'mas_vendidos');
         
         // Construir consulta con ordenamiento
-        $query = Producto::with('categoria');
+        $query = Producto::with(['subtipo', 'subcategoria']);
         
         switch ($ordenar) {
             case 'codigo':
@@ -57,15 +57,15 @@ class SupervisorProductoController extends Controller
         $ordenar = $request->get('ordenar', 'mas_vendidos');
         
         // Construir consulta de búsqueda
-        $query = Producto::with('categoria');
+        $query = Producto::with(['subtipo', 'subcategoria']);
         
         // Aplicar filtros si existen
         if ($codigo) {
-            $query->buscarPorCodigo($codigo);
+            $query->where('id_producto', 'like', '%' . $codigo . '%');
         }
         
         if ($nombre) {
-            $query->buscarPorNombre($nombre);
+            $query->where('nombre', 'like', '%' . $nombre . '%');
         }
         
         // Aplicar ordenamiento
@@ -104,7 +104,7 @@ class SupervisorProductoController extends Controller
     public function show($id)
     {
         // Cargar el producto con sus relaciones
-        $producto = Producto::with('categoria')
+        $producto = Producto::with(['subtipo', 'subcategoria'])
             ->where('id_producto', $id)
             ->firstOrFail();
         
@@ -117,7 +117,7 @@ class SupervisorProductoController extends Controller
     public function estadisticas($id)
     {
         // Cargar el producto
-        $producto = Producto::with('categoria')
+        $producto = Producto::with(['subtipo', 'subcategoria'])
             ->where('id_producto', $id)
             ->firstOrFail();
         
