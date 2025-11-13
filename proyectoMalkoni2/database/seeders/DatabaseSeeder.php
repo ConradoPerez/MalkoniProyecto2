@@ -21,18 +21,19 @@ class DatabaseSeeder extends Seeder
             EmpleadoSeeder::class,
             PersonaSeeder::class, 
             EmpresaSeeder::class,
-            RubroSeeder::class,           // Nuevo: tabla base para jerarquía
-            SubrubroSeeder::class,        // Nuevo: depende de rubros
-            SubdivisionSeeder::class,     // Nuevo: depende de subrubros
-            CategoriaSeeder::class,       // Depende de subdivisions
-            ProductoSeeder::class,        // Depende de categorias
-            EstadoSeeder::class,          // Estados actualizados
+            TipoSeeder::class,            // Nuevo: tipos de productos (Maderas, Herrajes, etc.)
+            SubtipoSeeder::class,         // Nuevo: subtipos de cada tipo
+            CategoriaSeeder::class,       // Nuevo: categorías de clasificación (Premium, Estándar, etc.)
+            SubcategoriaSeeder::class,    // Nuevo: subcategorías de cada categoría
+            ProductoSeeder::class,        // Actualizado: usa id_subtipo e id_subcategoria
+            EstadoSeeder::class,
             CotizacionSeeder::class,
             ItemSeeder::class,
-            CambioSeeder::class,          // Nuevo: registra cambios de estado
+            CambioSeeder::class,
         ]);
 
         $this->command->info('✅ Base de datos poblada exitosamente con datos de Malkoni Hnos.');
         $this->command->info('📊 Dashboard del vendedor listo para usar con datos realistas.');
+        $this->command->info('🔄 Estructura actualizada: Tipos->Subtipos y Categorías->Subcategorías');
     }
 }
