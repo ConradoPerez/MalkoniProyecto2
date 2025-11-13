@@ -153,7 +153,8 @@ class Cotizacion extends Model
      */
     public function getEstadoAttribute()
     {
-        return $this->estadoActual ? $this->estadoActual->nombre : 'Sin Estado';
+        $estadoActual = $this->getEstadoActualDirecto();
+        return $estadoActual ? $estadoActual->nombre : 'Sin Estado';
     }
 
     /**
@@ -161,7 +162,8 @@ class Cotizacion extends Model
      */
     public function getEstadoClaseAttribute()
     {
-        return $this->estadoActual ? $this->estadoActual->estado_clase : 'bg-gray-400';
+        $estadoActual = $this->getEstadoActualDirecto();
+        return $estadoActual ? $estadoActual->estado_clase : 'bg-gray-400';
     }
 
     /**
@@ -169,6 +171,33 @@ class Cotizacion extends Model
      */
     public function getEstadoEstiloAttribute()
     {
-        return $this->estadoActual ? $this->estadoActual->estado_estilo : 'background-color: #B1B7BB;';
+        $estadoActual = $this->getEstadoActualDirecto();
+        return $estadoActual ? $estadoActual->estado_estilo : 'background-color: #B1B7BB;';
+    }
+
+    /**
+     * Método para obtener el estado actual mediante consulta directa
+     */
+    public function getEstadoActualDirecto()
+    {
+        return \DB::table('cambios')
+            ->join('estados', 'cambios.id_estado', '=', 'estados.id_estado')
+            ->where('cambios.id_cotizaciones', $this->id)
+            ->orderByDesc('cambios.fyH')
+            ->select('estados.*')
+            ->first();
+    }
+
+    /**
+     * Accessor para obtener el nombre del cliente (empresa o persona)
+     */
+    public function getClienteNombreAttribute()
+    {
+        if ($this->empresa) {
+            return $this->empresa->nombre;
+        } elseif ($this->persona) {
+            return 'Cliente Persona'; // O usar algún campo de persona si existe
+        }
+        return 'Sin cliente';
     }
 }

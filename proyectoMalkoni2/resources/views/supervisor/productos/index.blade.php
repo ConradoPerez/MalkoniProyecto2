@@ -143,10 +143,10 @@
                                 @if(isset($productos) && $productos->count() > 0)
                                     @foreach($productos as $index => $producto)
                                         <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                            <td class="py-4 px-6 text-gray-900 font-mono font-medium">{{ $producto->codigo }}</td>
+                                            <td class="py-4 px-6 text-gray-900 font-mono font-medium">{{ $producto->id_producto }}</td>
                                             <td class="py-4 px-6 text-gray-900 font-medium">{{ $producto->nombre }}</td>
-                                            <td class="py-4 px-6 text-gray-900">{{ $producto->cant_cotizaciones }}</td>
-                                            <td class="py-4 px-6 text-gray-900 font-medium">{{ $producto->precio_formateado }}</td>
+                                            <td class="py-4 px-6 text-gray-900">{{ number_format($producto->cant_cotizaciones ?? 0) }}</td>
+                                            <td class="py-4 px-6 text-gray-900 font-medium">${{ number_format(($producto->precio_final ?? 0) * ($producto->cant_cotizaciones ?? 0)) }}</td>
                                             <td class="py-4 px-6">
                                                 @php
                                                     $rankingIndex = ($productos->currentPage() - 1) * $productos->perPage() + $index + 1;
