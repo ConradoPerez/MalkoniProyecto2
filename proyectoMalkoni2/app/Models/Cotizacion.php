@@ -153,8 +153,12 @@ class Cotizacion extends Model
      */
     public function getEstadoAttribute()
     {
-        $estadoActual = $this->getEstadoActualDirecto();
-        return $estadoActual ? $estadoActual->nombre : 'Sin Estado';
+        try {
+            $estadoActual = $this->getEstadoActualDirecto();
+            return $estadoActual ? $estadoActual->nombre : 'Pendiente';
+        } catch (\Exception $e) {
+            return 'Pendiente';
+        }
     }
 
     /**
@@ -162,8 +166,12 @@ class Cotizacion extends Model
      */
     public function getEstadoClaseAttribute()
     {
-        $estadoActual = $this->getEstadoActualDirecto();
-        return $estadoActual ? $estadoActual->estado_clase : 'bg-gray-400';
+        try {
+            $estadoActual = $this->getEstadoActualDirecto();
+            return $estadoActual ? $estadoActual->estado_clase : 'bg-gray-400';
+        } catch (\Exception $e) {
+            return 'bg-gray-400';
+        }
     }
 
     /**
@@ -171,8 +179,12 @@ class Cotizacion extends Model
      */
     public function getEstadoEstiloAttribute()
     {
-        $estadoActual = $this->getEstadoActualDirecto();
-        return $estadoActual ? $estadoActual->estado_estilo : 'background-color: #B1B7BB;';
+        try {
+            $estadoActual = $this->getEstadoActualDirecto();
+            return $estadoActual ? $estadoActual->estado_estilo : 'background-color: #B1B7BB;';
+        } catch (\Exception $e) {
+            return 'background-color: #B1B7BB;';
+        }
     }
 
     /**
