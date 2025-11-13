@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <!-- Cotizaciones en Proceso -->
+    <!-- Cotizaciones Pendientes -->
     <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
         <div class="flex items-start space-x-4">
             <div class="p-2 bg-blue-100 rounded-lg">
@@ -29,10 +29,10 @@
             </div>
             <div>
                 <p class="text-xs lg:text-sm text-gray-600 font-medium">
-                    Cotizaciones en proceso
+                    Cotizaciones Pendientes
                 </p>
                 <p class="text-xl lg:text-2xl font-syncopate font-bold text-gray-900 mt-1">
-                    {{ number_format($metrics['cotizaciones_proceso'] ?? 0) }}
+                    {{ number_format($metrics['cotizaciones_pendientes'] ?? 0) }}
                 </p>
             </div>
         </div>

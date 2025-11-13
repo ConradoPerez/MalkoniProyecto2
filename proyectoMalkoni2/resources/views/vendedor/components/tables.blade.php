@@ -34,10 +34,10 @@
                                     @if($cotizacion->estadoActual)
                                         @php
                                             $estadoClass = match($cotizacion->estadoActual->nombre) {
-                                                'En Proceso' => 'bg-blue-100 text-blue-800',
-                                                'Aprobado', 'Aprobada' => 'bg-green-100 text-green-800',
-                                                'Rechazado', 'Rechazada' => 'bg-gray-300 text-gray-700',
-                                                'Pendiente' => 'bg-yellow-100 text-yellow-800',
+                                                'Nuevo' => 'bg-blue-100 text-blue-800',
+                                                'Abierto' => 'bg-yellow-100 text-yellow-800',
+                                                'Cotizado' => 'bg-green-100 text-green-800',
+                                                'En entrega' => 'bg-purple-100 text-purple-800',
                                                 default => 'bg-gray-100 text-gray-600'
                                             };
                                         @endphp

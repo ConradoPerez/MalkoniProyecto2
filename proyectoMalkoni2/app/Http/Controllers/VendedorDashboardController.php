@@ -34,9 +34,16 @@ class VendedorDashboardController extends Controller
             'clientes_digitalizados' => Empresa::whereHas('cotizaciones', function($q) use ($empleadoId) {
                 $q->where('id_empleados', $empleadoId);
             })->count(),
-            'cotizaciones_proceso' => Cotizacion::where('id_empleados', $empleadoId)
-                ->whereHas('estadoActual', function($q) {
-                    $q->where('nombre', 'En Proceso');
+            'cotizaciones_pendientes' => Cotizacion::where('id_empleados', $empleadoId)
+                ->whereHas('cambios', function($q) {
+                    $q->whereHas('estado', function($subQ) {
+                        $subQ->where('nombre', 'Nuevo');
+                    })
+                    ->whereRaw('cambios.fyH = (
+                        SELECT MAX(fyH) 
+                        FROM cambios AS c2 
+                        WHERE c2.id_cotizaciones = cambios.id_cotizaciones
+                    )');
                 })
                 ->count(),
             'comisiones_mes' => Cotizacion::where('id_empleados', $empleadoId)
@@ -108,8 +115,9 @@ class VendedorDashboardController extends Controller
         
         switch($intervalo) {
             case '7dias':
+                $fechaInicio = Carbon::now()->subDays(6)->startOfDay();
                 return $query
-                    ->where('fyh', '>=', Carbon::now()->subDays(7))
+                    ->where('fyh', '>=', $fechaInicio)
                     ->select(
                         DB::raw('DATE(fyh) as fecha'),
                         DB::raw('COUNT(*) as total')
@@ -119,8 +127,9 @@ class VendedorDashboardController extends Controller
                     ->get();
                     
             case '3meses':
+                $fechaInicio = Carbon::now()->subMonths(3)->startOfMonth();
                 return $query
-                    ->where('fyh', '>=', Carbon::now()->subMonths(3))
+                    ->where('fyh', '>=', $fechaInicio)
                     ->select(
                         DB::raw('DATE_FORMAT(fyh, "%Y-%m") as mes'),
                         DB::raw('COUNT(*) as total')
@@ -130,8 +139,9 @@ class VendedorDashboardController extends Controller
                     ->get();
                     
             case '6meses':
+                $fechaInicio = Carbon::now()->subMonths(6)->startOfMonth();
                 return $query
-                    ->where('fyh', '>=', Carbon::now()->subMonths(6))
+                    ->where('fyh', '>=', $fechaInicio)
                     ->select(
                         DB::raw('DATE_FORMAT(fyh, "%Y-%m") as mes'),
                         DB::raw('COUNT(*) as total')
@@ -141,8 +151,9 @@ class VendedorDashboardController extends Controller
                     ->get();
                     
             case '1ano':
+                $fechaInicio = Carbon::now()->subYear()->startOfMonth();
                 return $query
-                    ->where('fyh', '>=', Carbon::now()->subYear())
+                    ->where('fyh', '>=', $fechaInicio)
                     ->select(
                         DB::raw('DATE_FORMAT(fyh, "%Y-%m") as mes'),
                         DB::raw('COUNT(*) as total')
