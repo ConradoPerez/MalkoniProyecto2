@@ -3,7 +3,7 @@
     <!-- Últimas Cotizaciones -->
     <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
         <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-4">
-            Últimas Cotizaciones
+            ÚLTIMAS COTIZACIONES
         </h2>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
@@ -14,6 +14,9 @@
                         </th>
                         <th class="text-left py-3 px-2 font-semibold text-gray-600">
                             Cliente
+                        </th>
+                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
+                            Vendedor
                         </th>
                         <th class="text-left py-3 px-2 font-semibold text-gray-600">
                             Número
@@ -34,6 +37,7 @@
                                     </span>
                                 </td>
                                 <td class="py-3 px-2 text-gray-900">{{ $cotizacion->empresa->nombre ?? 'Sin cliente' }}</td>
+                                <td class="py-3 px-2 text-gray-900">{{ $cotizacion->empleado->nombre ?? 'Sin vendedor' }}</td>
                                 <td class="py-3 px-2 text-gray-900">{{ $cotizacion->numero_formateado }}</td>
                                 <td class="py-3 px-2 text-gray-900">{{ $cotizacion->precio_formateado }}</td>
                             </tr>
@@ -53,7 +57,7 @@
     <!-- Ranking de Producto -->
     <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
         <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-4">
-            Ranking de Productos más cotizados
+            RANKING DE PRODUCTOS MÁS COTIZADOS
         </h2>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">

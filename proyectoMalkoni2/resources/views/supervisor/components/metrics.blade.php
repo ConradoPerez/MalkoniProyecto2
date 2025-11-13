@@ -10,7 +10,7 @@
             </div>
             <div>
                 <p class="text-xs lg:text-sm text-gray-600 font-medium">
-                    Clientes digitalizados
+                    Clientes online
                 </p>
                 <p class="text-xl lg:text-2xl font-syncopate font-bold text-gray-900 mt-1">
                     {{ number_format($metrics['clientes_digitalizados'] ?? 0) }}

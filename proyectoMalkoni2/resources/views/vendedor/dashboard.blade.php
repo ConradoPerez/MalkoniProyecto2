@@ -88,7 +88,7 @@
                     <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-lg font-syncopate font-bold text-gray-900">
-                                RESUMEN DE VENTAS
+                                RESUMEN DE COTIZACIONES
                             </h2>
                             <div class="flex gap-2">
                                 <button class="px-3 py-1 text-xs font-medium bg-primary text-white rounded hover:opacity-90">
@@ -111,7 +111,7 @@
                     <!-- Product Sales Donut Chart -->
                     <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-4">
-                            GRÁFICO DE TORTAS CON VENTA POR PRODUCTO
+                            COTIZACIONES POR PRODUCTO
                         </h2>
                         <div class="flex justify-center mb-4">
                             <canvas id="productChart" height="200"></canvas>
@@ -264,7 +264,7 @@
                     <!-- Product Ranking -->
                     <div class="bg-white rounded-lg p-6 border border-gray-200">
                         <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-4">
-                            RANKING DE PRODUCTO
+                            RANKING DE PRODUCTOS
                         </h2>
                         <div class="space-y-2">
                             <div class="flex items-center justify-between py-3 px-2 border-b border-gray-200">

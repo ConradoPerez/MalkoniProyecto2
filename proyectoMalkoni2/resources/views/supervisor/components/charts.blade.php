@@ -1,7 +1,7 @@
 <!-- Charts Section -->
 <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
     <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-6">
-        Gráfico de torta con cotizaciones por vendedor
+        COTIZACIONES POR VENDEDOR
     </h2>
     
     @if(isset($cotizacionesPorVendedor) && $cotizacionesPorVendedor->count() > 0)

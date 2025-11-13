@@ -46,8 +46,16 @@
             <span>Grupo de clientes</span>
         </a>
     </nav>
-        <!-- Indicadores (solo vista) -->
-    <div class="mt-6 space-y-8">
+    
+    <!-- Métricas Rápidas Section -->
+    <div class="mb-4">
+        <h3 class="text-sm font-syncopate font-bold text-gray-900 mb-4">
+            MÉTRICAS RÁPIDAS
+        </h3>
+    </div>
+    
+    <!-- Indicadores (solo vista) -->
+    <div class="mt-2 space-y-4">
         <!-- Mensajes -->
         <div class="border border-gray-300 rounded-xl p-4 bg-white">
             <div class="flex items-center gap-3">
