@@ -68,11 +68,11 @@
                         @if ($page === '...')
                             <span class="px-2 py-2 text-gray-500 text-xs">...</span>
                         @elseif ($page == $currentPage)
-                            <button class="px-2 py-2 text-white rounded-lg text-xs font-medium min-w-[28px]" style="background-color: #D88429;">
+                            <button class="px-2 py-2 text-white rounded-lg text-xs font-medium min-w-7" style="background-color: #D88429;">
                                 {{ $page }}
                             </button>
                         @else
-                            <a href="{{ $paginator->url($page) }}" class="px-2 py-2 border border-gray-300 rounded-lg text-xs hover:bg-gray-50 transition-colors min-w-[28px] text-center">
+                            <a href="{{ $paginator->url($page) }}" class="px-2 py-2 border border-gray-300 rounded-lg text-xs hover:bg-gray-50 transition-colors min-w-7 text-center">
                                 {{ $page }}
                             </a>
                         @endif
@@ -85,11 +85,11 @@
                         @if ($page === '...')
                             <span class="px-3 py-2 text-gray-500 text-sm">...</span>
                         @elseif ($page == $currentPage)
-                            <button class="px-3 py-2 text-white rounded-lg text-sm font-medium min-w-[36px]" style="background-color: #D88429;">
+                            <button class="px-3 py-2 text-white rounded-lg text-sm font-medium min-w-9" style="background-color: #D88429;">
                                 {{ $page }}
                             </button>
                         @else
-                            <a href="{{ $paginator->url($page) }}" class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors min-w-[36px] text-center">
+                            <a href="{{ $paginator->url($page) }}" class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors min-w-9 text-center">
                                 {{ $page }}
                             </a>
                         @endif

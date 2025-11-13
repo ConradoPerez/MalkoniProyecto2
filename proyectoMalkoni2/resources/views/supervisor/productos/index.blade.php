@@ -36,12 +36,12 @@
                 </div>
 
                 <!-- Search Section -->
-                <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm mb-8 mx-auto max-w-4xl">
+                <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm mb-8">
                     <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-4 text-center sm:text-left">
                         BUSCAR PRODUCTOS
                     </h2>
-                    <form action="{{ route('productos.search') }}" method="GET" class="flex flex-col lg:flex-row gap-4 items-end justify-center lg:justify-start">
-                        <div class="w-full lg:flex-1">
+                    <form action="{{ route('productos.search') }}" method="GET" class="flex flex-col lg:flex-row gap-4 items-center lg:items-end">
+                        <div class="w-full max-w-sm mx-auto lg:max-w-none lg:mx-0 lg:flex-1">
                             <label class="block text-sm font-medium text-gray-700 mb-2 text-center sm:text-left">
                                 Por Código del producto
                             </label>
@@ -50,11 +50,11 @@
                                 name="codigo" 
                                 value="{{ request('codigo') }}"
                                 placeholder="Ej: 1, 23, 45..."
-                                class="w-full max-w-sm sm:max-w-none mx-auto sm:mx-0 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
                                 style="focus:border-color: #D88429; focus:ring-color: #D88429;"
                             >
                         </div>
-                        <div class="w-full lg:flex-1">
+                        <div class="w-full max-w-sm mx-auto lg:max-w-none lg:mx-0 lg:flex-1">
                             <label class="block text-sm font-medium text-gray-700 mb-2 text-center sm:text-left">
                                 Por nombre del producto
                             </label>
@@ -63,15 +63,15 @@
                                 name="nombre" 
                                 value="{{ request('nombre') }}"
                                 placeholder="Buscar por nombre del producto..."
-                                class="w-full max-w-sm sm:max-w-none mx-auto sm:mx-0 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
                                 style="focus:border-color: #D88429; focus:ring-color: #D88429;"
                             >
                         </div>
                         <input type="hidden" name="ordenar" value="{{ request('ordenar', 'mas_vendidos') }}">
-                        <div class="w-full lg:w-auto flex flex-col sm:flex-row justify-center lg:justify-start gap-2">
+                        <div class="w-full max-w-sm mx-auto lg:max-w-none lg:mx-0 lg:w-auto flex flex-col sm:flex-row gap-2 lg:gap-4">
                             <button 
                                 type="submit"
-                                class="px-6 py-2 text-white rounded-lg font-medium hover:opacity-90 transition-opacity whitespace-nowrap"
+                                class="w-full sm:w-auto px-6 py-2 text-white rounded-lg font-medium hover:opacity-90 transition-opacity whitespace-nowrap"
                                 style="background-color: #D88429;"
                             >
                                 Buscar
@@ -79,7 +79,7 @@
                             <button 
                                 type="button"
                                 onclick="document.querySelector('input[name=codigo]').value=''; document.querySelector('input[name=nombre]').value=''; window.location.href='{{ route('productos.index') }}'"
-                                class="px-6 py-2 border rounded-lg font-medium hover:bg-gray-100 transition-colors whitespace-nowrap"
+                                class="w-full sm:w-auto px-6 py-2 border rounded-lg font-medium hover:bg-gray-100 transition-colors whitespace-nowrap"
                                 style="border-color: #B1B7BB; color: #B1B7BB;"
                             >
                                 Limpiar
