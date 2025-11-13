@@ -61,7 +61,7 @@ class SupervisorProductoController extends Controller
         
         // Aplicar filtros si existen
         if ($codigo) {
-            $query->where('id_producto', 'like', '%' . $codigo . '%');
+            $query->where('id_producto', $codigo);
         }
         
         if ($nombre) {
