@@ -35,7 +35,7 @@
         const loadingElement = document.getElementById('chartLoading');
         let salesChart = null;
         let currentInterval = '7dias';
-        const vendedorId = {{ isset($vendedor) ? $vendedor->id_empleado : 1 }};
+        const empleadoId = {{ isset($vendedor) ? $vendedor->id_empleado : 1 }};
 
         // Función para inicializar el gráfico
         function initChart(data) {
@@ -120,7 +120,7 @@
             salesCtx.style.opacity = '0.5';
 
             // Llamada AJAX real
-            fetch(`{{ route('vendedor.api.cotizaciones.chart') }}?intervalo=${interval}&vendedor_id=${vendedorId}`, {
+            fetch(`{{ route('vendedor.api.cotizaciones.chart') }}?intervalo=${interval}&empleado_id=${empleadoId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

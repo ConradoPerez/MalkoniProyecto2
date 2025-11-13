@@ -19,11 +19,11 @@ class VendedorDashboardController extends Controller
      */
     public function index(Request $request)
     {
-        // Por ahora simulo un vendedor específico (ID 1)
+        // Por ahora simulo un empleado/vendedor específico (ID 1)
         // En un sistema real esto vendría de la autenticación
-        $vendedorId = $request->get('vendedor_id', 1);
+        $empleadoId = $request->get('empleado_id', 1);
         
-        $vendedor = Empleado::with('rol')->find($vendedorId);
+        $vendedor = Empleado::with('rol')->find($empleadoId);
         
         if (!$vendedor) {
             abort(404, 'Vendedor no encontrado');
@@ -31,15 +31,15 @@ class VendedorDashboardController extends Controller
 
         // Métricas principales del vendedor
         $metrics = [
-            'clientes_digitalizados' => Empresa::whereHas('cotizaciones', function($q) use ($vendedorId) {
-                $q->where('id_empleados', $vendedorId);
+            'clientes_digitalizados' => Empresa::whereHas('cotizaciones', function($q) use ($empleadoId) {
+                $q->where('id_empleados', $empleadoId);
             })->count(),
-            'cotizaciones_proceso' => Cotizacion::where('id_empleados', $vendedorId)
+            'cotizaciones_proceso' => Cotizacion::where('id_empleados', $empleadoId)
                 ->whereHas('estadoActual', function($q) {
                     $q->where('nombre', 'En Proceso');
                 })
                 ->count(),
-            'comisiones_mes' => Cotizacion::where('id_empleados', $vendedorId)
+            'comisiones_mes' => Cotizacion::where('id_empleados', $empleadoId)
                 ->esteMes()
                 ->sum('precio_total'),
         ];
@@ -49,7 +49,7 @@ class VendedorDashboardController extends Controller
             ->join('cotizaciones', 'items.id_cotizaciones', '=', 'cotizaciones.id')
             ->join('productos', 'items.id_producto', '=', 'productos.id_producto')
             ->join('categorias', 'productos.id_categoria', '=', 'categorias.id_categoria')
-            ->where('cotizaciones.id_empleados', $vendedorId)
+            ->where('cotizaciones.id_empleados', $empleadoId)
             ->whereNotNull('items.id_producto')
             ->select(
                 'categorias.nombre as categoria',
@@ -64,11 +64,11 @@ class VendedorDashboardController extends Controller
 
         // Cotizaciones por tiempo (para gráfico de barras)
         $intervalo = $request->get('intervalo', '7dias');
-        $cotizacionesPorTiempo = $this->getCotizacionesPorTiempo($vendedorId, $intervalo);
+        $cotizacionesPorTiempo = $this->getCotizacionesPorTiempo($empleadoId, $intervalo);
 
         // Últimas cotizaciones del vendedor
         $ultimasCotizaciones = Cotizacion::with(['empresa', 'estadoActual'])
-            ->where('id_empleados', $vendedorId)
+            ->where('id_empleados', $empleadoId)
             ->orderByDesc('fyh')
             ->limit(6)
             ->get();
@@ -77,7 +77,7 @@ class VendedorDashboardController extends Controller
         $productosRanking = DB::table('items')
             ->join('cotizaciones', 'items.id_cotizaciones', '=', 'cotizaciones.id')
             ->join('productos', 'items.id_producto', '=', 'productos.id_producto')
-            ->where('cotizaciones.id_empleados', $vendedorId)
+            ->where('cotizaciones.id_empleados', $empleadoId)
             ->whereNotNull('items.id_producto')
             ->select(
                 'productos.id_producto',
@@ -102,9 +102,9 @@ class VendedorDashboardController extends Controller
     /**
      * Obtener cotizaciones por tiempo para gráfico de barras
      */
-    private function getCotizacionesPorTiempo($vendedorId, $intervalo)
+    private function getCotizacionesPorTiempo($empleadoId, $intervalo)
     {
-        $query = Cotizacion::where('id_empleados', $vendedorId);
+        $query = Cotizacion::where('id_empleados', $empleadoId);
         
         switch($intervalo) {
             case '7dias':
@@ -161,10 +161,10 @@ class VendedorDashboardController extends Controller
      */
     public function getCotizacionesBarChart(Request $request)
     {
-        $vendedorId = $request->get('vendedor_id', 1);
+        $empleadoId = $request->get('empleado_id', 1);
         $intervalo = $request->get('intervalo', '7dias');
         
-        $data = $this->getCotizacionesPorTiempo($vendedorId, $intervalo);
+        $data = $this->getCotizacionesPorTiempo($empleadoId, $intervalo);
         
         // Formatear la respuesta para asegurar que siempre tenga la estructura correcta
         $formattedData = $data->map(function($item) use ($intervalo) {
