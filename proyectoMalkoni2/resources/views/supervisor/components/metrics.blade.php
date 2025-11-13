@@ -13,7 +13,7 @@
                     Clientes digitalizados
                 </p>
                 <p class="text-xl lg:text-2xl font-syncopate font-bold text-gray-900 mt-1">
-                    190
+                    {{ number_format($metrics['clientes_digitalizados'] ?? 0) }}
                 </p>
             </div>
         </div>
@@ -32,7 +32,7 @@
                     Cotizaciones en proceso
                 </p>
                 <p class="text-xl lg:text-2xl font-syncopate font-bold text-gray-900 mt-1">
-                    78
+                    {{ number_format($metrics['cotizaciones_proceso'] ?? 0) }}
                 </p>
             </div>
         </div>
@@ -51,7 +51,7 @@
                     En cotizaciones este mes
                 </p>
                 <p class="text-xl lg:text-2xl font-syncopate font-bold text-gray-900 mt-1">
-                    $34.000.000
+                    ${{ number_format($metrics['cotizaciones_este_mes'] ?? 0, 0, ',', '.') }}
                 </p>
             </div>
         </div>

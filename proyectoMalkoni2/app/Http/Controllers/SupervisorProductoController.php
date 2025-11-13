@@ -3,28 +3,48 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Producto;
 
 class SupervisorProductoController extends Controller
 {
     /**
      * Mostrar la lista de productos
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Aquí puedes cargar estadísticas y productos
-        // Ejemplo:
-        // $estadisticas = [
-        //     'total_productos' => Producto::count(),
-        //     'total_ventas' => Venta::count(),
-        //     'ingresos_totales' => Venta::sum('total'),
-        //     'sin_ventas' => Producto::whereDoesntHave('ventas')->count(),
-        // ];
-        // $productos = Producto::withCount('ventas')
-        //     ->withSum('ventas', 'total')
-        //     ->orderByDesc('ventas_count')
-        //     ->paginate(10);
+        // Cargar estadísticas básicas
+        $estadisticas = [
+            'total_productos' => Producto::count(),
+            'total_cotizaciones' => Producto::sum('cant_cotizaciones'),
+            'ingresos_totales' => Producto::sum('precio_final'),
+        ];
+
+        // Obtener parámetro de ordenamiento
+        $ordenar = $request->get('ordenar', 'mas_vendidos');
         
-        return view('supervisor.productos.index');
+        // Construir consulta con ordenamiento
+        $query = Producto::with('categoria');
+        
+        switch ($ordenar) {
+            case 'codigo':
+                $query->orderBy('id_producto');
+                break;
+            case 'nombre':
+                $query->orderBy('nombre');
+                break;
+            case 'ingresos':
+                $query->orderByDesc('precio_final');
+                break;
+            case 'mas_vendidos':
+            default:
+                $query->orderByDesc('cant_cotizaciones');
+                break;
+        }
+
+        // Cargar productos con paginación
+        $productos = $query->paginate(10);
+        
+        return view('supervisor.productos.index', compact('productos', 'estadisticas', 'ordenar'));
     }
 
     /**
@@ -34,18 +54,48 @@ class SupervisorProductoController extends Controller
     {
         $codigo = $request->get('codigo');
         $nombre = $request->get('nombre');
+        $ordenar = $request->get('ordenar', 'mas_vendidos');
         
-        // Aquí puedes agregar la lógica de búsqueda con la base de datos
-        // Ejemplo:
-        // $productos = Producto::query()
-        //     ->when($codigo, fn($q) => $q->where('codigo', 'like', '%'.$codigo.'%'))
-        //     ->when($nombre, fn($q) => $q->where('nombre', 'like', '%'.$nombre.'%'))
-        //     ->withCount('ventas')
-        //     ->withSum('ventas', 'total')
-        //     ->orderByDesc('ventas_count')
-        //     ->paginate(10);
+        // Construir consulta de búsqueda
+        $query = Producto::with('categoria');
         
-        return view('supervisor.productos.index', compact('codigo', 'nombre'));
+        // Aplicar filtros si existen
+        if ($codigo) {
+            $query->buscarPorCodigo($codigo);
+        }
+        
+        if ($nombre) {
+            $query->buscarPorNombre($nombre);
+        }
+        
+        // Aplicar ordenamiento
+        switch ($ordenar) {
+            case 'codigo':
+                $query->orderBy('id_producto');
+                break;
+            case 'nombre':
+                $query->orderBy('nombre');
+                break;
+            case 'ingresos':
+                $query->orderByDesc('precio_final');
+                break;
+            case 'mas_vendidos':
+            default:
+                $query->orderByDesc('cant_cotizaciones');
+                break;
+        }
+        
+        // Obtener resultados paginados
+        $productos = $query->paginate(10);
+        
+        // Cargar estadísticas básicas
+        $estadisticas = [
+            'total_productos' => Producto::count(),
+            'total_cotizaciones' => Producto::sum('cant_cotizaciones'),
+            'ingresos_totales' => Producto::sum('precio_final'),
+        ];
+        
+        return view('supervisor.productos.index', compact('productos', 'estadisticas', 'codigo', 'nombre', 'ordenar'));
     }
 
     /**
@@ -53,14 +103,12 @@ class SupervisorProductoController extends Controller
      */
     public function show($id)
     {
-        // Aquí puedes cargar los detalles completos del producto
-        // Ejemplo:
-        // $producto = Producto::with(['ventas.cliente', 'categoria'])
-        //     ->withCount('ventas')
-        //     ->withSum('ventas', 'total')
-        //     ->findOrFail($id);
+        // Cargar el producto con sus relaciones
+        $producto = Producto::with('categoria')
+            ->where('id_producto', $id)
+            ->firstOrFail();
         
-        return view('supervisor.productos.show', ['productoId' => $id]);
+        return view('supervisor.productos.show', compact('producto'));
     }
 
     /**
@@ -68,14 +116,13 @@ class SupervisorProductoController extends Controller
      */
     public function estadisticas($id)
     {
-        // Aquí puedes cargar estadísticas detalladas del producto
-        // Ejemplo:
-        // $producto = Producto::findOrFail($id);
-        // $ventasPorMes = $producto->ventas()
-        //     ->selectRaw('MONTH(created_at) as mes, COUNT(*) as cantidad, SUM(total) as ingresos')
-        //     ->groupBy('mes')
-        //     ->get();
+        // Cargar el producto
+        $producto = Producto::with('categoria')
+            ->where('id_producto', $id)
+            ->firstOrFail();
         
-        return view('supervisor.productos.estadisticas', ['productoId' => $id]);
+        // TODO: Implementar estadísticas detalladas cuando tengas modelo de ventas
+        
+        return view('supervisor.productos.estadisticas', compact('producto'));
     }
 }

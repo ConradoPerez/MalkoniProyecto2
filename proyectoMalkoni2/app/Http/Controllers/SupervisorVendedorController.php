@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Empleado;
 
 class SupervisorVendedorController extends Controller
 {
@@ -11,7 +12,13 @@ class SupervisorVendedorController extends Controller
      */
     public function index()
     {
-        return view('supervisor.vendedores.index');
+        // Cargar todos los vendedores con paginación
+        $vendedores = Empleado::vendedores()
+            ->with('rol')
+            ->orderBy('nombre')
+            ->paginate(10);
+
+        return view('supervisor.vendedores.index', compact('vendedores'));
     }
 
     /**
@@ -22,14 +29,22 @@ class SupervisorVendedorController extends Controller
         $nombre = $request->get('nombre');
         $dni = $request->get('dni');
         
-        // Aquí puedes agregar la lógica de búsqueda con la base de datos
-        // Ejemplo:
-        // $vendedores = Vendedor::query()
-        //     ->when($nombre, fn($q) => $q->where('nombre', 'like', '%'.$nombre.'%'))
-        //     ->when($dni, fn($q) => $q->where('dni', $dni))
-        //     ->paginate(10);
+        // Construir consulta de búsqueda
+        $query = Empleado::vendedores()->with('rol');
         
-        return view('supervisor.vendedores.index', compact('nombre', 'dni'));
+        // Aplicar filtros si existen
+        if ($nombre) {
+            $query->buscarPorNombre($nombre);
+        }
+        
+        if ($dni) {
+            $query->buscarPorDni($dni);
+        }
+        
+        // Obtener resultados paginados
+        $vendedores = $query->orderBy('nombre')->paginate(10);
+        
+        return view('supervisor.vendedores.index', compact('vendedores', 'nombre', 'dni'));
     }
 
     /**
@@ -37,12 +52,15 @@ class SupervisorVendedorController extends Controller
      */
     public function clientes($id)
     {
-        // Aquí puedes cargar los datos del vendedor y sus clientes
-        // Ejemplo:
-        // $vendedor = Vendedor::findOrFail($id);
+        // Verificar que el empleado existe y es vendedor
+        $vendedor = Empleado::vendedores()
+            ->where('id_empleado', $id)
+            ->firstOrFail();
+        
+        // TODO: Implementar lógica para cargar clientes del vendedor
         // $clientes = $vendedor->clientes()->paginate(10);
         
-        return view('supervisor.vendedores.clientes', ['vendedorId' => $id]);
+        return view('supervisor.vendedores.clientes', compact('vendedor'));
     }
 
     /**
@@ -50,11 +68,14 @@ class SupervisorVendedorController extends Controller
      */
     public function cotizaciones($id)
     {
-        // Aquí puedes cargar los datos del vendedor y sus cotizaciones
-        // Ejemplo:
-        // $vendedor = Vendedor::findOrFail($id);
+        // Verificar que el empleado existe y es vendedor
+        $vendedor = Empleado::vendedores()
+            ->where('id_empleado', $id)
+            ->firstOrFail();
+        
+        // TODO: Implementar lógica para cargar cotizaciones del vendedor
         // $cotizaciones = $vendedor->cotizaciones()->with(['cliente', 'items'])->paginate(10);
         
-        return view('supervisor.vendedores.cotizaciones', ['vendedorId' => $id]);
+        return view('supervisor.vendedores.cotizaciones', compact('vendedor'));
     }
 }

@@ -68,7 +68,11 @@
                             Lista de Vendedores
                         </h2>
                         <p class="text-sm text-gray-600 mt-1">
-                            Mostrando 10 de 60 vendedores registrados
+                            @if(isset($vendedores))
+                                Mostrando {{ $vendedores->firstItem() }} al {{ $vendedores->lastItem() }} de {{ $vendedores->total() }} vendedores registrados
+                            @else
+                                No se han cargado vendedores
+                            @endif
                         </p>
                     </div>
 
@@ -80,7 +84,10 @@
                                         Vendedor
                                     </th>
                                     <th class="text-left py-3 px-6 font-semibold text-gray-700">
-                                        DNI/CUIT
+                                        Email
+                                    </th>
+                                    <th class="text-left py-3 px-6 font-semibold text-gray-700">
+                                        DNI
                                     </th>
                                     <th class="text-left py-3 px-6 font-semibold text-gray-700">
                                         Acciones
@@ -88,139 +95,47 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Juan Pérez</td>
-                                    <td class="py-4 px-6 text-gray-600">20-11222333-4</td>
-                                    <td class="py-4 px-6">
-                                        <div class="flex gap-3">
-                                            <a href="{{ route('vendedor.clientes', ['id' => 1]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
-                                               style="border-color: #166379; color: #166379;">
-                                                Ver Clientes
-                                            </a>
-                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 1]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
-                                               style="background-color: #D88429; border-color: #D88429;">
-                                                Ver Cotizaciones
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-medium">María García</td>
-                                    <td class="py-4 px-6 text-gray-600">27-22333444-5</td>
-                                    <td class="py-4 px-6">
-                                        <div class="flex gap-3">
-                                            <a href="{{ route('vendedor.clientes', ['id' => 2]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
-                                               style="border-color: #166379; color: #166379;">
-                                                Ver Clientes
-                                            </a>
-                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 2]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
-                                               style="background-color: #D88429; border-color: #D88429;">
-                                                Ver Cotizaciones
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Carlos Ruiz</td>
-                                    <td class="py-4 px-6 text-gray-600">20-33444555-6</td>
-                                    <td class="py-4 px-6">
-                                        <div class="flex gap-3">
-                                            <a href="{{ route('vendedor.clientes', ['id' => 3]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
-                                               style="border-color: #166379; color: #166379;">
-                                                Ver Clientes
-                                            </a>
-                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 3]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
-                                               style="background-color: #D88429; border-color: #D88429;">
-                                                Ver Cotizaciones
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Ana López</td>
-                                    <td class="py-4 px-6 text-gray-600">27-44555666-7</td>
-                                    <td class="py-4 px-6">
-                                        <div class="flex gap-3">
-                                            <a href="{{ route('vendedor.clientes', ['id' => 4]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
-                                               style="border-color: #166379; color: #166379;">
-                                                Ver Clientes
-                                            </a>
-                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 4]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
-                                               style="background-color: #D88429; border-color: #D88429;">
-                                                Ver Cotizaciones
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Roberto Martínez</td>
-                                    <td class="py-4 px-6 text-gray-600">20-55666777-8</td>
-                                    <td class="py-4 px-6">
-                                        <div class="flex gap-3">
-                                            <a href="{{ route('vendedor.clientes', ['id' => 5]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
-                                               style="border-color: #166379; color: #166379;">
-                                                Ver Clientes
-                                            </a>
-                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 5]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
-                                               style="background-color: #D88429; border-color: #D88429;">
-                                                Ver Cotizaciones
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Sofía Fernández</td>
-                                    <td class="py-4 px-6 text-gray-600">27-66777888-9</td>
-                                    <td class="py-4 px-6">
-                                        <div class="flex gap-3">
-                                            <a href="{{ route('vendedor.clientes', ['id' => 6]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
-                                               style="border-color: #166379; color: #166379;">
-                                                Ver Clientes
-                                            </a>
-                                            <a href="{{ route('vendedor.cotizaciones', ['id' => 6]) }}" 
-                                               class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
-                                               style="background-color: #D88429; border-color: #D88429;">
-                                                Ver Cotizaciones
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @if(isset($vendedores) && $vendedores->count() > 0)
+                                    @foreach($vendedores as $vendedor)
+                                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                                            <td class="py-4 px-6 text-gray-900 font-medium">{{ $vendedor->nombre }}</td>
+                                            <td class="py-4 px-6 text-gray-600">{{ $vendedor->email }}</td>
+                                            <td class="py-4 px-6 text-gray-600">{{ $vendedor->dni }}</td>
+                                            <td class="py-4 px-6">
+                                                <div class="flex gap-3">
+                                                    <a href="{{ route('vendedor.clientes', ['id' => $vendedor->id_empleado]) }}" 
+                                                       class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                                                       style="border-color: #166379; color: #166379;">
+                                                        Ver Clientes
+                                                    </a>
+                                                    <a href="{{ route('vendedor.cotizaciones', ['id' => $vendedor->id_empleado]) }}" 
+                                                       class="px-4 py-2 border rounded-lg text-sm font-medium hover:opacity-90 transition-opacity text-white"
+                                                       style="background-color: #D88429; border-color: #D88429;">
+                                                        Ver Cotizaciones
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="4" class="py-8 px-6 text-center text-gray-500">
+                                            @if(request('nombre') || request('dni'))
+                                                No se encontraron vendedores que coincidan con los criterios de búsqueda.
+                                            @else
+                                                No hay vendedores registrados en el sistema.
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Pagination -->
-                    <div class="p-6 border-t border-gray-200 flex justify-between items-center">
-                        <div class="text-sm text-gray-600">
-                            Mostrando 1-6 de 60 vendedores
-                        </div>
-                        <div class="flex gap-2">
-                            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                                Anterior
-                            </button>
-                            <button class="px-3 py-2 text-white rounded-lg text-sm hover:opacity-90 transition-opacity" 
-                                    style="background-color: #D88429;">
-                                1
-                            </button>
-                            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                                2
-                            </button>
-                            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                                Siguiente
-                            </button>
-                        </div>
-                    </div>
+                    @if(isset($vendedores) && $vendedores->hasPages())
+                        @include('components.custom-pagination', ['paginator' => $vendedores->appends(request()->query())])
+                    @endif
                 </div>
             </div>
         </main>

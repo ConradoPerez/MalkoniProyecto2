@@ -33,7 +33,7 @@
                                 type="text" 
                                 name="codigo" 
                                 value="{{ request('codigo') }}"
-                                placeholder="Ej: PRD-001, SRV-002..."
+                                placeholder="Ej: 1, 23, 45..."
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
                                 style="focus:border-color: #D88429; focus:ring-color: #D88429;"
                             >
@@ -51,6 +51,7 @@
                                 style="focus:border-color: #D88429; focus:ring-color: #D88429;"
                             >
                         </div>
+                        <input type="hidden" name="ordenar" value="{{ request('ordenar', 'mas_vendidos') }}">
                         <button 
                             type="submit"
                             class="px-6 py-2 text-white rounded-lg font-medium hover:opacity-90 transition-opacity whitespace-nowrap"
@@ -70,22 +71,18 @@
                 </div>
 
                 <!-- Products Statistics -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm text-center">
-                        <div class="text-2xl font-syncopate font-bold" style="color: #D88429;">250</div>
+                        <div class="text-2xl font-syncopate font-bold" style="color: #D88429;">{{ $estadisticas['total_productos'] ?? 0 }}</div>
                         <div class="text-sm text-gray-600">Total Productos</div>
                     </div>
                     <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm text-center">
-                        <div class="text-2xl font-syncopate font-bold" style="color: #166379;">1,895</div>
-                        <div class="text-sm text-gray-600">Total Ventas</div>
+                        <div class="text-2xl font-syncopate font-bold" style="color: #166379;">{{ number_format($estadisticas['total_cotizaciones'] ?? 0) }}</div>
+                        <div class="text-sm text-gray-600">Total Cotizaciones</div>
                     </div>
                     <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm text-center">
-                        <div class="text-2xl font-syncopate font-bold text-green-600">$389.800</div>
+                        <div class="text-2xl font-syncopate font-bold text-green-600">${{ number_format($estadisticas['ingresos_totales'] ?? 0) }}</div>
                         <div class="text-sm text-gray-600">Ingresos Totales</div>
-                    </div>
-                    <div class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm text-center">
-                        <div class="text-2xl font-syncopate font-bold" style="color: #B1B7BB;">45</div>
-                        <div class="text-sm text-gray-600">Sin Ventas</div>
                     </div>
                 </div>
 
@@ -98,17 +95,25 @@
                                     PRODUCTOS ENCONTRADOS
                                 </h2>
                                 <p class="text-sm text-gray-600 mt-1">
-                                    Mostrando 10 de 250 productos registrados
+                                    @if(isset($productos))
+                                        Mostrando {{ $productos->firstItem() }} al {{ $productos->lastItem() }} de {{ $productos->total() }} productos registrados
+                                    @else
+                                        No se han cargado productos
+                                    @endif
                                 </p>
                             </div>
                             <div class="flex items-center gap-2 text-sm text-gray-600">
                                 <span>Ordenar por:</span>
-                                <select class="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-primary">
-                                    <option>Más vendidos</option>
-                                    <option>Código</option>
-                                    <option>Nombre A-Z</option>
-                                    <option>Ingresos</option>
-                                </select>
+                                <form method="GET" action="{{ request('codigo') || request('nombre') ? route('productos.search') : route('productos.index') }}" class="inline">
+                                    <input type="hidden" name="codigo" value="{{ request('codigo') }}">
+                                    <input type="hidden" name="nombre" value="{{ request('nombre') }}">
+                                    <select name="ordenar" onchange="this.form.submit()" class="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-primary">
+                                        <option value="mas_vendidos" {{ request('ordenar', 'mas_vendidos') == 'mas_vendidos' ? 'selected' : '' }}>Más cotizados</option>
+                                        <option value="codigo" {{ request('ordenar') == 'codigo' ? 'selected' : '' }}>Código</option>
+                                        <option value="nombre" {{ request('ordenar') == 'nombre' ? 'selected' : '' }}>Nombre A-Z</option>
+                                        <option value="ingresos" {{ request('ordenar') == 'ingresos' ? 'selected' : '' }}>Ingresos</option>
+                                    </select>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -124,7 +129,7 @@
                                         Nombre del Producto
                                     </th>
                                     <th class="text-left py-3 px-6 font-semibold text-gray-700">
-                                        Cant. Ventas
+                                        Cant. Cotizaciones
                                     </th>
                                     <th class="text-left py-3 px-6 font-semibold text-gray-700">
                                         Ingresos Totales
@@ -135,106 +140,49 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-mono font-medium">PRD-001</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Software CRM Pro</td>
-                                    <td class="py-4 px-6 text-gray-900">250</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">$75.000</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold text-xs" style="background-color: #D88429;">1</span>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-mono font-medium">SRV-002</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Servicio Cloud Premium</td>
-                                    <td class="py-4 px-6 text-gray-900">180</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">$90.000</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold text-xs" style="background-color: #166379;">2</span>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-mono font-medium">PRD-003</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Consultoría TI Integral</td>
-                                    <td class="py-4 px-6 text-gray-900">120</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">$30.000</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold text-xs" style="background-color: #B1B7BB;">3</span>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-mono font-medium">HRD-004</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Hardware Redes Avanzado</td>
-                                    <td class="py-4 px-6 text-gray-900">95</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">$17.500</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold text-xs">4</span>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-mono font-medium">SRV-005</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Soporte Técnico 24/7</td>
-                                    <td class="py-4 px-6 text-gray-900">70</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">$40.000</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold text-xs">5</span>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-mono font-medium">PRD-006</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Desarrollo Web Personalizado</td>
-                                    <td class="py-4 px-6 text-gray-900">55</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">$14.000</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold text-xs">6</span>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-mono font-medium">SRV-007</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Migración de Datos</td>
-                                    <td class="py-4 px-6 text-gray-900">45</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">$9.300</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold text-xs">7</span>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                    <td class="py-4 px-6 text-gray-900 font-mono font-medium">PRD-008</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">Licencias Software Corporativo</td>
-                                    <td class="py-4 px-6 text-gray-900">35</td>
-                                    <td class="py-4 px-6 text-gray-900 font-medium">$85.000</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold text-xs">8</span>
-                                    </td>
-                                </tr>
+                                @if(isset($productos) && $productos->count() > 0)
+                                    @foreach($productos as $index => $producto)
+                                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                                            <td class="py-4 px-6 text-gray-900 font-mono font-medium">{{ $producto->codigo }}</td>
+                                            <td class="py-4 px-6 text-gray-900 font-medium">{{ $producto->nombre }}</td>
+                                            <td class="py-4 px-6 text-gray-900">{{ $producto->cant_cotizaciones }}</td>
+                                            <td class="py-4 px-6 text-gray-900 font-medium">{{ $producto->precio_formateado }}</td>
+                                            <td class="py-4 px-6">
+                                                @php
+                                                    $rankingIndex = ($productos->currentPage() - 1) * $productos->perPage() + $index + 1;
+                                                    $bgColor = match(true) {
+                                                        $rankingIndex === 1 => '#D88429',
+                                                        $rankingIndex === 2 => '#166379', 
+                                                        $rankingIndex === 3 => '#B1B7BB',
+                                                        default => '#6B7280'
+                                                    };
+                                                @endphp
+                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold text-xs" 
+                                                      style="background-color: {{ $bgColor }};">
+                                                    {{ $rankingIndex }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="5" class="py-8 px-6 text-center text-gray-500">
+                                            @if(request('codigo') || request('nombre'))
+                                                No se encontraron productos que coincidan con los criterios de búsqueda.
+                                            @else
+                                                No hay productos registrados en el sistema.
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Pagination -->
-                    <div class="p-6 border-t border-gray-200 flex justify-between items-center">
-                        <div class="text-sm text-gray-600">
-                            Mostrando 1-8 de 250 productos
-                        </div>
-                        <div class="flex gap-2">
-                            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                                Anterior
-                            </button>
-                            <button class="px-3 py-2 text-white rounded-lg text-sm hover:opacity-90 transition-opacity" 
-                                    style="background-color: #D88429;">
-                                1
-                            </button>
-                            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                                2
-                            </button>
-                            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                                3
-                            </button>
-                            <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                                Siguiente
-                            </button>
-                        </div>
-                    </div>
+                    @if(isset($productos) && $productos->hasPages())
+                        @include('components.custom-pagination', ['paginator' => $productos->appends(request()->query())])
+                    @endif
                 </div>
             </div>
         </main>

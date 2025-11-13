@@ -14,7 +14,7 @@
                 <!-- Header -->
                 <div class="mb-8">
                     <div class="flex items-center gap-4 mb-4">
-                        <a href="{{ route('vendedores.index') }}" 
+                        <a href="{{ route('vendedor.index') }}" 
                            class="px-4 py-2 border rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
                            style="border-color: #B1B7BB; color: #B1B7BB;">
                             ← Volver a Vendedores
@@ -23,7 +23,7 @@
                     <h1 class="text-3xl font-syncopate font-bold text-gray-900">
                         Clientes del Vendedor
                     </h1>
-                    <p class="text-gray-600 mt-2">Vendedor ID: {{ $vendedorId }}</p>
+                    <p class="text-gray-600 mt-2">Vendedor: {{ $vendedor->nombre }} (ID: {{ $vendedor->id_empleado }})</p>
                 </div>
 
                 <!-- Content placeholder -->
