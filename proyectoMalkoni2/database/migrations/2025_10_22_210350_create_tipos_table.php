@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('productos', function (Blueprint $table) {
-            $table->integer('cant_cotizaciones')->default(0)->after('precio_final');
+        Schema::create('tipos', function (Blueprint $table) {
+            $table->id('id_tipo');
+            $table->string('nombre', 100);
+            $table->text('descripcion')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('productos', function (Blueprint $table) {
-            $table->dropColumn('cant_cotizaciones');
-        });
+        Schema::dropIfExists('tipos');
     }
 };

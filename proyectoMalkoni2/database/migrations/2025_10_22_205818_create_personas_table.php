@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migración para la tabla Persona
         Schema::create('personas', function (Blueprint $table) {
-            $table->id('id_persona'); // id_persona integer [primary key]
+            $table->id('id_persona'); // Clave primaria
             $table->string('foto')->nullable();
             $table->string('token_opt')->nullable();
             $table->timestamps();

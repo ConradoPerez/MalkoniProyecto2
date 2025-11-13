@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migración para la tabla Empresa
-Schema::create('empresas', function (Blueprint $table) {
-    $table->id('id_empresa'); // id_empresa integer [primary key]
-    $table->string('nombre', 255);
-    $table->bigInteger('cuit')->unique(); // bigInteger para CUIT
-    $table->string('foto')->nullable();
-    $table->timestamps();
-});
+        Schema::create('empresas', function (Blueprint $table) {
+            $table->id('id_empresa'); // Clave primaria
+            $table->string('nombre', 150);
+            $table->unsignedBigInteger('cuit')->nullable(); // CUIT como número grande
+            $table->string('foto')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**

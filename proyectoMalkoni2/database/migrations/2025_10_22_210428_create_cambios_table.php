@@ -11,17 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migración para la tabla cambios
-Schema::create('cambios', function (Blueprint $table) {
-    $table->id('id_cambio'); // id_cambio integer [primary key]
-    $table->dateTime('fyH');
+        Schema::create('cambios', function (Blueprint $table) {
+            $table->id('id_cambio'); // Clave primaria
+            $table->dateTime('fyH');
+            
+            // Claves foráneas
+            $table->unsignedBigInteger('id_cotizaciones');
+            $table->foreign('id_cotizaciones')->references('id')->on('cotizaciones')->onDelete('cascade');
+            
+            // **CORRECCIÓN DE NOMBRE:** Usamos id_estado (singular) en lugar de id_Esatdo (sic)
+            $table->unsignedBigInteger('id_estado');
+            $table->foreign('id_estado')->references('id_estado')->on('estados');
 
-    // Claves Foráneas
-    $table->foreignId('id_cotizaciones')->constrained('cotizaciones', 'id');
-    $table->foreignId('id_estado')->constrained('estados', 'id_estado'); // Corregido 'id_Esatdo' a 'id_estado'
-    
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     /**

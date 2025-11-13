@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migración para la tabla Rubro
-        Schema::create('rubros', function (Blueprint $table) {
-            $table->id('id_rubro'); // id_rubro integer [primary key]
-            $table->string('nombre', 255);
+        Schema::create('subtipos', function (Blueprint $table) {
+            $table->id('id_subtipo');
+            $table->string('nombre', 100);
             $table->text('descripcion')->nullable();
+
+            $table->unsignedBigInteger('id_tipo');
+            $table->foreign('id_tipo')->references('id_tipo')->on('tipos');
+
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rubros');
+        Schema::dropIfExists('subtipos');
     }
 };

@@ -11,23 +11,31 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migración para la tabla Productos
-Schema::create('productos', function (Blueprint $table) {
-    $table->id('id_producto'); // id_producto integer [primary key]
-    $table->string('nombre', 255);
-    $table->text('descripcion')->nullable();
-    $table->integer('precio_base');
-    $table->string('foto')->nullable();
-    $table->integer('promocion')->default(0); // binario 0-1
-    $table->integer('descuento')->default(0); // 0-100
-    $table->integer('precio_final');
+        Schema::create('productos', function (Blueprint $table) {
+            $table->id('id_producto'); // Clave primaria
+            $table->string('nombre', 100);
+            $table->text('descripcion')->nullable();
+            $table->integer('precio_base');
+            $table->string('foto')->nullable();
+            $table->boolean('promocion')->default(false); // binario 0-1
+            $table->unsignedSmallInteger('descuento')->default(0); // 0-100
+            $table->integer('precio_final');
 
-    // Clave Foránea a Categoria (id_categoria)
-    // El DBML tiene una referencia: subdivision_servicio: Productos.id_categoria > Categoria.id_categoria
-    $table->foreignId('id_categoria')->constrained('categorias', 'id_categoria');
-    
-    $table->timestamps();
-});
+            // Columna consolidada para estadísticas
+            $table->unsignedBigInteger('cant_cotizaciones')->default(0);
+
+            // Claves foráneas para la nueva clasificación
+            
+            // Relación con Subtipos
+            $table->unsignedBigInteger('id_subtipo')->nullable();
+            $table->foreign('id_subtipo')->references('id_subtipo')->on('subtipos');
+            
+            // Relación con Subcategorías
+            $table->unsignedBigInteger('id_subcategoria')->nullable();
+            $table->foreign('id_subcategoria')->references('id_subcategoria')->on('subcategorias');
+
+            $table->timestamps();
+        });
     }
 
     /**

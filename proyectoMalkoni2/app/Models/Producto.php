@@ -9,9 +9,10 @@ class Producto extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'id_producto'; // Según tu migración
     protected $table = 'productos';
-    protected $primaryKey = 'id_producto';
-
+    
+    // Asegúrate de que los fillable incluyan los nuevos IDs
     protected $fillable = [
         'nombre',
         'descripcion',
@@ -20,54 +21,42 @@ class Producto extends Model
         'promocion',
         'descuento',
         'precio_final',
-        'cant_cotizaciones',
-        'id_categoria',
+        'cant_cotizaciones', // La nueva columna consolidada
+        'id_subtipo',        // Nuevo ID de clasificación
+        'id_subcategoria',   // Nuevo ID de clasificación
     ];
 
-    protected $casts = [
-        'promocion' => 'boolean',
-        'precio_base' => 'integer',
-        'precio_final' => 'integer',
-        'descuento' => 'integer',
-    ];
+    // ==========================================================
+    // NUEVAS RELACIONES DE CLASIFICACIÓN
+    // ==========================================================
 
     /**
-     * Relación con categoría
+     * Relación con Subtipo (Nuevo)
      */
-    public function categoria()
+    public function subtipo()
     {
-        return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
+        return $this->belongsTo(Subtipo::class, 'id_subtipo', 'id_subtipo');
     }
 
     /**
-     * Scope para buscar por código/nombre
+     * Relación con Subcategoria (Nuevo)
      */
-    public function scopeBuscarPorCodigo($query, $codigo)
+    public function subcategoria()
     {
-        return $query->where('id_producto', 'like', '%' . $codigo . '%');
+        return $this->belongsTo(Subcategoria::class, 'id_subcategoria', 'id_subcategoria');
     }
 
-    /**
-     * Scope para buscar por nombre
-     */
-    public function scopeBuscarPorNombre($query, $nombre)
-    {
-        return $query->where('nombre', 'like', '%' . $nombre . '%');
-    }
+    // ==========================================================
+    // RELACIONES EXISTENTES
+    // ==========================================================
 
     /**
-     * Accessor para formatear el precio
+     * Relación con items (asumida de tu DBML)
      */
-    public function getPrecioFormateadoAttribute()
+    public function items()
     {
-        return '$' . number_format($this->precio_final, 0, ',', '.');
+        return $this->hasMany(Item::class, 'id_Producto', 'id_producto');
     }
-
-    /**
-     * Accessor para el código del producto (usando el ID directamente)
-     */
-    public function getCodigoAttribute()
-    {
-        return $this->id_producto;
-    }
+    
+    // Aquí puedes añadir o modificar los accessors necesarios para precio_final, etc.
 }

@@ -11,19 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migración para la tabla items
-Schema::create('items', function (Blueprint $table) {
-    $table->id('id_item'); // id_item integer [primary key]
-    $table->integer('cantidad');
+        Schema::create('items', function (Blueprint $table) {
+            $table->id('id_item'); // Clave primaria
+            $table->integer('cantidad');
+            
+            // Claves foráneas
+            $table->unsignedBigInteger('id_cotizaciones');
+            $table->foreign('id_cotizaciones')->references('id')->on('cotizaciones')->onDelete('cascade');
+            
+            // Producto O Servicio (uno de los dos debe ser null)
+            $table->unsignedBigInteger('id_Producto')->nullable();
+            $table->foreign('id_Producto')->references('id_producto')->on('productos');
+            
+            $table->unsignedBigInteger('id_servicio')->nullable();
+            $table->foreign('id_servicio')->references('id_servicio')->on('servicios');
 
-    // Claves Foráneas
-    $table->foreignId('id_cotizaciones')->constrained('cotizaciones', 'id');
-    // id_Producto e id_servicio son opcionales según el DBML (un item es Producto O Servicio)
-    $table->foreignId('id_producto')->nullable()->constrained('productos', 'id_producto');
-    $table->foreignId('id_servicio')->nullable()->constrained('servicios', 'id_servicio');
-    
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     /**

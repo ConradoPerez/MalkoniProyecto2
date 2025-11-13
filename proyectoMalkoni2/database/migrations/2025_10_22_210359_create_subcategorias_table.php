@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grupos', function (Blueprint $table) {
-            $table->id('id_grupo'); // Clave primaria
-            $table->string('nombre_grupo', 100);
+        Schema::create('subcategorias', function (Blueprint $table) {
+            $table->id('id_subcategoria');
+            $table->string('nombre', 100);
             $table->text('descripcion')->nullable();
-            
-            // Clave foránea a Personas
-            $table->unsignedBigInteger('id_personas');
-            $table->foreign('id_personas')->references('id_persona')->on('personas');
+
+            $table->unsignedBigInteger('id_categoria');
+            $table->foreign('id_categoria')->references('id_categoria')->on('categorias');
 
             $table->timestamps();
         });
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grupos');
+        Schema::dropIfExists('subcategorias');
     }
 };

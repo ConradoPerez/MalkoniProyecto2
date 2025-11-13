@@ -11,23 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migración para la tabla Cotizaciones
-Schema::create('cotizaciones', function (Blueprint $table) {
-    $table->id(); // id integer [primary key]
-    $table->string('titulo', 255);
-    $table->integer('numero')->unique();
-    $table->dateTime('fyh');
-    $table->integer('precio_total');
+        Schema::create('cotizaciones', function (Blueprint $table) {
+            $table->id(); // Clave primaria
+            $table->string('titulo', 150);
+            $table->unsignedBigInteger('numero')->unique();
+            $table->dateTime('fyh');
+            $table->integer('precio_total');
+            $table->unsignedBigInteger('id_APIempl')->nullable(); // ID de API
 
-    // Claves Foráneas
-    $table->foreignId('id_empleados')->constrained('empleados', 'id_empleado');
-    $table->foreignId('id_empresas')->constrained('empresas', 'id_empresa');
-    $table->foreignId('id_personas')->constrained('personas', 'id_persona');
-    // id_APIempl no tiene tabla de origen definida, se deja como columna simple
-    $table->integer('id_APIempl')->nullable(); 
-    
-    $table->timestamps();
-});
+            // Claves foráneas (Clientes y Vendedor)
+            $table->unsignedBigInteger('id_empleados');
+            $table->foreign('id_empleados')->references('id_empleado')->on('empleados');
+            
+            // Un cotización es de una Empresa O una Persona (puedes necesitar hacer una de las dos nullable)
+            $table->unsignedBigInteger('id_empresas')->nullable();
+            $table->foreign('id_empresas')->references('id_empresa')->on('empresas');
+
+            $table->unsignedBigInteger('id_personas')->nullable();
+            $table->foreign('id_personas')->references('id_persona')->on('personas');
+            
+            $table->timestamps();
+        });
     }
 
     /**

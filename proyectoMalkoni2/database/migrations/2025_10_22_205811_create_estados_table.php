@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migración para la tabla Estados
         Schema::create('estados', function (Blueprint $table) {
-            $table->id('id_estado'); // id_estado integer [primary key]
-            $table->string('nombre', 255);
+            $table->id('id_estado'); // Clave primaria
+            $table->string('nombre', 50)->unique();
             $table->text('descripcion')->nullable();
-            $table->dateTime('fecha_hora');
+            $table->dateTime('fecha_hora')->nullable(); // Campo 'fecha_hora' según DBML
             $table->timestamps();
         });
     }

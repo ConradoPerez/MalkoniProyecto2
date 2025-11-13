@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migración para la tabla Servicio
-Schema::create('servicios', function (Blueprint $table) {
-    $table->id('id_servicio'); // id_servicio integer [primary key]
-    $table->string('nombre', 255);
-    $table->text('descripcion')->nullable();
-    $table->integer('nro_api_opt')->nullable();
-    $table->timestamps();
-});
+        Schema::create('servicios', function (Blueprint $table) {
+            $table->id('id_servicio'); // Clave primaria
+            $table->string('nombre', 100);
+            $table->text('descripcion')->nullable();
+            $table->integer('nro_api_opt')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**

@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Migración para la tabla Roles
         Schema::create('roles', function (Blueprint $table) {
-            $table->id('id_rol'); // id_rol integer [primary key]
-            $table->string('nombre', 255);
+            $table->id('id_rol'); // Clave primaria
+            $table->string('nombre', 50)->unique();
             $table->text('descripcion')->nullable();
             $table->timestamps();
         });
