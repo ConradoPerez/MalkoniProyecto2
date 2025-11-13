@@ -18,6 +18,11 @@ Route::get('/supervisor/dashboard', [SupervisorDashboardController::class, 'inde
 
 // Dashboard Vendedor
 Route::get('/vendedor/dashboard', [VendedorDashboardController::class, 'index'])->name('vendedor.dashboard');
+
+// AJAX Routes for Vendedor Dashboard
+Route::prefix('vendedor/api')->name('vendedor.api.')->group(function () {
+    Route::get('/cotizaciones-chart', [VendedorDashboardController::class, 'getCotizacionesBarChart'])->name('cotizaciones.chart');
+});
  
 // vendedor
 Route::prefix('supervisor/vendedor')->name('vendedor.')->group(function () {

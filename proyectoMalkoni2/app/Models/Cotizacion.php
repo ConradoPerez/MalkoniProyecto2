@@ -75,6 +75,14 @@ class Cotizacion extends Model
     }
 
     /**
+     * Relación con items
+     */
+    public function items()
+    {
+        return $this->hasMany(Item::class, 'id_cotizaciones', 'id');
+    }
+
+    /**
      * Accessor para formatear el precio
      */
     public function getPrecioFormateadoAttribute()

@@ -1,46 +1,68 @@
 <!-- Tables Section -->
-<div class="space-y-8">
-    <!-- Mis Últimas Cotizaciones -->
-    <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+    <!-- Últimas Cotizaciones -->
+    <div class="bg-white rounded-lg p-6 border border-gray-200">
         <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-4">
-            Mis Últimas Cotizaciones
+            ÚLTIMAS COTIZACIONES
         </h2>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="border-b border-gray-200">
-                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
+                    <tr class="bg-gray-100 border-b border-gray-200">
+                        <th class="text-left py-3 px-2 font-semibold text-gray-700">
                             Estado
                         </th>
-                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
+                        <th class="text-left py-3 px-2 font-semibold text-gray-700">
+                            N° cotización
+                        </th>
+                        <th class="text-left py-3 px-2 font-semibold text-gray-700">
                             Cliente
                         </th>
-                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
-                            Número
-                        </th>
-                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
+                        <th class="text-left py-3 px-2 font-semibold text-gray-700">
                             Monto
+                        </th>
+                        <th class="text-left py-3 px-2 font-semibold text-gray-700">
+                            Acción
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if(isset($misCotizaciones) && $misCotizaciones->count() > 0)
-                        @foreach($misCotizaciones as $cotizacion)
+                    @if(isset($ultimasCotizaciones) && $ultimasCotizaciones->count() > 0)
+                        @foreach($ultimasCotizaciones as $cotizacion)
                             <tr class="border-b border-gray-200 hover:bg-gray-50">
                                 <td class="py-3 px-2">
-                                    <span class="inline-block px-3 py-1 rounded text-xs font-medium text-white {{ $cotizacion->estado_clase }}" 
-                                          style="{{ $cotizacion->estado_estilo }}">
-                                        {{ $cotizacion->estado }}
-                                    </span>
+                                    @if($cotizacion->estadoActual)
+                                        @php
+                                            $estadoClass = match($cotizacion->estadoActual->nombre) {
+                                                'En Proceso' => 'bg-blue-100 text-blue-800',
+                                                'Aprobado', 'Aprobada' => 'bg-green-100 text-green-800',
+                                                'Rechazado', 'Rechazada' => 'bg-gray-300 text-gray-700',
+                                                'Pendiente' => 'bg-yellow-100 text-yellow-800',
+                                                default => 'bg-gray-100 text-gray-600'
+                                            };
+                                        @endphp
+                                        <span class="inline-block px-2 py-1 rounded text-xs font-medium {{ $estadoClass }}">
+                                            {{ $cotizacion->estadoActual->nombre }}
+                                        </span>
+                                    @else
+                                        <span class="inline-block px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                                            Sin Estado
+                                        </span>
+                                    @endif
                                 </td>
+                                <td class="py-3 px-2 text-gray-900">#{{ str_pad($cotizacion->numero, 3, '0', STR_PAD_LEFT) }}</td>
                                 <td class="py-3 px-2 text-gray-900">{{ $cotizacion->empresa->nombre ?? 'Sin cliente' }}</td>
-                                <td class="py-3 px-2 text-gray-900">{{ $cotizacion->numero_formateado }}</td>
-                                <td class="py-3 px-2 text-gray-900">{{ $cotizacion->precio_formateado }}</td>
+                                <td class="py-3 px-2 text-gray-900">${{ number_format($cotizacion->precio_total, 0, ',', '.') }}</td>
+                                <td class="py-3 px-2">
+                                    <a href="#" class="text-primary text-xs font-medium hover:underline">
+                                        Ver detalle
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="4" class="py-8 px-2 text-center text-gray-500">
+                            <td colspan="5" class="py-8 px-2 text-center text-gray-500">
                                 No hay cotizaciones registradas
                             </td>
                         </tr>
@@ -50,61 +72,27 @@
         </div>
     </div>
 
-    <!-- Mis Clientes Activos -->
-    <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+    <!-- Product Ranking -->
+    <div class="bg-white rounded-lg p-6 border border-gray-200">
         <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-4">
-            Mis Clientes Más Activos
+            RANKING DE MIS PRODUCTOS
         </h2>
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="border-b border-gray-200">
-                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
-                            Ranking
-                        </th>
-                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
-                            Cliente
-                        </th>
-                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
-                            Cotizaciones
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if(isset($clientesActivos) && $clientesActivos->count() > 0)
-                        @foreach($clientesActivos as $index => $cliente)
-                            <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                <td class="py-3 px-2 text-gray-900 font-medium">
-                                    @php
-                                        $bgColor = match($index + 1) {
-                                            1 => '#D88429',
-                                            2 => '#166379', 
-                                            3 => '#B1B7BB',
-                                            default => '#6B7280'
-                                        };
-                                    @endphp
-                                    @if($index < 3)
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold text-xs" 
-                                              style="background-color: {{ $bgColor }};">
-                                            {{ $index + 1 }}
-                                        </span>
-                                    @else
-                                        {{ $index + 1 }}
-                                    @endif
-                                </td>
-                                <td class="py-3 px-2 text-gray-900">{{ $cliente->nombre }}</td>
-                                <td class="py-3 px-2 text-gray-900 font-medium">{{ $cliente->cotizaciones_count }}</td>
-                            </tr>
-                        @endforeach
-                    @else
-                        <tr>
-                            <td colspan="3" class="py-8 px-2 text-center text-gray-500">
-                                No hay clientes con cotizaciones registradas
-                            </td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
+        <div class="space-y-2">
+            @if(isset($productosRanking) && $productosRanking->count() > 0)
+                @foreach($productosRanking as $index => $producto)
+                    <div class="flex items-center justify-between py-3 px-2 {{ !$loop->last ? 'border-b border-gray-200' : '' }}">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">{{ $index + 1 }}</span>
+                            <span class="text-sm">{{ $producto->nombre }}</span>
+                        </div>
+                        <span class="text-sm font-medium">{{ $producto->total_cotizaciones }}</span>
+                    </div>
+                @endforeach
+            @else
+                <div class="text-center py-8 text-gray-500">
+                    <p>No hay productos cotizados</p>
+                </div>
+            @endif
         </div>
     </div>
 </div>
