@@ -20,8 +20,8 @@
         </a>
 
         <!-- Cotizaciones -->
-        <a href="{{ route('vendedor.cotizaciones.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.cotizaciones.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
-           style="{{ request()->routeIs('vendedor.cotizaciones.*') ? 'background-color: #D88429;' : '' }}">
+        <a href="{{ route('vendedor.app.cotizaciones.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.cotizaciones.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+           style="{{ request()->routeIs('vendedor.app.cotizaciones.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
@@ -29,8 +29,8 @@
         </a>
 
         <!-- Clientes -->
-        <a href="{{ route('vendedor.clientes.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.clientes.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
-           style="{{ request()->routeIs('vendedor.clientes.*') ? 'background-color: #D88429;' : '' }}">
+        <a href="{{ route('vendedor.app.clientes.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.clientes.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+           style="{{ request()->routeIs('vendedor.app.clientes.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2z"></path>
             </svg>
@@ -38,8 +38,8 @@
         </a>
 
         <!-- Grupos de Clientes -->
-        <a href="{{ route('vendedor.grupos-clientes.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.grupos-clientes.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
-           style="{{ request()->routeIs('vendedor.grupos-clientes.*') ? 'background-color: #D88429;' : '' }}">
+        <a href="{{ route('vendedor.app.grupos.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.grupos.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+           style="{{ request()->routeIs('vendedor.app.grupos.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20a9 9 0 0118 0v2H4v-2a9 9 0 0118 0z"></path>
             </svg>

@@ -14,7 +14,7 @@ Route::get('/supervisor/dashboard', [SupervisorDashboardController::class, 'inde
 
 // Dashboard Vendedor
 Route::get('/vendedor/dashboard', function () {
-    return view('vendedor.dashboard-vendedor');
+    return view('vendedor.dashboard');
 })->name('vendedor.dashboard');
  
 // vendedor
@@ -34,16 +34,16 @@ Route::prefix('supervisor/productos')->name('productos.')->group(function () {
 });
 
 // Rutas adicionales para el vendedor
-Route::prefix('vendedor')->name('vendedor.')->group(function () {
+Route::prefix('vendedor')->name('vendedor.app.')->group(function () {
     Route::get('/clientes', function () {
-        return view('vendedor.clientes');
+        return view('vendedor.clientes.index');
     })->name('clientes.index');
 
     Route::get('/cotizaciones', function () {
-        return view('vendedor.cotizaciones');
+        return view('vendedor.cotizaciones.index');
     })->name('cotizaciones.index');
 
-    Route::get('/grupos-clientes', function () {
-        return view('vendedor.grupos-clientes');
-    })->name('grupos-clientes.index');
+    Route::get('/grupos', function () {
+        return view('vendedor.grupos.index');
+    })->name('grupos.index');
 });

@@ -33,7 +33,7 @@
                     <h2 class="text-base font-semibold mb-4">Buscar Clientes</h2>
 
                     {{-- 3 campos + botón en la misma fila (ocupan su box) --}}
-                    <form method="GET" action="{{ route('vendedor.clientes.index') }}"
+                    <form method="GET" action="{{ route('vendedor.app.clientes.index') }}"
                           class="grid grid-cols-1 md:grid-cols-4 gap-4 md:[&>*]:w-full">
 
                         <div class="flex flex-col gap-1">

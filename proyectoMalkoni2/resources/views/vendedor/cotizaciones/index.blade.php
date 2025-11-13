@@ -33,7 +33,7 @@
                     <h2 class="text-base font-semibold mb-4">Buscar Cotizaciones</h2>
 
                     {{-- 3 campos + botón en la misma fila en md+ --}}
-                    <form method="GET" action="{{ route('vendedor.cotizaciones.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 md:[&>*]:w-full">
+                    <form method="GET" action="{{ route('vendedor.app.cotizaciones.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 md:[&>*]:w-full">
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-gray-600">Por Número de pedido</label>
                             <input type="text" name="nropedido" value="{{ request('nropedido') }}"
