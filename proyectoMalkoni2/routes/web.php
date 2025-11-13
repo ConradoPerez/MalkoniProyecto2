@@ -55,7 +55,12 @@ Route::prefix('vendedor')->name('vendedor.app.')->group(function () {
 
     Route::get('/cotizaciones', [VendedorCotizacionController::class, 'index'])->name('cotizaciones.index');
 
+    // Rutas para grupos
     Route::get('/grupos', [VendedorGrupoController::class, 'index'])->name('grupos.index');
+    Route::post('/grupos', [VendedorGrupoController::class, 'store'])->name('grupos.store');
+    Route::post('/grupos/{grupo}/empresas', [VendedorGrupoController::class, 'addEmpresa'])->name('grupos.add_empresa');
+    Route::delete('/grupos/{grupo}/empresas/{empresa}', [VendedorGrupoController::class, 'removeEmpresa'])->name('grupos.remove_empresa');
+    Route::delete('/grupos/{grupo}', [VendedorGrupoController::class, 'destroy'])->name('grupos.destroy');
 
 });
 

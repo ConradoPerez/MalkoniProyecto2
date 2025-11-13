@@ -12,7 +12,7 @@
 
         <!-- Legend -->
         <div class="flex justify-center flex-wrap gap-4 text-sm">
-            @php $colors = ['#D88429', '#166379', '#16a34a', '#d946ef']; @endphp
+            @php $colors = ['#D88429', '#E1DFD9', '#172A32', '#4F4A44', '#166379', '#9AA2A8', '#B1B7BB', '#71716F', '#8A9A9C']; @endphp
             @foreach($cotizacionesPorProducto as $index => $item)
                 <div class="flex items-center gap-2">
                     <div class="w-4 h-4 rounded-full" style="background-color: {{ $colors[$index] ?? '#E1DFD9' }};"></div>
@@ -48,10 +48,15 @@
                                 @endforeach
                             ],
                             backgroundColor: [
-                                '#D88429',  // Malkoni Primary
-                                '#166379',  // Malkoni Secondary
-                                '#16a34a',  // Green
-                                '#d946ef'   // Purple
+                                '#D88429',  // Naranja principal
+                                '#E1DFD9',  // Gris claro
+                                '#172A32',  // Azul oscuro
+                                '#4F4A44',  // Gris oscuro
+                                '#166379',  // Azul medio
+                                '#9AA2A8',  // Gris azulado
+                                '#B1B7BB',  // Gris claro azulado
+                                '#71716F',  // Gris oscuro neutro
+                                '#8A9A9C'   // Gris verdoso
                             ],
                             borderColor: '#ffffff',
                             borderWidth: 2

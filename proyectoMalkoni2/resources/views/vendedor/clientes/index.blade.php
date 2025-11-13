@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 text-gray-900">
+<div class="min-h-screen bg-background text-gray-900">
     <div class="flex">
         {{-- Sidebar --}}
         @include('vendedor.components.sidebar')

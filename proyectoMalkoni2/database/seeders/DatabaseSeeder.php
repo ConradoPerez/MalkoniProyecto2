@@ -30,10 +30,12 @@ class DatabaseSeeder extends Seeder
             CotizacionSeeder::class,
             ItemSeeder::class,
             CambioSeeder::class,
+            GrupoSeeder::class,           // Nuevo: grupos de clientes para vendedores
         ]);
 
         $this->command->info('✅ Base de datos poblada exitosamente con datos de Malkoni Hnos.');
         $this->command->info('📊 Dashboard del vendedor listo para usar con datos realistas.');
         $this->command->info('🔄 Estructura actualizada: Tipos->Subtipos y Categorías->Subcategorías');
+        $this->command->info('👥 Grupos de clientes creados para gestión de vendedores.');
     }
 }
