@@ -18,10 +18,25 @@ class Categoria extends Model
     ];
 
     /**
-     * Relación con productos
+     * Relación con subcategorías
+     */
+    public function subcategorias()
+    {
+        return $this->hasMany(Subcategoria::class, 'id_categoria', 'id_categoria');
+    }
+    
+    /**
+     * Relación indirecta con productos a través de subcategorías
      */
     public function productos()
     {
-        return $this->hasMany(Producto::class, 'id_categoria', 'id_categoria');
+        return $this->hasManyThrough(
+            Producto::class,
+            Subcategoria::class,
+            'id_categoria',      // Foreign key on subcategorias table
+            'id_subcategoria',   // Foreign key on productos table
+            'id_categoria',      // Local key on categorias table
+            'id_subcategoria'    // Local key on subcategorias table
+        );
     }
 }

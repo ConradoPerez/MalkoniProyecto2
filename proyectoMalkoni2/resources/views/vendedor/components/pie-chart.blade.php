@@ -16,7 +16,7 @@
             @foreach($cotizacionesPorProducto as $index => $item)
                 <div class="flex items-center gap-2">
                     <div class="w-4 h-4 rounded-full" style="background-color: {{ $colors[$index] ?? '#E1DFD9' }};"></div>
-                    <span>{{ $item->categoria }} ({{ $item->total_cotizaciones }})</span>
+                    <span>{{ $item->tipo }} - {{ $item->subtipo }} ({{ $item->total_cotizaciones }})</span>
                 </div>
             @endforeach
         </div>
@@ -38,7 +38,7 @@
                     data: {
                         labels: [
                             @foreach($cotizacionesPorProducto as $item)
-                                '{{ $item->categoria }}',
+                                '{{ $item->tipo }} - {{ $item->subtipo }}',
                             @endforeach
                         ],
                         datasets: [{

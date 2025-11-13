@@ -9,6 +9,10 @@ use App\Models\Empresa;
 use App\Models\Producto;
 use App\Models\Item;
 use App\Models\Estado;
+use App\Models\Tipo;
+use App\Models\Subtipo;
+use App\Models\Categoria;
+use App\Models\Subcategoria;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -55,16 +59,18 @@ class VendedorDashboardController extends Controller
         $cotizacionesPorProducto = DB::table('items')
             ->join('cotizaciones', 'items.id_cotizaciones', '=', 'cotizaciones.id')
             ->join('productos', 'items.id_producto', '=', 'productos.id_producto')
-            ->join('categorias', 'productos.id_categoria', '=', 'categorias.id_categoria')
+            ->join('subtipos', 'productos.id_subtipo', '=', 'subtipos.id_subtipo')
+            ->join('tipos', 'subtipos.id_tipo', '=', 'tipos.id_tipo')
             ->where('cotizaciones.id_empleados', $empleadoId)
             ->whereNotNull('items.id_producto')
             ->select(
-                'categorias.nombre as categoria',
+                'tipos.nombre as tipo',
+                'subtipos.nombre as subtipo',
                 'productos.nombre as producto_nombre',
                 DB::raw('COUNT(DISTINCT cotizaciones.id) as total_cotizaciones'),
                 DB::raw('SUM(items.cantidad) as total_cantidad')
             )
-            ->groupBy('categorias.id_categoria', 'categorias.nombre', 'productos.id_producto', 'productos.nombre')
+            ->groupBy('tipos.id_tipo', 'tipos.nombre', 'subtipos.id_subtipo', 'subtipos.nombre', 'productos.id_producto', 'productos.nombre')
             ->orderBy('total_cotizaciones', 'desc')
             ->limit(4)
             ->get();
