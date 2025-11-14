@@ -82,10 +82,27 @@
                 @foreach($productosRanking as $index => $producto)
                     <div class="flex items-center justify-between py-3 px-2 {{ !$loop->last ? 'border-b border-gray-200' : '' }}">
                         <div class="flex items-center space-x-3">
-                            <span class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-white">{{ $index + 1 }}</span>
+                            @php
+                                $bgColor = match($index + 1) {
+                                    1 => '#D88429',
+                                    2 => '#166379', 
+                                    3 => '#B1B7BB',
+                                    default => '#6B7280'
+                                };
+                            @endphp
+                            @if($index < 3)
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold text-xs" 
+                                      style="background-color: {{ $bgColor }};">
+                                    {{ $index + 1 }}
+                                </span>
+                            @else
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-bold text-xs">
+                                    {{ $index + 1 }}
+                                </span>
+                            @endif
                             <span class="text-sm text-gray-900">{{ $producto->nombre }}</span>
                         </div>
-                        <span class="text-sm font-medium text-gray-900">{{ $producto->total_cotizaciones }}</span>
+                        <span class="text-sm font-bold text-gray-900">{{ $producto->total_cotizaciones }}</span>
                     </div>
                 @endforeach
             @else

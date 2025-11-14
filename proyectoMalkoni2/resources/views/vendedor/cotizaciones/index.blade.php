@@ -7,7 +7,7 @@
         @include('vendedor.components.sidebar')
 
         {{-- Contenido principal --}}
-        <main class="flex-1 overflow-y-auto ml-48">
+        <main class="flex-1 overflow-y-auto ml-56">
             <div class="p-4 lg:p-8">
 
                 {{-- Header mejorado --}}
@@ -93,7 +93,7 @@
                 </div>
 
                 {{-- Panel de filtros desplegable --}}
-                <div id="filtros-panel" class="hidden mb-6 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div id="filtros-panel" class="mb-6 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                     <div class="p-6">
                         <form method="GET" action="{{ route('vendedor.app.cotizaciones.index') }}" class="space-y-4">
                             @if(request('empleado_id'))
@@ -244,6 +244,7 @@
                                                 </svg>
                                             </a>
                                         </th>
+                                        <th class="px-6 py-4 text-sm font-semibold text-gray-700 text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
@@ -279,7 +280,40 @@
                                                 <span class="text-sm text-gray-700">{{ $cotizacion->fyh ? $cotizacion->fyh->format('d/m/Y H:i') : 'Sin fecha' }}</span>
                                             </td>
                                             <td class="px-6 py-4 text-right">
-                                                <span class="text-sm font-bold text-gray-900">${{ number_format($cotizacion->precio_total, 2, ',', '.') }}</span>
+                                                @php
+                                                    $estadoNombre = $cotizacion->estado_actual->nombre ?? 'Sin estado';
+                                                    $tienePrecio = $cotizacion->precio_total && $cotizacion->precio_total > 0;
+                                                    $esCotizable = in_array($estadoNombre, ['Nuevo', 'Abierto']);
+                                                @endphp
+                                                
+                                                @if($tienePrecio)
+                                                    <span class="text-sm font-bold text-gray-900">${{ number_format($cotizacion->precio_total, 2, ',', '.') }}</span>
+                                                @else
+                                                    <span class="text-sm text-gray-500 italic">Sin cotizar</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    @if($esCotizable && !$tienePrecio)
+                                                        <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id')]) }}" 
+                                                           class="inline-flex items-center px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition hover:opacity-90"
+                                                           style="background-color:#D88429;">
+                                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                            </svg>
+                                                            Cotizar
+                                                        </a>
+                                                    @endif
+                                                    
+                                                    <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id')]) }}" 
+                                                       class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 text-sm font-medium bg-white hover:bg-gray-50 transition-colors">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                        </svg>
+                                                        Ver detalle
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -366,7 +400,22 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
+// Mostrar SweetAlert si la cotización fue guardada
+@if(session('cotizacion_guardada'))
+    Swal.fire({
+        icon: 'success',
+        title: '¡Cotización guardada!',
+        html: `La cotización N° <strong>{{ session('cotizacion_guardada')['numero'] }}</strong> ha sido cotizada con éxito.<br>Se le notificará al cliente.`,
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#D88429',
+        timer: 5000,
+        timerProgressBar: true
+    });
+@endif
+
 function toggleFiltros() {
     const panel = document.getElementById('filtros-panel');
     const icon = document.getElementById('filtros-icon');
@@ -391,18 +440,12 @@ function toggleFiltros() {
     }
 }
 
-// Auto abrir el panel si hay filtros aplicados
+// El panel está abierto por defecto, solo necesitamos rotar el icono
 document.addEventListener('DOMContentLoaded', function() {
-    const hasFilters = {{ request()->hasAny(['nropedido', 'cliente', 'doc', 'estado', 'orderby']) ? 'true' : 'false' }};
+    const icon = document.getElementById('filtros-icon');
     
-    if (hasFilters) {
-        const panel = document.getElementById('filtros-panel');
-        const icon = document.getElementById('filtros-icon');
-        
-        if (panel && icon) {
-            panel.classList.remove('hidden');
-            icon.classList.add('rotate-180');
-        }
+    if (icon) {
+        icon.classList.add('rotate-180');
     }
 });
 </script>

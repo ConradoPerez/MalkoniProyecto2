@@ -25,37 +25,54 @@ class CambioSeeder extends Seeder
             // Simular progresión de estados para cada cotización
             $fechaBase = $cotizacion->created_at ?? now()->subDays(rand(1, 30));
             
-            // Estado Nuevo - todas las cotizaciones empiezan aquí
-            $cambios[] = [
-                'fyH' => $fechaBase,
-                'id_cotizaciones' => $cotizacion->id,
-                'id_estado' => $estados->where('nombre', 'Nuevo')->first()->id_estado,
-            ];
-            
-            // 80% pasan a Abierto
-            if (rand(1, 100) <= 80) {
+            // Si la cotización NO tiene precio, debe estar en Nuevo o Abierto
+            if (!$cotizacion->precio_total || $cotizacion->precio_total <= 0) {
+                // Estado Nuevo
+                $cambios[] = [
+                    'fyH' => $fechaBase,
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'Nuevo')->first()->id_estado,
+                ];
+                
+                // 50% pasan a Abierto (sin cotizar aún)
+                if (rand(1, 100) <= 50) {
+                    $cambios[] = [
+                        'fyH' => $fechaBase->copy()->addHours(rand(2, 12)),
+                        'id_cotizaciones' => $cotizacion->id,
+                        'id_estado' => $estados->where('nombre', 'Abierto')->first()->id_estado,
+                    ];
+                }
+            } else {
+                // Si tiene precio, debe haber pasado por Nuevo -> Abierto -> Cotizado
+                
+                // Estado Nuevo
+                $cambios[] = [
+                    'fyH' => $fechaBase,
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'Nuevo')->first()->id_estado,
+                ];
+                
+                // Pasar a Abierto
                 $cambios[] = [
                     'fyH' => $fechaBase->copy()->addHours(rand(2, 12)),
                     'id_cotizaciones' => $cotizacion->id,
                     'id_estado' => $estados->where('nombre', 'Abierto')->first()->id_estado,
                 ];
                 
-                // 70% de los abiertos pasan a Cotizado
-                if (rand(1, 100) <= 70) {
+                // Pasar a Cotizado (ya tiene precio)
+                $cambios[] = [
+                    'fyH' => $fechaBase->copy()->addDays(rand(1, 5)),
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'Cotizado')->first()->id_estado,
+                ];
+                
+                // 40% pasan a En entrega
+                if (rand(1, 100) <= 40) {
                     $cambios[] = [
-                        'fyH' => $fechaBase->copy()->addDays(rand(1, 5)),
+                        'fyH' => $fechaBase->copy()->addDays(rand(5, 15)),
                         'id_cotizaciones' => $cotizacion->id,
-                        'id_estado' => $estados->where('nombre', 'Cotizado')->first()->id_estado,
+                        'id_estado' => $estados->where('nombre', 'En entrega')->first()->id_estado,
                     ];
-                    
-                    // 40% de los cotizados pasan a En entrega
-                    if (rand(1, 100) <= 40) {
-                        $cambios[] = [
-                            'fyH' => $fechaBase->copy()->addDays(rand(5, 15)),
-                            'id_cotizaciones' => $cotizacion->id,
-                            'id_estado' => $estados->where('nombre', 'En entrega')->first()->id_estado,
-                        ];
-                    }
                 }
             }
         }

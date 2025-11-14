@@ -11,7 +11,7 @@
         @include('vendedor.components.sidebar')
 
         {{-- Contenido principal --}}
-        <main class="flex-1 overflow-y-auto ml-48">
+        <main class="flex-1 overflow-y-auto ml-56">
             <div class="p-4 lg:p-8">
 
                 {{-- Título principal --}}

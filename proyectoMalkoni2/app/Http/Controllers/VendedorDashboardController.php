@@ -41,7 +41,7 @@ class VendedorDashboardController extends Controller
             'cotizaciones_pendientes' => Cotizacion::where('id_empleados', $empleadoId)
                 ->whereHas('cambios', function($q) {
                     $q->whereHas('estado', function($subQ) {
-                        $subQ->where('nombre', 'Nuevo');
+                        $subQ->whereIn('nombre', ['Nuevo', 'Abierto']);
                     })
                     ->whereRaw('cambios.fyH = (
                         SELECT MAX(fyH) 
@@ -51,7 +51,9 @@ class VendedorDashboardController extends Controller
                 })
                 ->count(),
             'comisiones_mes' => Cotizacion::where('id_empleados', $empleadoId)
-                ->esteMes()
+                ->whereNotNull('fecha_cotizado')
+                ->whereMonth('fecha_cotizado', now()->month)
+                ->whereYear('fecha_cotizado', now()->year)
                 ->sum('precio_total'),
         ];
 
@@ -108,7 +110,8 @@ class VendedorDashboardController extends Controller
             'cotizacionesPorProducto', 
             'cotizacionesPorTiempo',
             'ultimasCotizaciones',
-            'productosRanking'
+            'productosRanking',
+            'empleadoId'
         ));
     }
 

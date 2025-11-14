@@ -26,10 +26,10 @@ class VendedorGrupoController extends Controller
         }
 
         // Obtener grupos del vendedor con sus empresas y conteo de cotizaciones
-        $grupos = Grupo::where('id_empleado', $vendedor->id_empleado)
+        $grupos = Grupo::where('id_personas', $vendedor->id_personas)
             ->with(['empresas' => function ($query) use ($vendedor) {
                 $query->withCount(['cotizaciones' => function ($subQuery) use ($vendedor) {
-                    $subQuery->where('id_personas', $vendedor->id_personas);
+                    $subQuery->where('id_empleados', $vendedor->id_empleado);
                 }]);
             }])
             ->get();
@@ -37,10 +37,10 @@ class VendedorGrupoController extends Controller
         // Obtener empresas disponibles para agregar a grupos
         // (empresas que tienen cotizaciones del vendedor pero no están en ningún grupo del vendedor)
         $empresasDisponibles = Empresa::whereHas('cotizaciones', function ($query) use ($vendedor) {
-                $query->where('id_personas', $vendedor->id_personas);
+                $query->where('id_empleados', $vendedor->id_empleado);
             })
             ->whereDoesntHave('grupos', function ($query) use ($vendedor) {
-                $query->where('id_empleado', $vendedor->id_empleado);
+                $query->where('id_personas', $vendedor->id_personas);
             })
             ->get();
 
@@ -75,7 +75,7 @@ class VendedorGrupoController extends Controller
             $grupo = Grupo::create([
                 'nombre_grupo' => $request->nombre_grupo,
                 'descripcion' => $request->descripcion,
-                'id_empleado' => $vendedor->id_empleado
+                'id_personas' => $vendedor->id_personas
             ]);
 
             // Agregar empresas al grupo si se proporcionaron
@@ -129,13 +129,14 @@ class VendedorGrupoController extends Controller
             }
 
             $grupo = Grupo::where('id_grupo', $grupoId)
-                ->where('id_empleado', $vendedor->id_empleado)
+                ->where('id_personas', $vendedor->id_personas)
                 ->first();
 
             if (!$grupo) {
                 \Log::error('Grupo no encontrado', [
                     'grupo_id' => $grupoId,
-                    'empleado_id' => $vendedor->id_empleado
+                    'empleado_id' => $vendedor->id_empleado,
+                    'id_personas' => $vendedor->id_personas
                 ]);
                 return response()->json(['error' => 'Grupo no encontrado o no pertenece al vendedor'], 404);
             }
@@ -211,7 +212,7 @@ class VendedorGrupoController extends Controller
         $vendedor = Empleado::find($empleadoId);
 
         $grupo = Grupo::where('id_grupo', $grupoId)
-            ->where('id_empleado', $vendedor->id_empleado)
+            ->where('id_personas', $vendedor->id_personas)
             ->first();
 
         if (!$grupo) {
@@ -236,7 +237,7 @@ class VendedorGrupoController extends Controller
         }
 
         $grupo = Grupo::where('id_grupo', $grupoId)
-            ->where('id_empleado', $vendedor->id_empleado)
+            ->where('id_personas', $vendedor->id_personas)
             ->first();
 
         if (!$grupo) {

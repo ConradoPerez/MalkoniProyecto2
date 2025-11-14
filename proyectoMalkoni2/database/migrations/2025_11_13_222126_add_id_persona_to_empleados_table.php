@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('empleados', function (Blueprint $table) {
-            //
+            if (!Schema::hasColumn('empleados', 'id_personas')) {
+                $table->unsignedBigInteger('id_personas')->nullable()->after('id_rol');
+                $table->foreign('id_personas')->references('id_persona')->on('personas')->onDelete('set null');
+            }
         });
     }
 
@@ -22,7 +25,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('empleados', function (Blueprint $table) {
-            //
+            if (Schema::hasColumn('empleados', 'id_personas')) {
+                $table->dropForeign(['id_personas']);
+                $table->dropColumn('id_personas');
+            }
         });
     }
 };

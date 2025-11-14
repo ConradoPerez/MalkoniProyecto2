@@ -27,6 +27,21 @@ class Empresa extends Model
     }
 
     /**
+     * Relación muchos a muchos con grupos
+     */
+    public function grupos()
+    {
+        return $this->belongsToMany(
+            Grupo::class,
+            'grupo_empresa',
+            'id_empresas',
+            'id_grupo',
+            'id_empresa',
+            'id_grupo'
+        );
+    }
+
+    /**
      * Accessor para formatear CUIT
      */
     public function getCuitFormateadoAttribute()

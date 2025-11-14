@@ -81,11 +81,18 @@ class ItemSeeder extends Seeder
         foreach ($itemsData as $cotizacionIndex => $items) {
             $cotizacion = $cotizaciones[$cotizacionIndex - 1];
             
+            // Determinar si esta cotización tiene precio
+            $tienePrecio = $cotizacion->precio_total && $cotizacion->precio_total > 0;
+            
             foreach ($items as $itemData) {
+                $producto = Producto::find($itemData['producto_id']);
+                $precioUnitario = $tienePrecio && $producto ? rand(1000, 50000) : null;
+                
                 Item::create([
                     'cantidad' => $itemData['cantidad'],
+                    'precio_unitario' => $precioUnitario,
                     'id_cotizaciones' => $cotizacion->id,
-                    'id_producto' => $itemData['producto_id'],
+                    'id_Producto' => $itemData['producto_id'],
                     'id_servicio' => null,
                 ]);
             }
@@ -96,14 +103,19 @@ class ItemSeeder extends Seeder
             $cotizacion = $cotizaciones[$i];
             $numItems = rand(2, 5);
             
+            // Determinar si esta cotización tiene precio
+            $tienePrecio = $cotizacion->precio_total && $cotizacion->precio_total > 0;
+            
             for ($j = 0; $j < $numItems; $j++) {
                 $producto = $productos->random();
                 $cantidad = rand(1, 10);
+                $precioUnitario = $tienePrecio ? rand(1000, 50000) : null;
                 
                 Item::create([
                     'cantidad' => $cantidad,
+                    'precio_unitario' => $precioUnitario,
                     'id_cotizaciones' => $cotizacion->id,
-                    'id_producto' => $producto->id_producto,
+                    'id_Producto' => $producto->id_producto,
                     'id_servicio' => null,
                 ]);
             }

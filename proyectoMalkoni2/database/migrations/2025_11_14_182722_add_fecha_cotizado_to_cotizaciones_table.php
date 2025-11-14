@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Esta migración fue reemplazada por 2025_11_14_181137_add_foreign_keys_to_grupo_empresa_table
-        // Se deja vacía para no causar conflictos
+        Schema::table('cotizaciones', function (Blueprint $table) {
+            $table->timestamp('fecha_cotizado')->nullable()->after('fyh');
+        });
     }
 
     /**
@@ -20,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // No hacer nada
+        Schema::table('cotizaciones', function (Blueprint $table) {
+            $table->dropColumn('fecha_cotizado');
+        });
     }
 };

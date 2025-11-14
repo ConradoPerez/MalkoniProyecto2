@@ -62,15 +62,27 @@ class CotizacionSeeder extends Seeder
         for ($i = 0; $i < count($vendedores); $i++) {
             for ($j = 0; $j < 25; $j++) {
                 $dias_atras = rand(1, 365); // Entre 1 día y 1 año atrás
-                $precio = rand(50, 1000) * 1000; // Entre $50.000 y $1.000.000
                 $empresa_index = rand(0, count($empresas) - 1);
                 $persona_index = rand(0, count($personas) - 1);
                 $titulo_index = ($i * 25 + $j) % count($titulos_base);
+
+                // Determinar si esta cotización tendrá precio o no
+                // 30% sin precio (Nuevo/Abierto), 70% con precio (Cotizado/En entrega)
+                $tiene_precio = rand(1, 100) > 30;
+                $precio = $tiene_precio ? rand(50, 1000) * 1000 : 0; // Entre $50.000 y $1.000.000 o 0
+                
+                // Si tiene precio, establecer fecha_cotizado (entre la fecha de creación y ahora)
+                $fecha_cotizado = null;
+                if ($tiene_precio) {
+                    $dias_desde_creacion = rand(0, $dias_atras);
+                    $fecha_cotizado = Carbon::now()->subDays($dias_desde_creacion);
+                }
 
                 $cotizaciones[] = [
                     'titulo' => $titulos_base[$titulo_index],
                     'numero' => $numero_actual++,
                     'fyh' => Carbon::now()->subDays($dias_atras),
+                    'fecha_cotizado' => $fecha_cotizado,
                     'precio_total' => $precio,
                     'id_empleados' => $vendedores[$i]->id_empleado,
                     'id_empresas' => $empresas[$empresa_index]->id_empresa,
@@ -86,6 +98,7 @@ class CotizacionSeeder extends Seeder
                 'titulo' => 'Proyecto especial - Oficina ejecutiva',
                 'numero' => 10001,
                 'fyh' => Carbon::now()->subDays(5),
+                'fecha_cotizado' => Carbon::now()->subDays(3),
                 'precio_total' => 485000,
                 'id_empleados' => $vendedores[0]->id_empleado,
                 'id_empresas' => $empresas[0]->id_empresa,
@@ -96,6 +109,7 @@ class CotizacionSeeder extends Seeder
                 'titulo' => 'Showroom premium - Muebles exhibit',
                 'numero' => 10002,
                 'fyh' => Carbon::now()->subDays(12),
+                'fecha_cotizado' => Carbon::now()->subDays(10),
                 'precio_total' => 720000,
                 'id_empleados' => $vendedores[1]->id_empleado,
                 'id_empresas' => $empresas[1]->id_empresa,
@@ -105,6 +119,7 @@ class CotizacionSeeder extends Seeder
                 'titulo' => 'Restaurante completo - Carpintería',
                 'numero' => 10003,
                 'fyh' => Carbon::now()->subDays(8),
+                'fecha_cotizado' => Carbon::now()->subDays(7),
                 'precio_total' => 850000,
                 'id_empleados' => $vendedores[2]->id_empleado,
                 'id_empresas' => $empresas[2]->id_empresa,
@@ -114,6 +129,7 @@ class CotizacionSeeder extends Seeder
                 'titulo' => 'Edificio corporativo - Lobby',
                 'numero' => 10004,
                 'fyh' => Carbon::now()->subDays(3),
+                'fecha_cotizado' => Carbon::now()->subDays(2),
                 'precio_total' => 1200000,
                 'id_empleados' => $vendedores[3]->id_empleado,
                 'id_empresas' => $empresas[3]->id_empresa,

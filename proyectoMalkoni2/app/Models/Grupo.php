@@ -15,7 +15,7 @@ class Grupo extends Model
     protected $fillable = [
         'nombre_grupo',
         'descripcion',
-        'id_empleado'
+        'id_personas'
     ];
 
     /**
@@ -23,7 +23,7 @@ class Grupo extends Model
      */
     public function empleado()
     {
-        return $this->belongsTo(Empleado::class, 'id_empleado', 'id_empleado');
+        return $this->belongsTo(Empleado::class, 'id_personas', 'id_personas');
     }
 
     /**
@@ -34,6 +34,8 @@ class Grupo extends Model
         return $this->belongsToMany(
             Empresa::class,
             'grupo_empresa',
+            'id_grupo',
+            'id_empresas',
             'id_grupo',
             'id_empresa'
         );

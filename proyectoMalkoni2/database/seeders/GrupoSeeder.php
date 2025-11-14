@@ -25,11 +25,11 @@ class GrupoSeeder extends Seeder
         $this->command->info("Vendedores encontrados: " . $vendedores->count());
 
         foreach ($vendedores as $vendedor) {
-            $this->command->info("Procesando vendedor: {$vendedor->nombre} (ID empleado: {$vendedor->id_empleado})");
+            $this->command->info("Procesando vendedor: {$vendedor->nombre} (ID empleado: {$vendedor->id_empleado}, ID persona: {$vendedor->id_personas})");
             
-            // Verificar empresas con cotizaciones del vendedor
+            // Verificar empresas con cotizaciones del vendedor (buscar por id_empleados)
             $empresasConCotizaciones = Empresa::whereHas('cotizaciones', function ($query) use ($vendedor) {
-                $query->where('id_personas', $vendedor->id_personas);
+                $query->where('id_empleados', $vendedor->id_empleado);
             })->get();
 
             $this->command->info("Empresas con cotizaciones del vendedor {$vendedor->nombre}: " . $empresasConCotizaciones->count());
@@ -51,7 +51,7 @@ class GrupoSeeder extends Seeder
                     $grupo = Grupo::create([
                         'nombre_grupo' => $grupoData['nombre_grupo'] . ' - ' . $vendedor->nombre,
                         'descripcion' => $grupoData['descripcion'] . ' del vendedor ' . $vendedor->nombre,
-                        'id_empleado' => $vendedor->id_empleado
+                        'id_personas' => $vendedor->id_personas
                     ]);
 
                     // Asignar empresas al grupo (dividir empresas entre grupos)

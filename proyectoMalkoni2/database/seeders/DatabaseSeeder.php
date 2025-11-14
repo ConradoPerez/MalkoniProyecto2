@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
         // Ejecutar seeders en orden de dependencias
         $this->call([
             RolSeeder::class,
+            PersonaSeeder::class,         // Mover PersonaSeeder antes de EmpleadoSeeder
             EmpleadoSeeder::class,
-            PersonaSeeder::class, 
             EmpresaSeeder::class,
             TipoSeeder::class,            // Nuevo: tipos de productos (Maderas, Herrajes, etc.)
             SubtipoSeeder::class,         // Nuevo: subtipos de cada tipo

@@ -54,6 +54,8 @@ Route::prefix('vendedor')->name('vendedor.app.')->group(function () {
     Route::get('/clientes', [VendedorClienteController::class, 'index'])->name('clientes.index');
 
     Route::get('/cotizaciones', [VendedorCotizacionController::class, 'index'])->name('cotizaciones.index');
+    Route::get('/cotizaciones/{id}', [VendedorCotizacionController::class, 'detalle'])->name('cotizaciones.detalle');
+    Route::put('/cotizaciones/{id}', [VendedorCotizacionController::class, 'guardar'])->name('cotizaciones.guardar');
 
     // Rutas para grupos
     Route::get('/grupos', [VendedorGrupoController::class, 'index'])->name('grupos.index');

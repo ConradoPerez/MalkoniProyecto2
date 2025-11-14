@@ -14,8 +14,10 @@ class Item extends Model
 
     protected $fillable = [
         'cantidad',
+        'precio_unitario',
+        'descripcion',
         'id_cotizaciones',
-        'id_producto',
+        'id_Producto',
         'id_servicio',
     ];
 
@@ -32,7 +34,7 @@ class Item extends Model
      */
     public function producto()
     {
-        return $this->belongsTo(Producto::class, 'id_producto', 'id_producto');
+        return $this->belongsTo(Producto::class, 'id_Producto', 'id_producto');
     }
 
     /**
@@ -48,7 +50,7 @@ class Item extends Model
      */
     public function scopeProductos($query)
     {
-        return $query->whereNotNull('id_producto');
+        return $query->whereNotNull('id_Producto');
     }
 
     /**

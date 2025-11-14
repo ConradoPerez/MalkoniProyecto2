@@ -16,6 +16,7 @@ class Cotizacion extends Model
         'titulo',
         'numero',
         'fyh',
+        'fecha_cotizado',
         'precio_total',
         'id_empleados',
         'id_empresas',
@@ -25,6 +26,7 @@ class Cotizacion extends Model
 
     protected $casts = [
         'fyh' => 'datetime',
+        'fecha_cotizado' => 'datetime',
         'precio_total' => 'integer',
     ];
 
