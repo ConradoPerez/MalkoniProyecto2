@@ -3,16 +3,16 @@
     <h1 class="text-3xl font-syncopate font-bold text-gray-900">
         DASHBOARD VENDEDOR
     </h1>
-    <div class="flex items-center space-x-3">
-        <span class="text-sm font-medium">
-            {{ isset($vendedor) ? $vendedor->nombre : 'Vendedor' }}
-        </span>
-        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
-            @if(isset($vendedor) && $vendedor->nombre)
-                {{ strtoupper(substr($vendedor->nombre, 0, 1)) . strtoupper(substr(explode(' ', $vendedor->nombre)[1] ?? $vendedor->nombre, 0, 1)) }}
-            @else
-                VN
-            @endif
-        </div>
-    </div>
+    <div class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 grid place-items-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                        <div class="text-sm">
+                            <div class="font-semibold text-gray-900">{{ isset($vendedor) ? $vendedor->nombre : 'Vendedor' }}</div>
+                            <div class="text-gray-500">{{ isset($vendedor) ? $vendedor->rol->nombre ?? 'Vendedor' : 'Vendedor activo' }}</div>
+                        </div>
+                    </div>
 </div>

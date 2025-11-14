@@ -1,27 +1,27 @@
 <!-- Tables Section -->
 <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
     <!-- Últimas Cotizaciones -->
-    <div class="bg-white rounded-lg p-6 border border-gray-200">
+    <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
         <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-4">
             ÚLTIMAS COTIZACIONES
         </h2>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="bg-gray-100 border-b border-gray-200">
-                        <th class="text-left py-3 px-2 font-semibold text-gray-700">
+                    <tr class="bg-gray-50 border-b border-gray-200">
+                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
                             Estado
                         </th>
-                        <th class="text-left py-3 px-2 font-semibold text-gray-700">
+                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
                             N° cotización
                         </th>
-                        <th class="text-left py-3 px-2 font-semibold text-gray-700">
+                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
                             Cliente
                         </th>
-                        <th class="text-left py-3 px-2 font-semibold text-gray-700">
+                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
                             Monto
                         </th>
-                        <th class="text-left py-3 px-2 font-semibold text-gray-700">
+                        <th class="text-left py-3 px-2 font-semibold text-gray-600">
                             Acción
                         </th>
                     </tr>
@@ -62,7 +62,7 @@
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="5" class="py-8 px-2 text-center text-gray-500">
+                            <td colspan="5" class="py-8 px-2 text-center text-gray-600">
                                 No hay cotizaciones registradas
                             </td>
                         </tr>
@@ -73,7 +73,7 @@
     </div>
 
     <!-- Product Ranking -->
-    <div class="bg-white rounded-lg p-6 border border-gray-200">
+    <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
         <h2 class="text-lg font-syncopate font-bold text-gray-900 mb-4">
             RANKING DE MIS PRODUCTOS
         </h2>
@@ -82,14 +82,14 @@
                 @foreach($productosRanking as $index => $producto)
                     <div class="flex items-center justify-between py-3 px-2 {{ !$loop->last ? 'border-b border-gray-200' : '' }}">
                         <div class="flex items-center space-x-3">
-                            <span class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">{{ $index + 1 }}</span>
-                            <span class="text-sm">{{ $producto->nombre }}</span>
+                            <span class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-white">{{ $index + 1 }}</span>
+                            <span class="text-sm text-gray-900">{{ $producto->nombre }}</span>
                         </div>
-                        <span class="text-sm font-medium">{{ $producto->total_cotizaciones }}</span>
+                        <span class="text-sm font-medium text-gray-900">{{ $producto->total_cotizaciones }}</span>
                     </div>
                 @endforeach
             @else
-                <div class="text-center py-8 text-gray-500">
+                <div class="text-center py-8 text-gray-600">
                     <p>No hay productos cotizados</p>
                 </div>
             @endif

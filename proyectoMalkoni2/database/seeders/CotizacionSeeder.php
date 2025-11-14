@@ -21,10 +21,69 @@ class CotizacionSeeder extends Seeder
         $empresas = Empresa::all();
         $personas = Persona::all();
 
-        $cotizaciones = [
+        // Plantillas de cotizaciones variadas
+        $titulos_base = [
+            'Reforma integral oficina comercial',
+            'Aberturas para vivienda unifamiliar', 
+            'Muebles de cocina a medida',
+            'Sistema corredizo para showroom',
+            'Herrajes premium para portón',
+            'Estructura de madera para pérgola',
+            'Vidrios temperados para edificio',
+            'Revestimiento completo en madera',
+            'Carpintería para local gastronómico',
+            'Cerramientos para terraza',
+            'Mobiliario corporativo completo',
+            'Sistemas de seguridad para ventanas',
+            'Deck de madera para quincho',
+            'Puerta blindada alta seguridad',
+            'Ventiluz automatizado para galpón',
+            'Escalera de madera maciza',
+            'Frente completo de local comercial',
+            'Pérgola con techo corredizo',
+            'Muebles empotrados dormitorio',
+            'Canceles de vidrio para oficina',
+            'Estantería industrial personalizada',
+            'Mampara de baño premium',
+            'Closet completo con cajones',
+            'Divisor de ambientes moderno',
+            'Mesa de reuniones ejecutiva',
+            'Biblioteca empotrada',
+            'Cocina integral premium',
+            'Ventanas termopanel eficientes',
+            'Puerta de entrada luxury',
+            'Parrilla con techo de madera'
+        ];
+
+        $cotizaciones = [];
+        $numero_actual = 9001; // Empezamos con números más bajos para las generadas automáticamente
+
+        // Generar 25 cotizaciones por cada vendedor
+        for ($i = 0; $i < count($vendedores); $i++) {
+            for ($j = 0; $j < 25; $j++) {
+                $dias_atras = rand(1, 365); // Entre 1 día y 1 año atrás
+                $precio = rand(50, 1000) * 1000; // Entre $50.000 y $1.000.000
+                $empresa_index = rand(0, count($empresas) - 1);
+                $persona_index = rand(0, count($personas) - 1);
+                $titulo_index = ($i * 25 + $j) % count($titulos_base);
+
+                $cotizaciones[] = [
+                    'titulo' => $titulos_base[$titulo_index],
+                    'numero' => $numero_actual++,
+                    'fyh' => Carbon::now()->subDays($dias_atras),
+                    'precio_total' => $precio,
+                    'id_empleados' => $vendedores[$i]->id_empleado,
+                    'id_empresas' => $empresas[$empresa_index]->id_empresa,
+                    'id_personas' => $personas[$persona_index]->id_persona,
+                ];
+            }
+        }
+
+        // Agregar algunas cotizaciones específicas con títulos únicos para testing
+        $cotizaciones_especiales = [
             // Cotizaciones del último mes
             [
-                'titulo' => 'Reforma integral oficina comercial',
+                'titulo' => 'Proyecto especial - Oficina ejecutiva',
                 'numero' => 10001,
                 'fyh' => Carbon::now()->subDays(5),
                 'precio_total' => 485000,
@@ -32,186 +91,40 @@ class CotizacionSeeder extends Seeder
                 'id_empresas' => $empresas[0]->id_empresa,
                 'id_personas' => $personas[0]->id_persona,
             ],
+            // Cotizaciones especiales adicionales para variedad
             [
-                'titulo' => 'Aberturas para vivienda unifamiliar',
+                'titulo' => 'Showroom premium - Muebles exhibit',
                 'numero' => 10002,
                 'fyh' => Carbon::now()->subDays(12),
-                'precio_total' => 320000,
+                'precio_total' => 720000,
                 'id_empleados' => $vendedores[1]->id_empleado,
                 'id_empresas' => $empresas[1]->id_empresa,
                 'id_personas' => $personas[1]->id_persona,
             ],
             [
-                'titulo' => 'Muebles de cocina a medida',
+                'titulo' => 'Restaurante completo - Carpintería',
                 'numero' => 10003,
                 'fyh' => Carbon::now()->subDays(8),
-                'precio_total' => 156000,
+                'precio_total' => 850000,
                 'id_empleados' => $vendedores[2]->id_empleado,
                 'id_empresas' => $empresas[2]->id_empresa,
                 'id_personas' => $personas[2]->id_persona,
             ],
             [
-                'titulo' => 'Sistema corredizo para showroom',
+                'titulo' => 'Edificio corporativo - Lobby',
                 'numero' => 10004,
                 'fyh' => Carbon::now()->subDays(3),
-                'precio_total' => 98000,
-                'id_empleados' => $vendedores[0]->id_empleado,
-                'id_empresas' => $empresas[3]->id_empresa,
-                'id_personas' => $personas[3]->id_persona,
-            ],
-            [
-                'titulo' => 'Herrajes premium para portón',
-                'numero' => 10005,
-                'fyh' => Carbon::now()->subDays(15),
-                'precio_total' => 75000,
-                'id_empleados' => $vendedores[1]->id_empleado,
-                'id_empresas' => $empresas[4]->id_empresa,
-                'id_personas' => $personas[4]->id_persona,
-            ],
-            [
-                'titulo' => 'Estructura de madera para pérgola',
-                'numero' => 10006,
-                'fyh' => Carbon::now()->subDays(7),
-                'precio_total' => 145000,
-                'id_empleados' => $vendedores[2]->id_empleado,
-                'id_empresas' => $empresas[5]->id_empresa,
-                'id_personas' => $personas[5]->id_persona,
-            ],
-            [
-                'titulo' => 'Vidrios temperados para edificio',
-                'numero' => 10007,
-                'fyh' => Carbon::now()->subDays(20),
-                'precio_total' => 890000,
-                'id_empleados' => $vendedores[0]->id_empleado,
-                'id_empresas' => $empresas[0]->id_empresa,
-                'id_personas' => $personas[6]->id_persona,
-            ],
-            [
-                'titulo' => 'Revestimiento completo en madera',
-                'numero' => 10008,
-                'fyh' => Carbon::now()->subDays(25),
-                'precio_total' => 267000,
-                'id_empleados' => $vendedores[1]->id_empleado,
-                'id_empresas' => $empresas[6]->id_empresa,
-                'id_personas' => $personas[7]->id_persona,
-            ],
-
-            // Cotizaciones de meses anteriores
-            [
-                'titulo' => 'Carpintería para local gastronómico',
-                'numero' => 9998,
-                'fyh' => Carbon::now()->subMonths(1)->subDays(10),
-                'precio_total' => 345000,
-                'id_empleados' => $vendedores[2]->id_empleado,
-                'id_empresas' => $empresas[7]->id_empresa,
-                'id_personas' => $personas[0]->id_persona,
-            ],
-            [
-                'titulo' => 'Cerramientos para terraza',
-                'numero' => 9999,
-                'fyh' => Carbon::now()->subMonths(1)->subDays(5),
-                'precio_total' => 198000,
-                'id_empleados' => $vendedores[0]->id_empleado,
-                'id_empresas' => $empresas[1]->id_empresa,
-                'id_personas' => $personas[1]->id_persona,
-            ],
-            [
-                'titulo' => 'Mobiliario corporativo completo',
-                'numero' => 9997,
-                'fyh' => Carbon::now()->subMonths(2)->subDays(8),
-                'precio_total' => 567000,
-                'id_empleados' => $vendedores[1]->id_empleado,
-                'id_empresas' => $empresas[2]->id_empresa,
-                'id_personas' => $personas[2]->id_persona,
-            ],
-            [
-                'titulo' => 'Sistemas de seguridad para ventanas',
-                'numero' => 9996,
-                'fyh' => Carbon::now()->subMonths(2)->subDays(15),
-                'precio_total' => 123000,
-                'id_empleados' => $vendedores[2]->id_empleado,
-                'id_empresas' => $empresas[3]->id_empresa,
-                'id_personas' => $personas[3]->id_persona,
-            ],
-
-            // Cotizaciones más antiguas
-            [
-                'titulo' => 'Deck de madera para quincho',
-                'numero' => 9995,
-                'fyh' => Carbon::now()->subMonths(3)->subDays(12),
-                'precio_total' => 234000,
-                'id_empleados' => $vendedores[0]->id_empleado,
-                'id_empresas' => $empresas[4]->id_empresa,
-                'id_personas' => $personas[4]->id_persona,
-            ],
-            [
-                'titulo' => 'Puerta blindada alta seguridad',
-                'numero' => 9994,
-                'fyh' => Carbon::now()->subMonths(3)->subDays(20),
-                'precio_total' => 189000,
-                'id_empleados' => $vendedores[1]->id_empleado,
-                'id_empresas' => $empresas[5]->id_empresa,
-                'id_personas' => $personas[5]->id_persona,
-            ],
-            [
-                'titulo' => 'Ventiluz automatizado para galpón',
-                'numero' => 9993,
-                'fyh' => Carbon::now()->subMonths(4)->subDays(5),
-                'precio_total' => 678000,
-                'id_empleados' => $vendedores[2]->id_empleado,
-                'id_empresas' => $empresas[6]->id_empresa,
-                'id_personas' => $personas[6]->id_persona,
-            ],
-
-            // Cotizaciones de hace 6 meses
-            [
-                'titulo' => 'Escalera de madera maciza',
-                'numero' => 9992,
-                'fyh' => Carbon::now()->subMonths(5)->subDays(18),
-                'precio_total' => 145000,
-                'id_empleados' => $vendedores[0]->id_empleado,
-                'id_empresas' => $empresas[7]->id_empresa,
-                'id_personas' => $personas[7]->id_persona,
-            ],
-            [
-                'titulo' => 'Frente completo de local comercial',
-                'numero' => 9991,
-                'fyh' => Carbon::now()->subMonths(6)->subDays(10),
-                'precio_total' => 890000,
-                'id_empleados' => $vendedores[1]->id_empleado,
-                'id_empresas' => $empresas[0]->id_empresa,
-                'id_personas' => $personas[0]->id_persona,
-            ],
-            [
-                'titulo' => 'Pérgola con techo corredizo',
-                'numero' => 9990,
-                'fyh' => Carbon::now()->subMonths(6)->subDays(25),
-                'precio_total' => 456000,
-                'id_empleados' => $vendedores[2]->id_empleado,
-                'id_empresas' => $empresas[1]->id_empresa,
-                'id_personas' => $personas[1]->id_persona,
-            ],
-            [
-                'titulo' => 'Muebles empotrados dormitorio',
-                'numero' => 9989,
-                'fyh' => Carbon::now()->subMonths(7)->subDays(8),
-                'precio_total' => 234000,
-                'id_empleados' => $vendedores[0]->id_empleado,
-                'id_empresas' => $empresas[2]->id_empresa,
-                'id_personas' => $personas[2]->id_persona,
-            ],
-            [
-                'titulo' => 'Canceles de vidrio para oficina',
-                'numero' => 9988,
-                'fyh' => Carbon::now()->subMonths(8)->subDays(15),
-                'precio_total' => 167000,
-                'id_empleados' => $vendedores[1]->id_empleado,
+                'precio_total' => 1200000,
+                'id_empleados' => $vendedores[3]->id_empleado,
                 'id_empresas' => $empresas[3]->id_empresa,
                 'id_personas' => $personas[3]->id_persona,
             ]
         ];
 
-        foreach ($cotizaciones as $cotizacion) {
+        // Combinar todas las cotizaciones
+        $todas_cotizaciones = array_merge($cotizaciones, $cotizaciones_especiales);
+
+        foreach ($todas_cotizaciones as $cotizacion) {
             Cotizacion::create($cotizacion);
         }
     }

@@ -1,5 +1,5 @@
 <!-- Bar Chart for Quotations Over Time -->
-<div class="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+<div class="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-4">
         <h2 class="text-lg sm:text-xl font-syncopate font-bold text-gray-900 tracking-wide">
             RESUMEN DE COTIZACIONES
@@ -8,20 +8,20 @@
             <button class="interval-btn px-2 sm:px-4 py-2 text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-md shadow-sm hover:from-amber-600 hover:to-orange-700 transition-all duration-200" data-interval="7dias">
                 7 Días
             </button>
-            <button class="interval-btn px-2 sm:px-4 py-2 text-xs font-semibold bg-transparent text-gray-600 rounded-md hover:bg-white hover:text-gray-800 transition-all duration-200" data-interval="3meses">
+            <button class="interval-btn px-2 sm:px-4 py-2 text-xs font-semibold bg-transparent text-gray-600 rounded-md hover:bg-gray-200 hover:text-gray-900 transition-all duration-200" data-interval="3meses">
                 3 Meses
             </button>
-            <button class="interval-btn px-2 sm:px-4 py-2 text-xs font-semibold bg-transparent text-gray-600 rounded-md hover:bg-white hover:text-gray-800 transition-all duration-200" data-interval="6meses">
+            <button class="interval-btn px-2 sm:px-4 py-2 text-xs font-semibold bg-transparent text-gray-600 rounded-md hover:bg-gray-200 hover:text-gray-900 transition-all duration-200" data-interval="6meses">
                 6 Meses
             </button>
-            <button class="interval-btn px-2 sm:px-4 py-2 text-xs font-semibold bg-transparent text-gray-600 rounded-md hover:bg-white hover:text-gray-800 transition-all duration-200" data-interval="1ano">
+            <button class="interval-btn px-2 sm:px-4 py-2 text-xs font-semibold bg-transparent text-gray-600 rounded-md hover:bg-gray-200 hover:text-gray-900 transition-all duration-200" data-interval="1ano">
                 1 Año
             </button>
         </div>
     </div>
     <div class="mb-4">
         <div id="chartLoading" class="text-center py-4 hidden">
-            <div class="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div class="inline-block w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
             <span class="ml-2 text-sm text-gray-600">Cargando datos...</span>
         </div>
         <div id="chartContainer" class="relative w-full bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg p-2 sm:p-3" 

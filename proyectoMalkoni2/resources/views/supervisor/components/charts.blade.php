@@ -7,7 +7,7 @@
     @if(isset($cotizacionesPorVendedor) && $cotizacionesPorVendedor->count() > 0)
         <!-- Pie Chart Canvas -->
         <div class="flex justify-center mb-4">
-            <div class="w-full max-w-xs" style="height: 200px;">
+            <div class="w-full max-w-md" style="height: 700px;">
                 <canvas id="pieChart" class="w-full h-full"></canvas>
             </div>
         </div>

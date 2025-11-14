@@ -14,12 +14,13 @@ class Empleado extends Model
 
     protected $fillable = [
         'nombre',
-        'foto',
+        'foto', 
         'email',
         'password',
         'telefono',
         'dni',
         'id_rol',
+        'id_personas'
     ];
 
     protected $hidden = [
