@@ -8,7 +8,7 @@
     @include('supervisor.components.sidebar')
 
     <!-- Main content -->
-    <main class="lg:ml-48">
+    <main class="lg:ml-56">
         <!-- Mobile Header -->
         <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div class="flex items-center justify-between">

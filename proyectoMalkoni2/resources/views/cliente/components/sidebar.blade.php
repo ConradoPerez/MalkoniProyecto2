@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<aside class="hidden lg:block w-48 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto">
+<aside class="hidden lg:block w-56 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto">
     <!-- Logo -->
     <div class="mb-8">
         <div class="flex items-center justify-center">
@@ -93,4 +93,4 @@
 </aside>
 
 <!-- Mobile sidebar toggle button (for future mobile implementation) -->
-<div class="lg:hidden flex-1 ml-48"></div>
+<div class="lg:hidden flex-1 ml-56"></div>
