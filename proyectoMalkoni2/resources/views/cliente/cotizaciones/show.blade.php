@@ -8,7 +8,7 @@
     @include('cliente.components.sidebar')
 
     <!-- Main content -->
-    <main class="lg:ml-48">
+    <main>
         <!-- Mobile Header -->
         <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div class="flex items-center justify-between">
@@ -26,17 +26,42 @@
             </div>
         </div>
 
+        <!-- Desktop Header with offset -->
+        <div class="hidden lg:block sticky top-0 z-20 bg-white border-b border-gray-200 p-8">
+            <div class="max-w-5xl mx-auto">
+                <h1 class="text-3xl font-bold text-gray-900">Detalle de cotización</h1>
+            </div>
+        </div>
+
         <div class="p-4 lg:p-8">
             <div class="max-w-5xl mx-auto">
                 
-                <!-- Header principal -->
-                <div class="flex justify-between items-start mb-8">
+                <!-- Mobile Header principal -->
+                <div class="lg:hidden flex justify-between items-start mb-8">
                     <div>
                         <h1 class="text-4xl font-bold text-gray-900 mb-4">Detalle de cotización</h1>
                         <div class="space-y-2 text-gray-700">
                             <p><strong>Número del pedido:</strong> {{ $cotizacion->numero_formateado }}</p>
                             <p><strong>Fecha de inicio:</strong> {{ $cotizacion->fyh->format('d/m/Y') }}</p>
                         </div>
+                    </div>
+                    
+                    <!-- Usuario/Estado -->
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
+                            <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                            </svg>
+                        </div>
+                        <p class="font-medium text-gray-900">{{ auth()->user()?->name ?? 'Cliente' }}</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Header Info -->
+                <div class="hidden lg:flex justify-between items-start mb-8">
+                    <div class="space-y-2 text-gray-700">
+                        <p><strong>Número del pedido:</strong> {{ $cotizacion->numero_formateado }}</p>
+                        <p><strong>Fecha de inicio:</strong> {{ $cotizacion->fyh->format('d/m/Y') }}</p>
                     </div>
                     
                     <!-- Usuario/Estado -->

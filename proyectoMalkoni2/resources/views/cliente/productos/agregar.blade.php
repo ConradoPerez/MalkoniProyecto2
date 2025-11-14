@@ -8,7 +8,7 @@
     @include('cliente.components.sidebar')
 
     <!-- Main content -->
-    <main class="lg:ml-48">
+    <main>
         <!-- Mobile Header -->
         <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div class="flex items-center justify-between">
@@ -26,10 +26,15 @@
             </div>
         </div>
 
+        <!-- Desktop Header with offset -->
+        <div class="hidden lg:block sticky top-0 z-20 bg-white border-b border-gray-200 p-8">
+            <h1 class="text-2xl font-bold text-gray-900">Agregar Producto</h1>
+        </div>
+
         <div class="p-8">
                 
-                <!-- Header -->
-                <div class="flex justify-between items-center mb-8 border-b pb-4">
+                <!-- Mobile Header -->
+                <div class="lg:hidden flex justify-between items-center mb-8 border-b pb-4">
                     <h1 class="text-3xl font-bold">Agregar Producto</h1>
                     <div class="flex items-center space-x-2">
                         <span class="text-lg font-medium">{{ auth()->user()->name ?? 'Usuario' }}</span>

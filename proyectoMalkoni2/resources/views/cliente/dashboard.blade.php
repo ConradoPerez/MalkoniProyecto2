@@ -8,7 +8,7 @@
     @include('cliente.components.sidebar')
 
     <!-- Main content -->
-    <main class="lg:ml-48">
+    <main>
         <!-- Mobile Header -->
         <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div class="flex items-center justify-between">
@@ -26,11 +26,16 @@
             </div>
         </div>
 
+        <!-- Desktop Header with offset -->
+        <div class="hidden lg:block sticky top-0 z-20 bg-white border-b border-gray-200 p-8">
+            <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+        </div>
+
         <div class="p-4 lg:p-8">
                 
                 @include('cliente.components.header')
 
-                <h2 class="text-xl font-semibold mb-4">Últimas Cotizaciones</h2>
+                <h2 class="text-xl font-semibold mb-4 mt-4 lg:mt-0">Últimas Cotizaciones</h2>
                 
                 @include('cliente.components.tables') 
 

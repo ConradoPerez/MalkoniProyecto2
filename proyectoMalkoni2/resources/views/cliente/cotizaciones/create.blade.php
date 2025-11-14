@@ -8,7 +8,7 @@
     @include('cliente.components.sidebar')
 
     <!-- Main content -->
-    <main class="lg:ml-48">
+    <main>
         <!-- Mobile Header -->
         <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div class="flex items-center justify-between">
@@ -26,9 +26,14 @@
             </div>
         </div>
 
+        <!-- Desktop Header with offset -->
+        <div class="hidden lg:block sticky top-0 z-20 bg-white border-b border-gray-200 p-8">
+            <h1 class="text-2xl font-bold text-gray-900">Nueva Cotización</h1>
+        </div>
+
         <div class="p-4 lg:p-8">
                 
-                <div class="flex justify-between items-start border-b pb-4 mb-6">
+                <div class="lg:hidden flex justify-between items-start border-b pb-4 mb-6">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-2">Nueva Cotización</h1>
                         <p class="text-sm text-gray-600">Fecha: {{ now()->format('d/m/Y') }}</p>
@@ -39,6 +44,14 @@
                     <div class="flex items-center space-x-2">
                         <span class="text-lg font-medium">Usuario</span>
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                </div>
+
+                <!-- Desktop Header Info -->
+                <div class="hidden lg:flex justify-between items-start mb-6 pb-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Fecha: {{ now()->format('d/m/Y') }}</p>
+                        <p class="text-sm text-gray-600">Número: {{ $numero_pedido ?? 'Generando...' }}</p>
                     </div>
                 </div>
 

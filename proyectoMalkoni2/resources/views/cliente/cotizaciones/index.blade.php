@@ -8,7 +8,7 @@
     @include('cliente.components.sidebar')
 
     <!-- Main content -->
-    <main class="lg:ml-48">
+    <main>
         <!-- Mobile Header -->
         <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div class="flex items-center justify-between">
@@ -26,10 +26,20 @@
             </div>
         </div>
 
+        <!-- Desktop Header with offset -->
+        <div class="hidden lg:flex sticky top-0 z-20 bg-white border-b border-gray-200 p-4 lg:p-8 justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Mis Cotizaciones</h1>
+            </div>
+            <a href="{{ route('cliente.nueva_cotizacion') }}" class="px-4 py-2 bg-[#D88429] text-white font-semibold rounded shadow hover:bg-[#c7731f] transition-colors">
+                + Nueva Cotización
+            </a>
+        </div>
+
         <div class="p-4 lg:p-8">
                 
-                <!-- Header -->
-                <div class="flex justify-between items-start border-b pb-4 mb-6">
+                <!-- Mobile Header -->
+                <div class="lg:hidden flex justify-between items-start border-b pb-4 mb-6">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-2">Mis Cotizaciones</h1>
                         <p class="text-sm text-gray-600">Gestiona tus solicitudes de presupuesto</p>
@@ -40,22 +50,24 @@
                     </a>
                 </div>
 
-                <!-- Mensajes de Éxito/Error -->
-                @if (session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                        {{ session('success') }}
+                <!-- Filtros y Búsqueda -->
+                <div class="bg-white border border-gray-400 rounded p-4 mb-6">
+                    <div class="flex flex-col md:flex-row gap-3 items-center">
+                        <input type="text" placeholder="Buscar Cotizaciones" class="flex-1 px-4 py-2 border border-gray-400 rounded focus:ring-2 focus:ring-[#D88429] focus:border-transparent">
+                        <select class="px-4 py-2 border border-gray-400 rounded focus:ring-2 focus:ring-[#D88429] focus:border-transparent bg-white">
+                            <option>Fecha</option>
+                            <option>Más recientes</option>
+                            <option>Más antiguos</option>
+                        </select>
+                        <select class="px-4 py-2 border border-gray-400 rounded focus:ring-2 focus:ring-[#D88429] focus:border-transparent bg-white">
+                            <option>Vendedor</option>
+                        </select>
+                        <select class="px-4 py-2 border border-gray-400 rounded focus:ring-2 focus:ring-[#D88429] focus:border-transparent bg-white">
+                            <option>Nº de cotización</option>
+                        </select>
+                        <button class="px-6 py-2 bg-white border border-gray-400 text-gray-900 font-semibold rounded hover:bg-gray-50 transition-colors">Buscar</button>
                     </div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        <ul class="list-disc list-inside">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                </div>
 
                 <!-- Tabla de Cotizaciones -->
                 <div class="bg-white border border-gray-300 rounded-lg overflow-hidden">
@@ -63,53 +75,53 @@
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead>
-                                    <tr class="bg-gray-100 border-b border-gray-300">
-                                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Número</th>
-                                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Título</th>
-                                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Vendedor</th>
-                                        <th class="px-6 py-3 text-center text-sm font-semibold text-gray-900">Fecha</th>
-                                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-900">Total</th>
+                                    <tr class="bg-gray-200 border-b border-gray-300">
                                         <th class="px-6 py-3 text-center text-sm font-semibold text-gray-900">Estado</th>
+                                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Nº de Cotización</th>
+                                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Fecha de Inicio</th>
+                                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Vendedor</th>
+                                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-900">Total</th>
                                         <th class="px-6 py-3 text-center text-sm font-semibold text-gray-900">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($cotizaciones as $cotizacion)
                                         <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                            <td class="px-6 py-3">
-                                                <span class="font-medium text-[#D88429]">{{ $cotizacion->numero_formateado }}</span>
+                                            <td class="px-6 py-4 text-center">
+                                                @php
+                                                    $estado = $cotizacion->estado ?? 'Pendiente';
+                                                    $colorMap = [
+                                                        'Nuevo' => 'bg-orange-500',
+                                                        'Abierto' => 'bg-yellow-400',
+                                                        'Cotizado' => 'bg-green-500',
+                                                        'En entrega' => 'bg-blue-600',
+                                                        'Pendiente' => 'bg-orange-500'
+                                                    ];
+                                                    $color = $colorMap[$estado] ?? 'bg-gray-400';
+                                                @endphp
+                                                <span class="inline-block w-4 h-4 rounded-full {{ $color }}"></span>
                                             </td>
-                                            <td class="px-6 py-3">
-                                                <p class="font-medium text-gray-900">{{ $cotizacion->titulo }}</p>
+                                            <td class="px-6 py-4">
+                                                <span class="font-medium">{{ $cotizacion->numero_formateado }}</span>
                                             </td>
-                                            <td class="px-6 py-3">
-                                                <p class="font-medium">{{ $cotizacion->empleado->nombre ?? 'N/A' }}</p>
-                                            </td>
-                                            <td class="px-6 py-3 text-center text-sm">
+                                            <td class="px-6 py-4 text-sm">
                                                 {{ $cotizacion->fyh->format('d/m/Y') }}
                                             </td>
-                                            <td class="px-6 py-3 text-right font-medium">
+                                            <td class="px-6 py-4">
+                                                <p class="font-medium">{{ $cotizacion->empleado->nombre ?? 'N/A' }}</p>
+                                            </td>
+                                            <td class="px-6 py-4 text-right font-medium">
                                                 ${{ number_format($cotizacion->precio_total / 100, 2, ',', '.') }}
                                             </td>
-                                            <td class="px-6 py-3 text-center">
-                                                <span class="inline-block px-3 py-1 rounded text-white text-sm font-semibold" style="{{ $cotizacion->estado_estilo }}">
-                                                    {{ $cotizacion->estado }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-3 text-center">
-                                                <div class="flex justify-center gap-2">
-                                                    <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacion->id]) }}" class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
-                                                        Ver
-                                                    </a>
-                                                    <a href="{{ route('cliente.cotizacion.productos', ['id' => $cotizacion->id]) }}" class="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600">
-                                                        Productos
-                                                    </a>
-                                                </div>
+                                            <td class="px-6 py-4 text-center">
+                                                <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacion->id]) }}" class="text-blue-600 font-semibold hover:underline">
+                                                    Ver
+                                                </a>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="px-6 py-8 text-center text-gray-600">
+                                            <td colspan="6" class="px-6 py-8 text-center text-gray-600">
                                                 <p class="mb-4">No hay cotizaciones aún.</p>
                                                 <a href="{{ route('cliente.nueva_cotizacion') }}" class="text-[#D88429] font-semibold hover:underline">
                                                     Crear nueva cotización
@@ -121,12 +133,14 @@
                             </table>
                         </div>
 
-                        <!-- Paginación -->
-                        @if($cotizaciones->hasPages())
-                            <div class="px-6 py-4 border-t border-gray-300">
-                                {{ $cotizaciones->links() }}
-                            </div>
-                        @endif
+                        <!-- Footer con "Ver más" -->
+                        <div class="px-6 py-4 border-t border-gray-300 flex justify-end">
+                            @if($cotizaciones->hasPages())
+                                <a href="{{ $cotizaciones->nextPageUrl() }}" class="px-6 py-2 text-gray-600 font-semibold hover:text-gray-900 transition-colors">
+                                    Ver más
+                                </a>
+                            @endif
+                        </div>
                     @else
                         <div class="px-6 py-16 text-center">
                             <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,8 +154,26 @@
                         </div>
                     @endif
                 </div>
-                
-            </div>
+
+                <!-- Leyenda de Estados -->
+                <div class="mt-8 flex flex-wrap gap-6 justify-center pb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-orange-500"></span>
+                        <span class="text-gray-700 text-sm">Nuevo</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-yellow-400"></span>
+                        <span class="text-gray-700 text-sm">Abierto</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-green-500"></span>
+                        <span class="text-gray-700 text-sm">Cotizado</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-blue-600"></span>
+                        <span class="text-gray-700 text-sm">En entrega</span>
+                    </div>
+                </div>
         </main>
     </div>
 </div>

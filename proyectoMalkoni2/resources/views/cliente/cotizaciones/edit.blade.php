@@ -8,7 +8,7 @@
     @include('cliente.components.sidebar')
 
     <!-- Main content -->
-    <main class="lg:ml-48">
+    <main>
         <!-- Mobile Header -->
         <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div class="flex items-center justify-between">
@@ -26,10 +26,15 @@
             </div>
         </div>
 
+        <!-- Desktop Header with offset -->
+        <div class="hidden lg:block sticky top-0 z-20 bg-white border-b border-gray-200 p-8">
+            <h1 class="text-2xl font-bold text-gray-900">Editar Cotización</h1>
+        </div>
+
         <div class="p-4 lg:p-8">
                 
-                <!-- Header -->
-                <div class="flex justify-between items-start border-b pb-4 mb-6">
+                <!-- Mobile Header -->
+                <div class="lg:hidden flex justify-between items-start border-b pb-4 mb-6">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-2">Editar Cotización</h1>
                         <p class="text-sm text-gray-600">Cotización: {{ $cotizacion->numero_formateado }}</p>
