@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
 @section('content')
 <div class="min-h-screen bg-background text-gray-900">
     <div class="flex">
@@ -21,16 +25,29 @@
                         </p>
                     </div>
 
-                    <div class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 grid place-items-center">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    <div class="flex items-center gap-4">
+                        {{-- Botón Crear Nuevo Grupo --}}
+                        <button onclick="showCreateGroupModal()" 
+                                class="px-6 py-3 rounded-lg text-white font-semibold shadow-sm transition-colors hover:opacity-90 flex items-center"
+                                style="background-color:#D88429;">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                             </svg>
-                        </div>
-                        <div class="text-sm">
-                            <div class="font-semibold text-gray-900">{{ isset($vendedor) ? $vendedor->nombre : 'Vendedor' }}</div>
-                            <div class="text-gray-500">{{ isset($vendedor) ? $vendedor->rol->nombre ?? 'Vendedor' : 'Vendedor activo' }}</div>
+                            Crear Nuevo Grupo
+                        </button>
+
+                        {{-- Info del vendedor --}}
+                        <div class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 grid place-items-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                            <div class="text-sm">
+                                <div class="font-semibold text-gray-900">{{ isset($vendedor) ? $vendedor->nombre : 'Vendedor' }}</div>
+                                <div class="text-gray-500">{{ isset($vendedor) ? $vendedor->rol->nombre ?? 'Vendedor' : 'Vendedor activo' }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -136,43 +153,46 @@
                     </section>
                 @endforelse
 
-                {{-- Botón Crear Nuevo Grupo --}}
-                <div class="flex justify-center">
-                    <button onclick="showCreateGroupModal()" 
-                            class="px-6 py-3 rounded-lg text-white font-semibold shadow-sm transition-colors hover:opacity-90"
-                            style="background-color:#D88429;">
-                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
-                        Crear Nuevo Grupo
-                    </button>
-                </div>
-
             </div>
         </main>
     </div>
 </div>
 
-{{-- Modal para crear grupo --}}
-<div id="createGroupModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+{{-- Modal para crear grupo MEJORADO --}}
+<div id="createGroupModal" class="fixed inset-0 bg-gradient-to-br from-white/10 via-gray-100/20 to-orange-100/30 backdrop-blur-md hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-            <form action="{{ route('vendedor.app.grupos.store') }}" method="POST">
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all border border-gray-200/50 ring-1 ring-gray-300/30">
+            <form id="createGroupForm" action="{{ route('vendedor.app.grupos.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="empleado_id" value="{{ request('empleado_id', 1) }}">
-                <div class="p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Crear Nuevo Grupo</h3>
+                
+                <!-- Encabezado del modal -->
+                <div class="p-6 border-b border-gray-200/50 bg-gradient-to-r from-orange-50/80 to-orange-100/60 backdrop-blur-sm rounded-t-2xl">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-semibold text-gray-900">Crear Nuevo Grupo</h3>
+                        <button type="button" onclick="hideCreateGroupModal()" 
+                                class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Paso 1: Información del grupo -->
+                <div id="step1" class="p-6">
+                    <h4 class="text-md font-medium text-gray-700 mb-4">Información del Grupo</h4>
                     
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del Grupo</label>
-                        <input type="text" name="nombre_grupo" required maxlength="100"
+                        <input type="text" name="nombre_grupo" id="nombreGrupo" required maxlength="100"
                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                                placeholder="Ej: Clientes Capital">
                     </div>
 
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Descripción (Opcional)</label>
-                        <textarea name="descripcion" rows="3" maxlength="500"
+                        <textarea name="descripcion" id="descripcionGrupo" rows="3" maxlength="500"
                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                                   placeholder="Descripción del grupo..."></textarea>
                     </div>
@@ -182,10 +202,56 @@
                                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
                             Cancelar
                         </button>
-                        <button type="submit" 
+                        <button type="button" onclick="showStep2()" 
                                 class="px-4 py-2 text-sm font-medium text-white rounded-lg" style="background-color:#D88429;">
-                            Crear Grupo
+                            Continuar
                         </button>
+                    </div>
+                </div>
+
+                <!-- Paso 2: Seleccionar empresas -->
+                <div id="step2" class="p-6 hidden">
+                    <h4 class="text-md font-medium text-gray-700 mb-4">Seleccionar Empresas para el Grupo</h4>
+                    
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-3">Selecciona las empresas que deseas agregar a "<span id="grupoNombrePreview"></span>":</p>
+                        
+                        <div class="max-h-60 overflow-y-auto border border-gray-300 rounded-lg">
+                            @foreach($empresasDisponibles as $empresa)
+                                <label class="flex items-center p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0">
+                                    <input type="checkbox" name="empresas[]" value="{{ $empresa->id_empresa }}" 
+                                           class="mr-3 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                                    <div class="flex-1">
+                                        <div class="font-medium text-gray-900">{{ $empresa->nombre }}</div>
+                                        <div class="text-sm text-gray-500">CUIT: {{ $empresa->cuit_formateado }}</div>
+                                    </div>
+                                </label>
+                            @endforeach
+                            
+                            @if($empresasDisponibles->count() === 0)
+                                <div class="p-4 text-center text-gray-500">
+                                    <p>No hay empresas disponibles para agregar.</p>
+                                    <p class="text-xs mt-1">Todas las empresas con cotizaciones ya están en otros grupos.</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between space-x-3">
+                        <button type="button" onclick="showStep1()" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Volver
+                        </button>
+                        <div class="flex space-x-3">
+                            <button type="button" onclick="hideCreateGroupModal()" 
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                Cancelar
+                            </button>
+                            <button type="button" onclick="createGroupWithAjax()" 
+                                    class="px-4 py-2 text-sm font-medium text-white rounded-lg" style="background-color:#D88429;">
+                                Crear Grupo
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -194,30 +260,49 @@
 </div>
 
 {{-- Modal para agregar empresa --}}
-<div id="addEmpresaModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+<div id="addEmpresaModal" class="fixed inset-0 bg-gradient-to-br from-white/10 via-gray-100/20 to-orange-100/30 backdrop-blur-md hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl max-w-lg w-full transform transition-all border border-gray-200/50 ring-1 ring-gray-300/30">
+            <div class="p-6 border-b border-gray-200/50 bg-gradient-to-r from-orange-50/80 to-orange-100/60 backdrop-blur-sm rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-semibold text-gray-900">Agregar Empresas al Grupo</h3>
+                    <button type="button" onclick="hideAddEmpresaModal()" 
+                            class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
             <div class="p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Agregar Empresa al Grupo</h3>
-                
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Empresa</label>
-                    <select id="empresaSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                        <option value="">Seleccione una empresa...</option>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Seleccionar Empresas (múltiple selección)</label>
+                    <div class="space-y-2 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-gray-50">
                         @foreach($empresasDisponibles as $empresa)
-                            <option value="{{ $empresa->id_empresa }}">{{ $empresa->nombre }} ({{ $empresa->cuit_formateado }})</option>
+                        <label class="flex items-center space-x-3 cursor-pointer hover:bg-white p-2 rounded transition-colors">
+                            <input type="checkbox" 
+                                   name="empresas_add[]" 
+                                   value="{{ $empresa->id_empresa }}"
+                                   class="rounded border-gray-300 text-orange-600 focus:ring-orange-500 h-4 w-4">
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-gray-900">{{ $empresa->nombre }}</div>
+                                <div class="text-xs text-gray-500">{{ $empresa->cuit_formateado }}</div>
+                            </div>
+                        </label>
                         @endforeach
-                    </select>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Selecciona todas las empresas que desees agregar al grupo</p>
                 </div>
 
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="hideAddEmpresaModal()" 
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                            class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors">
                         Cancelar
                     </button>
                     <button type="button" onclick="addEmpresaToGroup()" 
-                            class="px-4 py-2 text-sm font-medium text-white rounded-lg" style="background-color:#D88429;">
-                        Agregar
+                            class="px-6 py-2 text-sm font-medium text-white rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors" style="background-color:#D88429;">
+                        Agregar Seleccionadas
                     </button>
                 </div>
             </div>
@@ -231,10 +316,83 @@ const empleadoId = {{ request('empleado_id', 1) }};
 
 function showCreateGroupModal() {
     document.getElementById('createGroupModal').classList.remove('hidden');
+    showStep1();
 }
 
 function hideCreateGroupModal() {
     document.getElementById('createGroupModal').classList.add('hidden');
+    // Limpiar formulario
+    document.getElementById('createGroupForm').reset();
+    showStep1();
+}
+
+function showStep1() {
+    document.getElementById('step1').classList.remove('hidden');
+    document.getElementById('step2').classList.add('hidden');
+}
+
+function showStep2() {
+    const nombreGrupo = document.getElementById('nombreGrupo').value;
+    if (!nombreGrupo.trim()) {
+        alert('Por favor ingresa un nombre para el grupo');
+        return;
+    }
+    
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+    document.getElementById('grupoNombrePreview').textContent = nombreGrupo;
+}
+
+function createGroupWithAjax() {
+    const formData = new FormData();
+    formData.append('nombre_grupo', document.getElementById('nombreGrupo').value);
+    formData.append('descripcion', document.getElementById('descripcionGrupo').value);
+    formData.append('empleado_id', empleadoId);
+    
+    // Agregar empresas seleccionadas
+    const empresasSeleccionadas = document.querySelectorAll('input[name="empresas[]"]:checked');
+    empresasSeleccionadas.forEach(checkbox => {
+        formData.append('empresas[]', checkbox.value);
+    });
+
+    fetch(`/vendedor/grupos?empleado_id=${empleadoId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            if (response.headers.get('content-type')?.includes('text/html')) {
+                throw new Error('El servidor devolvió HTML en lugar de JSON. Revisa los logs del servidor.');
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            hideCreateGroupModal();
+            Swal.fire({
+                title: '¡Creado!',
+                text: 'El grupo ha sido creado exitosamente.',
+                icon: 'success',
+                confirmButtonColor: '#D88429',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.reload();
+            });
+        } else {
+            Swal.fire('Error', data.error || 'Error al crear el grupo', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', error.message, 'error');
+    });
 }
 
 function showAddEmpresaModal(groupId) {
@@ -245,88 +403,199 @@ function showAddEmpresaModal(groupId) {
 function hideAddEmpresaModal() {
     document.getElementById('addEmpresaModal').classList.add('hidden');
     currentGroupId = null;
-    document.getElementById('empresaSelect').value = '';
+    // Desmarcar todos los checkboxes
+    document.querySelectorAll('input[name="empresas_add[]"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
 }
 
 function addEmpresaToGroup() {
-    const empresaId = document.getElementById('empresaSelect').value;
-    if (!empresaId || !currentGroupId) {
-        alert('Por favor seleccione una empresa');
+    const empresasSeleccionadas = document.querySelectorAll('input[name="empresas_add[]"]:checked');
+    
+    if (empresasSeleccionadas.length === 0) {
+        Swal.fire('Error', 'Por favor seleccione al menos una empresa', 'warning');
         return;
     }
+    
+    if (!currentGroupId) {
+        Swal.fire('Error', 'No se ha seleccionado un grupo válido', 'error');
+        return;
+    }
+
+    const empresas = Array.from(empresasSeleccionadas).map(checkbox => checkbox.value);
+
+    console.log('Enviando petición:', {
+        url: `/vendedor/grupos/${currentGroupId}/empresas?empleado_id=${empleadoId}`,
+        empresas: empresas,
+        currentGroupId: currentGroupId
+    });
+
+    // Mostrar loading
+    Swal.fire({
+        title: 'Agregando empresas...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     fetch(`/vendedor/grupos/${currentGroupId}/empresas?empleado_id=${empleadoId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify({
-            id_empresa: empresaId,
+            empresas: empresas,
             empleado_id: empleadoId
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            if (response.headers.get('content-type')?.includes('text/html')) {
+                throw new Error('El servidor devolvió HTML en lugar de JSON. Revisa los logs del servidor.');
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
-            location.reload();
+            hideAddEmpresaModal();
+            Swal.fire({
+                title: '¡Agregadas!',
+                text: data.success,
+                icon: 'success',
+                confirmButtonColor: '#D88429',
+                timer: 3000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.reload();
+            });
         } else {
-            alert(data.error || 'Error al agregar empresa');
+            Swal.fire('Error', data.error || 'Error al agregar empresas', 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error al agregar empresa');
+        Swal.fire('Error', error.message, 'error');
     });
 }
 
 function removeEmpresa(groupId, empresaId) {
-    if (!confirm('¿Está seguro de que desea remover esta empresa del grupo?')) {
-        return;
-    }
+    Swal.fire({
+        title: '¿Remover empresa?',
+        text: '¿Está seguro de que desea remover esta empresa del grupo?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, remover',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Mostrar loading
+            Swal.fire({
+                title: 'Removiendo...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
-    fetch(`/vendedor/grupos/${groupId}/empresas/${empresaId}?empleado_id=${empleadoId}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            fetch(`/vendedor/grupos/${groupId}/empresas/${empresaId}?empleado_id=${empleadoId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: '¡Removida!',
+                        text: 'La empresa ha sido removida del grupo exitosamente.',
+                        icon: 'success',
+                        confirmButtonColor: '#D88429',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.error || 'Error al remover empresa', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Error de conexión al remover empresa', 'error');
+            });
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            alert(data.error || 'Error al remover empresa');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al remover empresa');
     });
 }
 
 function deleteGroup(groupId) {
-    if (!confirm('¿Está seguro de que desea eliminar este grupo? Esta acción no se puede deshacer.')) {
-        return;
-    }
+    Swal.fire({
+        title: '¿Eliminar grupo?',
+        text: 'Esta acción no se puede deshacer. Se eliminará el grupo y todas sus empresas asociadas.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Mostrar loading
+            Swal.fire({
+                title: 'Eliminando...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
-    fetch(`/vendedor/grupos/${groupId}?empleado_id=${empleadoId}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            fetch(`/vendedor/grupos/${groupId}?empleado_id=${empleadoId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: '¡Eliminado!',
+                        text: 'El grupo ha sido eliminado exitosamente.',
+                        icon: 'success',
+                        confirmButtonColor: '#D88429',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.error || 'Error al eliminar grupo', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Error de conexión al eliminar grupo', 'error');
+            });
         }
-    })
-    .then(response => {
-        if (response.ok) {
-            location.reload();
-        } else {
-            alert('Error al eliminar grupo');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al eliminar grupo');
     });
 }
 </script>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endpush
+
 @endsection

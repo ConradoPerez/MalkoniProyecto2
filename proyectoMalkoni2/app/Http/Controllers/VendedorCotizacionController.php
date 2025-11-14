@@ -25,6 +25,9 @@ class VendedorCotizacionController extends Controller
             abort(404, 'Vendedor no encontrado');
         }
 
+        // Obtener todos los estados para el filtro
+        $estados = Estado::orderBy('nombre')->get();
+
         // Construir query base para las cotizaciones del vendedor
         $query = Cotizacion::with(['empresa', 'empleado'])
             ->where('id_empleados', $empleadoId);
@@ -46,8 +49,59 @@ class VendedorCotizacionController extends Controller
             });
         }
 
+        // Filtro por estado
+        if ($request->filled('estado')) {
+            $query->whereHas('cambios', function($q) use ($request) {
+                $q->where('id_estado', $request->estado)
+                  ->whereIn('fyH', function($subQuery) {
+                      $subQuery->select(DB::raw('MAX(fyH)'))
+                               ->from('cambios as c2')
+                               ->whereColumn('c2.id_cotizaciones', 'cambios.id_cotizaciones')
+                               ->groupBy('c2.id_cotizaciones');
+                  });
+            });
+        }
+
+        // Ordenamiento
+        $orderBy = $request->get('orderby', 'fecha');
+        $orderDirection = $request->get('direction', 'desc');
+
+        switch ($orderBy) {
+            case 'estado':
+                // Para ordenar por estado con orden personalizado: Nuevo -> Abierto -> Cotizado -> En entrega
+                $query->leftJoin('cambios as ultimo_cambio', function($join) {
+                    $join->on('cotizaciones.id', '=', 'ultimo_cambio.id_cotizaciones')
+                         ->whereIn('ultimo_cambio.fyH', function($subQuery) {
+                             $subQuery->select(DB::raw('MAX(fyH)'))
+                                      ->from('cambios as c3')
+                                      ->whereColumn('c3.id_cotizaciones', 'cotizaciones.id')
+                                      ->groupBy('c3.id_cotizaciones');
+                         });
+                })
+                ->leftJoin('estados', 'ultimo_cambio.id_estado', '=', 'estados.id_estado')
+                ->orderByRaw("
+                    CASE estados.nombre 
+                        WHEN 'Nuevo' THEN 1 
+                        WHEN 'Abierto' THEN 2 
+                        WHEN 'Cotizado' THEN 3 
+                        WHEN 'En entrega' THEN 4 
+                        ELSE 5 
+                    END " . ($orderDirection == 'desc' ? 'DESC' : 'ASC'))
+                ->select('cotizaciones.*');
+                break;
+            case 'numero':
+                $query->orderBy('numero', $orderDirection);
+                break;
+            case 'monto':
+                $query->orderBy('precio_total', $orderDirection);
+                break;
+            default: // fecha
+                $query->orderBy('fyh', $orderDirection);
+                break;
+        }
+
         // Obtener cotizaciones con paginación
-        $cotizaciones = $query->latest('fyh')->paginate(15);
+        $cotizaciones = $query->paginate(15);
 
         // Para cada cotización, obtener su estado actual
         foreach ($cotizaciones as $cotizacion) {
@@ -66,7 +120,8 @@ class VendedorCotizacionController extends Controller
         return view('vendedor.cotizaciones.index', compact(
             'cotizaciones', 
             'total', 
-            'vendedor'
+            'vendedor',
+            'estados'
         ));
     }
 

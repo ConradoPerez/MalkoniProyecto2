@@ -15,15 +15,15 @@ class Grupo extends Model
     protected $fillable = [
         'nombre_grupo',
         'descripcion',
-        'id_personas'
+        'id_empleado'
     ];
 
     /**
-     * Relación con el empleado que creó el grupo
+     * Relación con el empleado/vendedor que creó el grupo
      */
     public function empleado()
     {
-        return $this->belongsTo(Empleado::class, 'id_personas', 'id_personas');
+        return $this->belongsTo(Empleado::class, 'id_empleado', 'id_empleado');
     }
 
     /**
@@ -44,12 +44,16 @@ class Grupo extends Model
      */
     public function empresasConCotizaciones()
     {
+        if (!$this->empleado) {
+            return collect();
+        }
+
         return $this->empresas()
             ->whereHas('cotizaciones', function ($query) {
-                $query->where('id_personas', $this->id_personas);
+                $query->where('id_personas', $this->empleado->id_personas);
             })
             ->withCount(['cotizaciones' => function ($query) {
-                $query->where('id_personas', $this->id_personas);
+                $query->where('id_personas', $this->empleado->id_personas);
             }]);
     }
 }

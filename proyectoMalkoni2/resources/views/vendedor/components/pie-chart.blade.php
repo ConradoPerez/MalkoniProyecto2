@@ -16,12 +16,12 @@
             @foreach($cotizacionesPorProducto as $index => $item)
                 <div class="flex items-center gap-2">
                     <div class="w-4 h-4 rounded-full" style="background-color: {{ $colors[$index] ?? '#E1DFD9' }};"></div>
-                    <span>{{ $item->tipo }} - {{ $item->subtipo }} ({{ $item->total_cotizaciones }})</span>
+                    <span class="text-gray-600">{{ $item->tipo }} - {{ $item->subtipo }} ({{ $item->total_cotizaciones }})</span>
                 </div>
             @endforeach
         </div>
     @else
-        <div class="text-center py-8 text-gray-500">
+        <div class="text-center py-8 text-gray-600">
             <p>No hay cotizaciones de productos para mostrar</p>
         </div>
     @endif

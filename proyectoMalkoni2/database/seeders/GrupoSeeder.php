@@ -17,27 +17,25 @@ class GrupoSeeder extends Seeder
         // Luego eliminar grupos
         Grupo::query()->delete();
         
-        // Obtener empleados que tienen cotizaciones (usar id_personas que existen en cotizaciones)
-        $idPersonasConCotizaciones = \DB::table('cotizaciones')
-            ->select('id_personas')
-            ->distinct()
-            ->take(3)
-            ->pluck('id_personas');
+        // Obtener empleados vendedores
+        $vendedores = Empleado::whereHas('rol', function ($query) {
+            $query->where('nombre', 'vendedor');
+        })->get();
 
-        $this->command->info("ID Personas con cotizaciones: " . $idPersonasConCotizaciones->implode(', '));
+        $this->command->info("Vendedores encontrados: " . $vendedores->count());
 
-        foreach ($idPersonasConCotizaciones as $index => $idPersona) {
-            $this->command->info("Procesando id_personas: {$idPersona}");
+        foreach ($vendedores as $vendedor) {
+            $this->command->info("Procesando vendedor: {$vendedor->nombre} (ID empleado: {$vendedor->id_empleado})");
             
-            // Verificar empresas con cotizaciones de esta persona
-            $empresasConCotizaciones = Empresa::whereHas('cotizaciones', function ($query) use ($idPersona) {
-                $query->where('id_personas', $idPersona);
+            // Verificar empresas con cotizaciones del vendedor
+            $empresasConCotizaciones = Empresa::whereHas('cotizaciones', function ($query) use ($vendedor) {
+                $query->where('id_personas', $vendedor->id_personas);
             })->get();
 
-            $this->command->info("Empresas con cotizaciones para id_personas {$idPersona}: " . $empresasConCotizaciones->count());
+            $this->command->info("Empresas con cotizaciones del vendedor {$vendedor->nombre}: " . $empresasConCotizaciones->count());
 
             if ($empresasConCotizaciones->count() >= 2) {
-                // Crear grupos para esta persona
+                // Crear grupos para este vendedor
                 $grupos = [
                     [
                         'nombre_grupo' => 'Clientes Importantes',
@@ -51,23 +49,23 @@ class GrupoSeeder extends Seeder
 
                 foreach ($grupos as $grupoIndex => $grupoData) {
                     $grupo = Grupo::create([
-                        'nombre_grupo' => $grupoData['nombre_grupo'] . ' - Vendedor' . $idPersona,
-                        'descripcion' => $grupoData['descripcion'] . ' (ID Persona: ' . $idPersona . ')',
-                        'id_personas' => $idPersona
+                        'nombre_grupo' => $grupoData['nombre_grupo'] . ' - ' . $vendedor->nombre,
+                        'descripcion' => $grupoData['descripcion'] . ' del vendedor ' . $vendedor->nombre,
+                        'id_empleado' => $vendedor->id_empleado
                     ]);
 
-                    // Asignar empresas al grupo (mitad para cada grupo)
+                    // Asignar empresas al grupo (dividir empresas entre grupos)
                     $empresasParaGrupo = $empresasConCotizaciones->slice($grupoIndex * 2, 2);
                     
                     foreach ($empresasParaGrupo as $empresa) {
                         $grupo->empresas()->attach($empresa->id_empresa);
-                        $this->command->info("Empresa {$empresa->nombre_empresa} agregada al grupo {$grupo->nombre_grupo}");
+                        $this->command->info("Empresa {$empresa->nombre} agregada al grupo {$grupo->nombre_grupo}");
                     }
                     
                     if ($empresasConCotizaciones->count() < 4) break;
                 }
             } else {
-                $this->command->warn("ID Persona {$idPersona} no tiene suficientes empresas con cotizaciones");
+                $this->command->warn("Vendedor {$vendedor->nombre} no tiene suficientes empresas con cotizaciones");
             }
         }
 
