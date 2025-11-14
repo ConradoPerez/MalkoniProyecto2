@@ -109,6 +109,9 @@ class VendedorCotizacionController extends Controller
             case 'monto':
                 $query->orderBy('precio_total', $orderDirection);
                 break;
+            case 'modificacion':
+                $query->orderBy('updated_at', $orderDirection);
+                break;
             default: // fecha
                 $query->orderBy('fyh', $orderDirection);
                 break;
@@ -265,17 +268,25 @@ class VendedorCotizacionController extends Controller
             // Actualizar el precio total de la cotización
             $cotizacion->precio_total = $precioTotal;
             $cotizacion->fecha_cotizado = now();
+            $cotizacion->touch(); // Actualizar updated_at
             $cotizacion->save();
 
-            // Cambiar el estado a "Cotizado"
-            $estadoCotizado = Estado::where('nombre', 'Cotizado')->first();
+            // Cambiar el estado a "Cotizado" solo si no está ya cotizado
+            $estadoActual = Cambio::where('id_cotizaciones', $cotizacion->id)
+                ->with('estado')
+                ->latest('fyH')
+                ->first();
             
-            if ($estadoCotizado) {
-                Cambio::create([
-                    'fyH' => now(),
-                    'id_cotizaciones' => $cotizacion->id,
-                    'id_estado' => $estadoCotizado->id_estado,
-                ]);
+            if (!$estadoActual || $estadoActual->estado->nombre !== 'Cotizado') {
+                $estadoCotizado = Estado::where('nombre', 'Cotizado')->first();
+                
+                if ($estadoCotizado) {
+                    Cambio::create([
+                        'fyH' => now(),
+                        'id_cotizaciones' => $cotizacion->id,
+                        'id_estado' => $estadoCotizado->id_estado,
+                    ]);
+                }
             }
 
             DB::commit();
@@ -284,7 +295,8 @@ class VendedorCotizacionController extends Controller
                 'empleado_id' => $empleadoId
             ])->with('cotizacion_guardada', [
                 'numero' => $cotizacion->numero,
-                'titulo' => $cotizacion->titulo
+                'titulo' => $cotizacion->titulo,
+                'modificada' => $estadoActual && $estadoActual->estado->nombre === 'Cotizado'
             ]);
 
         } catch (\Exception $e) {

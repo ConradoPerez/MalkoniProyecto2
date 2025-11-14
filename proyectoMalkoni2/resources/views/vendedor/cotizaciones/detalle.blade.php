@@ -80,7 +80,7 @@
                 @endif
 
                 {{-- Información de la cotización --}}
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
                     <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div>
@@ -90,6 +90,25 @@
                             <div class="w-12 h-12 rounded-full bg-blue-100 grid place-items-center">
                                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Última modificación</p>
+                                @if($cotizacion->updated_at && $cotizacion->updated_at != $cotizacion->created_at)
+                                    <p class="text-xl font-bold text-gray-900">{{ $cotizacion->updated_at->format('d/m/Y') }}</p>
+                                    <p class="text-xs text-gray-500">{{ $cotizacion->updated_at->format('H:i') }}</p>
+                                @else
+                                    <p class="text-xl font-bold text-gray-400">Sin modificar</p>
+                                @endif
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-amber-100 grid place-items-center">
+                                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                         </div>
@@ -131,7 +150,8 @@
                 {{-- Formulario de cotización --}}
                 @php
                     $estadoNombre = $cotizacion->estado_actual->nombre ?? 'Sin estado';
-                    $puedeEditar = in_array($estadoNombre, ['Nuevo', 'Abierto']) || !$cotizacion->precio_total || $cotizacion->precio_total <= 0;
+                    // Permitir editar si está en estado Nuevo, Abierto o Cotizado
+                    $puedeEditar = in_array($estadoNombre, ['Nuevo', 'Abierto', 'Cotizado']);
                 @endphp
 
                 <form method="POST" action="{{ route('vendedor.app.cotizaciones.guardar', ['id' => $cotizacion->id]) }}" class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mb-6">
@@ -208,16 +228,25 @@
                     @if($cotizacion->items->count() > 0 && $puedeEditar)
                         <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
                             <div class="text-sm text-gray-600">
-                                <p>Complete los precios unitarios y haga clic en "Guardar cotización"</p>
-                                <p class="text-xs mt-1">El estado cambiará automáticamente a "Cotizado" al guardar</p>
+                                @if($estadoNombre == 'Cotizado')
+                                    <p>Modifique los precios unitarios y haga clic en "Actualizar cotización"</p>
+                                    <p class="text-xs mt-1">Los cambios se guardarán y se actualizará la fecha de modificación</p>
+                                @else
+                                    <p>Complete los precios unitarios y haga clic en "Guardar cotización"</p>
+                                    <p class="text-xs mt-1">El estado cambiará automáticamente a "Cotizado" al guardar</p>
+                                @endif
                             </div>
                             <button type="submit" 
                                     class="inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold transition hover:opacity-90"
                                     style="background-color:#D88429;">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    @if($estadoNombre == 'Cotizado')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    @else
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    @endif
                                 </svg>
-                                Guardar cotización
+                                {{ $estadoNombre == 'Cotizado' ? 'Actualizar cotización' : 'Guardar cotización' }}
                             </button>
                         </div>
                     @endif

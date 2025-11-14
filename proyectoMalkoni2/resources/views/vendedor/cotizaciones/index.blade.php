@@ -151,7 +151,8 @@
                                         <label class="text-sm text-gray-600">Ordenar por</label>
                                         <select name="orderby" 
                                                 class="h-10 rounded-lg border border-gray-300 px-3 outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429]">
-                                            <option value="fecha" {{ request('orderby', 'fecha') == 'fecha' ? 'selected' : '' }}>Fecha</option>
+                                            <option value="fecha" {{ request('orderby', 'fecha') == 'fecha' ? 'selected' : '' }}>Fecha Creación</option>
+                                            <option value="modificacion" {{ request('orderby') == 'modificacion' ? 'selected' : '' }}>Última Modificación</option>
                                             <option value="estado" {{ request('orderby') == 'estado' ? 'selected' : '' }}>Estado</option>
                                             <option value="numero" {{ request('orderby') == 'numero' ? 'selected' : '' }}>N° Cotización</option>
                                             <option value="monto" {{ request('orderby') == 'monto' ? 'selected' : '' }}>Monto</option>
@@ -221,9 +222,22 @@
                                         <th class="px-6 py-4 text-sm font-semibold text-gray-700">
                                             <a href="{{ request()->fullUrlWithQuery(['orderby' => 'fecha', 'direction' => request('orderby') == 'fecha' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}" 
                                                class="flex items-center hover:text-[#D88429] transition-colors">
-                                                Fecha
+                                                Fecha Creación
                                                 <svg class="w-4 h-4 ml-1 {{ request('orderby', 'fecha') == 'fecha' ? 'text-[#D88429]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     @if((request('orderby', 'fecha') == 'fecha') && request('direction', 'desc') == 'desc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                                    @endif
+                                                </svg>
+                                            </a>
+                                        </th>
+                                        <th class="px-6 py-4 text-sm font-semibold text-gray-700">
+                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'modificacion', 'direction' => request('orderby') == 'modificacion' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}" 
+                                               class="flex items-center hover:text-[#D88429] transition-colors">
+                                                Última Modificación
+                                                <svg class="w-4 h-4 ml-1 {{ request('orderby') == 'modificacion' ? 'text-[#D88429]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    @if(request('orderby') == 'modificacion' && request('direction', 'desc') == 'desc')
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                                     @else
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
@@ -279,6 +293,13 @@
                                             <td class="px-6 py-4">
                                                 <span class="text-sm text-gray-700">{{ $cotizacion->fyh ? $cotizacion->fyh->format('d/m/Y H:i') : 'Sin fecha' }}</span>
                                             </td>
+                                            <td class="px-6 py-4">
+                                                @if($cotizacion->updated_at && $cotizacion->updated_at != $cotizacion->created_at)
+                                                    <span class="text-sm text-gray-700">{{ $cotizacion->updated_at->format('d/m/Y H:i') }}</span>
+                                                @else
+                                                    <span class="text-sm text-gray-400 italic">Sin modificar</span>
+                                                @endif
+                                            </td>
                                             <td class="px-6 py-4 text-right">
                                                 @php
                                                     $estadoNombre = $cotizacion->estado_actual->nombre ?? 'Sin estado';
@@ -294,14 +315,18 @@
                                             </td>
                                             <td class="px-6 py-4">
                                                 <div class="flex items-center justify-center gap-2">
-                                                    @if($esCotizable && !$tienePrecio)
+                                                    @if($esCotizable || ($estadoNombre == 'Cotizado' && $tienePrecio))
                                                         <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id')]) }}" 
                                                            class="inline-flex items-center px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition hover:opacity-90"
                                                            style="background-color:#D88429;">
                                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                                @if($tienePrecio)
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                                @else
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                                @endif
                                                             </svg>
-                                                            Cotizar
+                                                            {{ $tienePrecio ? 'Editar' : 'Cotizar' }}
                                                         </a>
                                                     @endif
                                                     
@@ -407,8 +432,8 @@
 @if(session('cotizacion_guardada'))
     Swal.fire({
         icon: 'success',
-        title: '¡Cotización guardada!',
-        html: `La cotización N° <strong>{{ session('cotizacion_guardada')['numero'] }}</strong> ha sido cotizada con éxito.<br>Se le notificará al cliente.`,
+        title: '{{ session('cotizacion_guardada')['modificada'] ?? false ? '¡Cotización actualizada!' : '¡Cotización guardada!' }}',
+        html: `La cotización N° <strong>{{ session('cotizacion_guardada')['numero'] }}</strong> ha sido {{ session('cotizacion_guardada')['modificada'] ?? false ? 'actualizada' : 'cotizada' }} con éxito.{{ session('cotizacion_guardada')['modificada'] ?? false ? '' : '<br>Se le notificará al cliente.' }}`,
         confirmButtonText: 'Entendido',
         confirmButtonColor: '#D88429',
         timer: 5000,
