@@ -12,7 +12,7 @@
                         </div>
                         <div class="text-sm">
                             <div class="font-semibold text-gray-900">{{ isset($vendedor) ? $vendedor->nombre : 'Vendedor' }}</div>
-                            <div class="text-gray-500">{{ isset($vendedor) ? $vendedor->rol->nombre ?? 'Vendedor' : 'Vendedor activo' }}</div>
+                            <div class="text-gray-500">Vendedor activo</div>
                         </div>
                     </div>
 </div>

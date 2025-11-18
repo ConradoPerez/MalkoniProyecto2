@@ -34,6 +34,20 @@ class VendedorGrupoController extends Controller
             }])
             ->get();
 
+        // Calcular estadísticas por estado para cada grupo
+        foreach ($grupos as $grupo) {
+            $grupo->estadisticas_estados = $grupo->empresas->flatMap(function ($empresa) use ($vendedor) {
+                return $empresa->cotizaciones()
+                    ->where('id_empleados', $vendedor->id_empleado)
+                    ->with('estadoActual')
+                    ->get();
+            })->groupBy(function ($cotizacion) {
+                return $cotizacion->estadoActual->nombre_estado ?? 'Sin Estado';
+            })->map(function ($group) {
+                return $group->count();
+            });
+        }
+
         // Obtener empresas disponibles para agregar a grupos
         // (empresas que tienen cotizaciones del vendedor pero no están en ningún grupo del vendedor)
         $empresasDisponibles = Empresa::whereHas('cotizaciones', function ($query) use ($vendedor) {

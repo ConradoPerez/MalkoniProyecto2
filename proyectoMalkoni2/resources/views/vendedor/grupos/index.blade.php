@@ -41,12 +41,12 @@
                             <div class="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 grid place-items-center">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                             </div>
                             <div class="text-sm">
                                 <div class="font-semibold text-gray-900">{{ isset($vendedor) ? $vendedor->nombre : 'Vendedor' }}</div>
-                                <div class="text-gray-500">{{ isset($vendedor) ? $vendedor->rol->nombre ?? 'Vendedor' : 'Vendedor activo' }}</div>
+                                <div class="text-gray-500">Vendedor activo</div>
                             </div>
                         </div>
                     </div>
@@ -79,10 +79,12 @@
                                 </div>
                                 <div class="flex gap-2">
                                     <button onclick="showAddEmpresaModal({{ $grupo->id_grupo }})" 
+                                            title="Agregar empresa al grupo"
                                             class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 transition-colors">
                                         <span class="text-xl font-bold">+</span>
                                     </button>
                                     <button onclick="deleteGroup({{ $grupo->id_grupo }})" 
+                                            title="Eliminar grupo completo"
                                             class="w-8 h-8 flex items-center justify-center rounded-lg border border-red-300 bg-white hover:bg-red-50 text-red-600 transition-colors">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -92,43 +94,93 @@
                             </div>
 
                             @if($grupo->empresas->count() > 0)
+                                {{-- Resumen de Estados del Grupo --}}
+                                @php
+                                    $estadoColores = [
+                                        'Nuevo' => 'bg-blue-100 text-blue-700',
+                                        'Abierto' => 'bg-yellow-100 text-yellow-700',
+                                        'Cotizado' => 'bg-green-100 text-green-700',
+                                        'En entrega' => 'bg-purple-100 text-purple-700',
+                                    ];
+                                    
+                                    // Calcular estadísticas totales del grupo
+                                    $estadisticasGrupo = [
+                                        'Nuevo' => 0,
+                                        'Abierto' => 0,
+                                        'Cotizado' => 0,
+                                        'En entrega' => 0
+                                    ];
+                                    
+                                    foreach ($grupo->empresas as $empresa) {
+                                        $cotizacionesEmpresa = $empresa->cotizaciones()
+                                            ->where('id_empleados', $vendedor->id_empleado)
+                                            ->get();
+                                        
+                                        foreach ($cotizacionesEmpresa as $cotizacion) {
+                                            $estadoActual = $cotizacion->getEstadoActualDirecto();
+                                            $nombreEstado = $estadoActual ? $estadoActual->nombre : 'Nuevo';
+                                            
+                                            if (isset($estadisticasGrupo[$nombreEstado])) {
+                                                $estadisticasGrupo[$nombreEstado]++;
+                                            }
+                                        }
+                                    }
+                                @endphp
+
+                                <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                    <div class="flex flex-wrap gap-2">
+                                        @foreach($estadisticasGrupo as $estado => $cantidad)
+                                            @if($cantidad > 0)
+                                                <span class="inline-flex items-center px-3 py-1 rounded text-sm font-medium {{ $estadoColores[$estado] ?? 'bg-gray-100 text-gray-700' }}">
+                                                    {{ $cantidad }} {{ $estado }}
+                                                </span>
+                                            @endif
+                                        @endforeach
+                                        @if(array_sum($estadisticasGrupo) == 0)
+                                            <span class="text-sm text-gray-500">Sin cotizaciones</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- Lista de Empresas --}}
                                 <div class="overflow-x-auto">
-                                    <table class="w-full border-collapse">
-                                        <thead class="bg-gray-50 border-b border-gray-200">
-                                            <tr class="text-left text-sm font-semibold text-gray-700">
-                                                <th class="px-4 py-3">CUIT</th>
-                                                <th class="px-4 py-3">Razón Social</th>
-                                                <th class="px-4 py-3">Cotizaciones</th>
-                                                <th class="px-4 py-3 text-center">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="text-sm divide-y divide-gray-200">
+                                    <div class="min-w-full">
+                                        <!-- Encabezados -->
+                                        <div class="grid grid-cols-[150px_1fr_150px_80px] gap-2 bg-gray-50 border-b border-gray-200 px-2 py-2">
+                                            <div class="text-left text-sm font-semibold text-gray-700">CUIT</div>
+                                            <div class="text-left text-sm font-semibold text-gray-700">Razón Social</div>
+                                            <div class="text-left text-sm font-semibold text-gray-700">Cotizaciones</div>
+                                            <div class="text-center text-sm font-semibold text-gray-700">Acciones</div>
+                                        </div>
+                                        <!-- Filas -->
+                                        <div class="bg-white divide-y divide-gray-200">
                                             @foreach($grupo->empresas as $empresa)
-                                                <tr class="hover:bg-gray-50 transition-colors">
-                                                    <td class="px-4 py-3 font-mono text-gray-600">{{ $empresa->cuit_formateado }}</td>
-                                                    <td class="px-4 py-3 font-medium text-gray-900">{{ $empresa->nombre }}</td>
-                                                    <td class="px-4 py-3">
-                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                <div class="grid grid-cols-[150px_1fr_150px_80px] gap-2 px-2 py-2 hover:bg-gray-50 transition-colors">
+                                                    <div class="text-sm font-mono text-gray-600 truncate">{{ $empresa->cuit_formateado }}</div>
+                                                    <div class="text-sm font-medium text-gray-900 truncate">{{ $empresa->nombre }}</div>
+                                                    <div>
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                             {{ $empresa->cotizaciones_count ?? 0 }} cotizaciones
                                                         </span>
-                                                    </td>
-                                                    <td class="px-4 py-3 text-center">
+                                                    </div>
+                                                    <div class="text-center">
                                                         <button onclick="removeEmpresa({{ $grupo->id_grupo }}, {{ $empresa->id_empresa }})" 
-                                                                class="text-red-600 hover:text-red-800 transition-colors">
-                                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                                title="Eliminar empresa del grupo"
+                                                                class="inline-flex items-center justify-center w-7 h-7 rounded-lg border border-red-300 bg-white hover:bg-red-50 text-red-600 transition-colors">
+                                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                                                             </svg>
                                                         </button>
-                                                    </td>
-                                                </tr>
+                                                    </div>
+                                                </div>
                                             @endforeach
-                                        </tbody>
-                                    </table>
+                                        </div>
+                                    </div>
                                 </div>
                             @else
                                 <div class="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
                                     <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                     </svg>
                                     <p>No hay empresas en este grupo</p>
                                     <button onclick="showAddEmpresaModal({{ $grupo->id_grupo }})" class="mt-2 text-sm text-orange-600 hover:text-orange-700">
@@ -144,7 +196,7 @@
                         <div class="text-center py-16">
                             <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                                 <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                             </div>
                             <h3 class="text-lg font-medium text-gray-900 mb-2">No tienes grupos creados</h3>
