@@ -3,179 +3,172 @@
 @section('title', 'Mis Cotizaciones')
 
 @section('content')
-<div class="min-h-screen text-gray-900">
-    <!-- Sidebar -->
-    @include('cliente.components.sidebar')
+<div class="min-h-screen bg-gray-50 text-gray-900">
+    <div class="flex">
+        @include('cliente.components.sidebar')
 
-    <!-- Main content -->
-    <main>
-        <!-- Mobile Header -->
-        <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
-            <div class="flex items-center justify-between">
-                <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-                <div class="flex items-center">
-                    <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-8 w-auto">
-                </div>
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-full bg-gray-300"></div>
-                </div>
-            </div>
-        </div>
+        <main class="flex-1 overflow-y-auto md:ml-64 transition-all duration-300">
+            
+            <div class="p-4 lg:p-8">
+                @include('cliente.components.header')
 
-        <!-- Desktop Header with offset -->
-        <div class="hidden lg:flex sticky top-0 z-20 bg-white border-b border-gray-200 p-4 lg:p-8 justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Mis Cotizaciones</h1>
-            </div>
-            <a href="{{ route('cliente.nueva_cotizacion') }}" class="px-4 py-2 bg-[#D88429] text-white font-semibold rounded shadow hover:bg-[#c7731f] transition-colors">
-                + Nueva Cotización
-            </a>
-        </div>
-
-        <div class="p-4 lg:p-8">
-                
-                <!-- Mobile Header -->
-                <div class="lg:hidden flex justify-between items-start border-b pb-4 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 mt-8">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Mis Cotizaciones</h1>
-                        <p class="text-sm text-gray-600">Gestiona tus solicitudes de presupuesto</p>
+                        <h2 class="text-xl font-syncopate font-bold text-gray-800">
+                            Mis Cotizaciones
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1">Gestiona y revisa el historial de tus solicitudes</p>
                     </div>
                     
-                    <a href="{{ route('cliente.nueva_cotizacion') }}" class="px-4 py-2 bg-[#D88429] text-white font-semibold rounded shadow hover:bg-[#c7731f] transition-colors">
-                        + Nueva Cotización
+                    <a href="{{ route('cliente.nueva_cotizacion') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-[#D88429] hover:bg-[#c7731f] text-white text-sm font-medium rounded-lg transition-colors shadow-sm hover:shadow md:w-auto w-full">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Nueva Cotización
                     </a>
                 </div>
 
-                <!-- Filtros y Búsqueda -->
-                <div class="bg-white border border-gray-400 rounded p-4 mb-6">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
                     <div class="flex flex-col md:flex-row gap-3 items-center">
-                        <input type="text" placeholder="Buscar Cotizaciones" class="flex-1 px-4 py-2 border border-gray-400 rounded focus:ring-2 focus:ring-[#D88429] focus:border-transparent">
-                        <select class="px-4 py-2 border border-gray-400 rounded focus:ring-2 focus:ring-[#D88429] focus:border-transparent bg-white">
-                            <option>Fecha</option>
-                            <option>Más recientes</option>
-                            <option>Más antiguos</option>
-                        </select>
-                        <select class="px-4 py-2 border border-gray-400 rounded focus:ring-2 focus:ring-[#D88429] focus:border-transparent bg-white">
-                            <option>Vendedor</option>
-                        </select>
-                        <select class="px-4 py-2 border border-gray-400 rounded focus:ring-2 focus:ring-[#D88429] focus:border-transparent bg-white">
-                            <option>Nº de cotización</option>
-                        </select>
-                        <button class="px-6 py-2 bg-white border border-gray-400 text-gray-900 font-semibold rounded hover:bg-gray-50 transition-colors">Buscar</button>
+                        <div class="relative flex-1 w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input type="text" placeholder="Buscar por número..." class="block w-full pl-10 px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-[#D88429] focus:border-[#D88429] bg-gray-50 focus:bg-white transition-colors">
+                        </div>
+
+                        <div class="grid grid-cols-2 md:flex gap-3 w-full md:w-auto">
+                            <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-[#D88429] focus:border-[#D88429] bg-white text-gray-600 cursor-pointer hover:border-gray-300">
+                                <option>Fecha</option>
+                                <option>Más recientes</option>
+                                <option>Más antiguos</option>
+                            </select>
+                            <select class="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-[#D88429] focus:border-[#D88429] bg-white text-gray-600 cursor-pointer hover:border-gray-300">
+                                <option>Vendedor</option>
+                                </select>
+                        </div>
+                        
+                        <button class="w-full md:w-auto px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                            Filtrar
+                        </button>
                     </div>
                 </div>
 
-                <!-- Tabla de Cotizaciones -->
-                <div class="bg-white border border-gray-300 rounded-lg overflow-hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     @if($cotizaciones->count() > 0)
                         <div class="overflow-x-auto">
-                            <table class="w-full">
+                            <table class="w-full whitespace-nowrap">
                                 <thead>
-                                    <tr class="bg-gray-200 border-b border-gray-300">
-                                        <th class="px-6 py-3 text-center text-sm font-semibold text-gray-900">Estado</th>
-                                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Nº de Cotización</th>
-                                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Fecha de Inicio</th>
-                                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Vendedor</th>
-                                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-900">Total</th>
-                                        <th class="px-6 py-3 text-center text-sm font-semibold text-gray-900">Acciones</th>
+                                    <tr class="bg-gray-50/50 border-b border-gray-100 text-left">
+                                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Estado</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Nº Cotización</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Vendedor</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Total</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse($cotizaciones as $cotizacion)
-                                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <tbody class="divide-y divide-gray-50">
+                                    @foreach($cotizaciones as $cotizacion)
+                                        <tr class="hover:bg-gray-50/80 transition-colors group">
                                             <td class="px-6 py-4 text-center">
                                                 @php
                                                     $estado = $cotizacion->estado ?? 'Pendiente';
                                                     $colorMap = [
-                                                        'Nuevo' => 'bg-orange-500',
-                                                        'Abierto' => 'bg-yellow-400',
-                                                        'Cotizado' => 'bg-green-500',
-                                                        'En entrega' => 'bg-blue-600',
-                                                        'Pendiente' => 'bg-orange-500'
+                                                        'Nuevo' => 'bg-orange-500 shadow-orange-200',
+                                                        'Abierto' => 'bg-yellow-400 shadow-yellow-200',
+                                                        'Cotizado' => 'bg-green-500 shadow-green-200',
+                                                        'En entrega' => 'bg-blue-600 shadow-blue-200',
+                                                        'Pendiente' => 'bg-gray-400 shadow-gray-200'
                                                     ];
-                                                    $color = $colorMap[$estado] ?? 'bg-gray-400';
+                                                    $colorClass = $colorMap[$estado] ?? 'bg-gray-400 shadow-gray-200';
                                                 @endphp
-                                                <span class="inline-block w-4 h-4 rounded-full {{ $color }}"></span>
+                                                <div class="flex justify-center">
+                                                    <span class="h-3 w-3 rounded-full {{ $colorClass }} shadow-sm ring-2 ring-white" title="{{ $estado }}"></span>
+                                                </div>
+                                            </td>
+
+                                            <td class="px-6 py-4">
+                                                <span class="text-sm font-semibold text-gray-900 group-hover:text-[#166379] transition-colors">
+                                                    {{ $cotizacion->numero_formateado }}
+                                                </span>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <span class="font-medium">{{ $cotizacion->numero_formateado }}</span>
-                                            </td>
-                                            <td class="px-6 py-4 text-sm">
-                                                {{ $cotizacion->fyh->format('d/m/Y') }}
+                                                <span class="text-sm text-gray-600">
+                                                    {{ $cotizacion->fyh->format('d M, Y') }}
+                                                </span>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <p class="font-medium">{{ $cotizacion->empleado->nombre ?? 'N/A' }}</p>
+                                                <div class="flex items-center">
+                                                    <div class="h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 mr-2">
+                                                        {{ substr($cotizacion->empleado->nombre ?? 'A', 0, 1) }}
+                                                    </div>
+                                                    <span class="text-sm text-gray-700">{{ $cotizacion->empleado->nombre ?? 'Sin asignar' }}</span>
+                                                </div>
                                             </td>
-                                            <td class="px-6 py-4 text-right font-medium">
-                                                ${{ number_format($cotizacion->precio_total / 100, 2, ',', '.') }}
+                                            <td class="px-6 py-4 text-right">
+                                                <span class="text-sm font-bold text-gray-900">
+                                                    ${{ number_format($cotizacion->precio_total / 100, 2, ',', '.') }}
+                                                </span>
                                             </td>
+                                            
                                             <td class="px-6 py-4 text-center">
-                                                <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacion->id]) }}" class="text-blue-600 font-semibold hover:underline">
-                                                    Ver
+                                                <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacion->id]) }}" class="inline-flex items-center px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 bg-white hover:bg-gray-50 hover:text-[#166379] hover:border-[#166379] transition-all">
+                                                    Ver Detalle
                                                 </a>
                                             </td>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="px-6 py-8 text-center text-gray-600">
-                                                <p class="mb-4">No hay cotizaciones aún.</p>
-                                                <a href="{{ route('cliente.nueva_cotizacion') }}" class="text-[#D88429] font-semibold hover:underline">
-                                                    Crear nueva cotización
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforelse
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
 
-                        <!-- Footer con "Ver más" -->
-                        <div class="px-6 py-4 border-t border-gray-300 flex justify-end">
-                            @if($cotizaciones->hasPages())
-                                <a href="{{ $cotizaciones->nextPageUrl() }}" class="px-6 py-2 text-gray-600 font-semibold hover:text-gray-900 transition-colors">
-                                    Ver más
-                                </a>
-                            @endif
+                        @if($cotizaciones->hasPages())
+                        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
+                            <a href="{{ $cotizaciones->nextPageUrl() }}" class="text-sm font-medium text-[#166379] hover:text-[#0e4555] hover:underline transition-colors">
+                                Ver más cotizaciones &rarr;
+                            </a>
                         </div>
+                        @endif
                     @else
-                        <div class="px-6 py-16 text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">No hay cotizaciones</h3>
-                            <p class="text-gray-600 mb-4">Comienza creando tu primera cotización</p>
-                            <a href="{{ route('cliente.nueva_cotizacion') }}" class="inline-block px-6 py-2 bg-[#D88429] text-white font-semibold rounded shadow hover:bg-[#c7731f] transition-colors">
-                                Crear Nueva Cotización
+                        <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
+                            <div class="bg-gray-50 rounded-full p-4 mb-4">
+                                <svg class="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900">Aún no tienes cotizaciones</h3>
+                            <p class="text-gray-500 mt-1 mb-6 max-w-sm">Comienza solicitando un presupuesto para tus productos de interés.</p>
+                            <a href="{{ route('cliente.nueva_cotizacion') }}" class="px-6 py-2 bg-[#D88429] text-white font-semibold rounded-lg shadow hover:bg-[#c7731f] transition-colors">
+                                Crear mi primera cotización
                             </a>
                         </div>
                     @endif
                 </div>
 
-                <!-- Leyenda de Estados -->
-                <div class="mt-8 flex flex-wrap gap-6 justify-center pb-4">
-                    <div class="flex items-center gap-2">
-                        <span class="w-4 h-4 rounded-full bg-orange-500"></span>
-                        <span class="text-gray-700 text-sm">Nuevo</span>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-center space-x-3">
+                        <span class="h-2.5 w-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-200"></span>
+                        <span class="text-xs font-medium text-gray-600">Nuevo</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-4 h-4 rounded-full bg-yellow-400"></span>
-                        <span class="text-gray-700 text-sm">Abierto</span>
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-center space-x-3">
+                        <span class="h-2.5 w-2.5 rounded-full bg-yellow-400 shadow-sm shadow-yellow-200"></span>
+                        <span class="text-xs font-medium text-gray-600">Abierto</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-4 h-4 rounded-full bg-green-500"></span>
-                        <span class="text-gray-700 text-sm">Cotizado</span>
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-center space-x-3">
+                        <span class="h-2.5 w-2.5 rounded-full bg-green-500 shadow-sm shadow-green-200"></span>
+                        <span class="text-xs font-medium text-gray-600">Cotizado</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-4 h-4 rounded-full bg-blue-600"></span>
-                        <span class="text-gray-700 text-sm">En entrega</span>
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-center space-x-3">
+                        <span class="h-2.5 w-2.5 rounded-full bg-blue-600 shadow-sm shadow-blue-200"></span>
+                        <span class="text-xs font-medium text-gray-600">En entrega</span>
                     </div>
                 </div>
+
+            </div>
         </main>
     </div>
 </div>
-
 @endsection

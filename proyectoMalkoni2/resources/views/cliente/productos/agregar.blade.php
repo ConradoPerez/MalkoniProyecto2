@@ -1,374 +1,279 @@
 @extends('layouts.app')
 
-@section('title', 'Agregar Producto')
+@section('title', 'Agregar Productos')
 
 @section('content')
-<div class="min-h-screen text-gray-900">
-    <!-- Sidebar -->
-    @include('cliente.components.sidebar')
+<div class="min-h-screen bg-gray-50 text-gray-900">
+    <div class="flex">
+        @include('cliente.components.sidebar')
 
-    <!-- Main content -->
-    <main>
-        <!-- Mobile Header -->
-        <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
-            <div class="flex items-center justify-between">
-                <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-                <div class="flex items-center">
-                    <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-8 w-auto">
-                </div>
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-full bg-gray-300"></div>
-                </div>
-            </div>
-        </div>
+        <main class="flex-1 overflow-y-auto md:ml-64 transition-all duration-300">
+            
+            <div class="p-4 lg:p-8">
+                @include('cliente.components.header')
 
-        <!-- Desktop Header with offset -->
-        <div class="hidden lg:block sticky top-0 z-20 bg-white border-b border-gray-200 p-8">
-            <h1 class="text-2xl font-bold text-gray-900">Agregar Producto</h1>
-        </div>
+                <nav class="flex mb-6 mt-4" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li>
+                            <a href="{{ route('cliente.cotizacion.ver', $cotizacion->id) }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                                Volver al Detalle
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                                <span class="ml-1 text-sm font-medium text-gray-400">Catálogo de Productos</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
 
-        <div class="p-8">
-                
-                <!-- Mobile Header -->
-                <div class="lg:hidden flex justify-between items-center mb-8 border-b pb-4">
-                    <h1 class="text-3xl font-bold">Agregar Producto</h1>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-lg font-medium">{{ auth()->user()->name ?? 'Usuario' }}</span>
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-syncopate font-bold text-gray-800">Selección de Productos</h2>
+                        <p class="text-sm text-gray-500 mt-1">Agrega items a la cotización <span class="font-semibold text-[#D88429]">#{{ $cotizacion->numero }}</span></p>
+                    </div>
+                    
+                    <div class="w-full md:w-1/3 relative">
+                        <input type="text" placeholder="Buscar productos..." class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 focus:border-[#D88429] focus:ring-2 focus:ring-[#D88429]/20 outline-none transition-all shadow-sm text-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Tabs de Categorías -->
-                <div class="mb-8">
-                    <div class="flex border-b border-gray-300 gap-0 overflow-x-auto">
-                        @forelse($categorias as $categoria)
-                            <button 
-                                class="tab-btn px-6 py-3 border-b-2 font-medium transition-colors whitespace-nowrap"
-                                data-categoria="{{ $categoria->id_categoria }}"
-                                style="border-color: {{ $loop->first ? '#333' : '#ccc' }}; color: {{ $loop->first ? '#000' : '#666' }};"
-                            >
-                                {{ $categoria->nombre }}
-                            </button>
-                        @empty
-                            <p class="text-gray-600">No hay categorías disponibles</p>
-                        @endforelse
-                    </div>
-                </div>
-
-                <!-- Barra de búsqueda -->
-                <div class="mb-8 flex justify-center">
-                    <div class="relative w-full max-w-xl">
-                        <input 
-                            type="text" 
-                            id="searchInput"
-                            placeholder="Buscar producto..." 
-                            class="w-full px-4 py-2 border-2 border-gray-400 rounded focus:outline-none focus:border-[#D88429]"
-                        >
-                        <svg class="absolute right-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Debug Info -->
-                <div class="bg-blue-50 border border-blue-200 rounded px-4 py-2 mb-4 text-sm text-blue-800">
-                    📊 Categorías: {{ $categorias->count() }} | Productos: {{ $productos->count() }}
-                </div>
-
-                <!-- Mensajes de Éxito/Error -->
-                @if (session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        <ul class="list-disc list-inside">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                <!-- Grid de Productos -->
-                <form action="{{ route('cliente.cotizacion.guardar_productos', ['id' => $cotizacionId]) }}" method="POST" id="formProductos">
+                <form action="{{ route('cliente.cotizacion.guardar_productos', ['id' => $cotizacion->id]) }}" method="POST" id="formProductos">
                     @csrf
                     
-                    <div id="productosContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                        @forelse($productos as $producto)
-                            <div class="producto-card border-2 border-gray-300 p-4 rounded hover:shadow-lg transition-shadow"
-                                 data-categoria="{{ $producto->subcategoria->id_categoria ?? '' }}"
-                                 data-nombre="{{ strtolower($producto->nombre) }}"
-                                 data-descripcion="{{ strtolower($producto->descripcion ?? '') }}">
-                                
-                                <!-- Imagen del Producto -->
-                                <div class="w-full h-40 bg-gray-200 rounded mb-3 border-2 border-gray-400 flex items-center justify-center overflow-hidden">
-                                    @if($producto->foto)
-                                        <img src="{{ asset($producto->foto) }}" alt="{{ $producto->nombre }}" class="w-full h-full object-cover">
-                                    @else
-                                        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                    @endif
-                                </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                        
+                        <div class="lg:col-span-2">
+                            
+                            <div class="flex gap-2 overflow-x-auto pb-4 mb-4 no-scrollbar">
+                                <button type="button" class="px-4 py-2 bg-gray-800 text-white rounded-full text-sm font-medium whitespace-nowrap shadow-md">Todos</button>
+                                @foreach($categorias as $cat)
+                                    <button type="button" class="px-4 py-2 bg-white text-gray-600 border border-gray-200 rounded-full text-sm font-medium whitespace-nowrap hover:bg-gray-50 hover:border-gray-300 transition-colors">{{ $cat->nombre }}</button>
+                                @endforeach
+                            </div>
 
-                                <!-- Información del Producto -->
-                                <div class="mb-3">
-                                    <h3 class="font-semibold text-gray-900 text-sm">{{ $producto->nombre }}</h3>
-                                    <p class="text-xs text-gray-600 mt-1">{{ Str::limit($producto->descripcion, 60) }}</p>
-                                </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                                @forelse($productos as $index => $producto)
+                                    <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group flex flex-col h-full">
+                                        
+                                        <div class="relative h-48 bg-gray-100 overflow-hidden">
+                                            @if($producto->foto)
+                                                <img src="{{ asset($producto->foto) }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                                            @else
+                                                <div class="flex items-center justify-center h-full text-gray-300">
+                                                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                </div>
+                                            @endif
+                                            
+                                            @if($producto->descuento > 0)
+                                                <div class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded shadow-sm">
+                                                    -{{ $producto->descuento }}%
+                                                </div>
+                                            @endif
+                                        </div>
 
-                                <!-- Precio y Descuento -->
-                                <div class="flex justify-between items-center mb-3">
-                                    @if($producto->descuento > 0)
-                                        <span class="text-xs text-red-500 line-through">${{ number_format($producto->precio_base / 100, 0) }}</span>
-                                        <span class="text-sm font-bold text-green-600">${{ number_format($producto->precio_final / 100, 0) }}</span>
-                                    @else
-                                        <span class="text-sm font-bold text-blue-600">${{ number_format($producto->precio_final / 100, 0) }}</span>
-                                    @endif
-                                    @if($producto->descuento > 0)
-                                        <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">-{{ $producto->descuento }}%</span>
-                                    @endif
-                                </div>
+                                        <div class="p-5 flex-1 flex flex-col">
+                                            <div class="mb-auto">
+                                                <h3 class="font-bold text-gray-900 text-base mb-1 leading-tight">{{ $producto->nombre }}</h3>
+                                                <p class="text-xs text-gray-500 line-clamp-2 mb-3">{{ $producto->descripcion }}</p>
+                                            </div>
 
-                                <!-- Cantidad e Input Oculto -->
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs text-gray-700">Cantidad:</span>
-                                    <div class="flex items-center gap-2">
-                                        <input type="hidden" 
-                                            name="productos[{{ $loop->index }}][id_producto]" 
-                                            value="{{ $producto->id_producto }}"
-                                        >
-                                        <input type="number" 
-                                            name="productos[{{ $loop->index }}][cantidad]"
-                                            min="0"
-                                            max="999"
-                                            value="0"
-                                            class="cantidad-input w-20 px-2 py-1 border-2 border-gray-300 rounded text-center focus:border-[#D88429]"
-                                            data-producto="{{ $producto->id_producto }}"
-                                            data-precio="{{ $producto->precio_final }}"
-                                        >
+                                            <div class="mt-4 pt-4 border-t border-gray-50">
+                                                <div class="flex justify-between items-end mb-3">
+                                                    <div class="flex flex-col">
+                                                        @if($producto->descuento > 0)
+                                                            <span class="text-xs text-gray-400 line-through">${{ number_format($producto->precio_base / 100, 2, ',', '.') }}</span>
+                                                        @endif
+                                                        <span class="text-lg font-bold text-gray-900">${{ number_format($producto->precio_final / 100, 2, ',', '.') }}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex items-center bg-gray-50 rounded-lg border border-gray-200 p-1">
+                                                    <button type="button" onclick="ajustarCantidad('{{ $producto->id_producto }}', -1)" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white rounded-md transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                                                    </button>
+                                                    
+                                                    <input type="hidden" name="productos[{{ $index }}][id_producto]" value="{{ $producto->id_producto }}">
+                                                    <input type="number" 
+                                                           id="input-{{ $producto->id_producto }}"
+                                                           name="productos[{{ $index }}][cantidad]" 
+                                                           value="0" 
+                                                           min="0"
+                                                           class="flex-1 w-full text-center bg-transparent border-none focus:ring-0 text-gray-900 font-semibold p-0 cantidad-input"
+                                                           data-precio="{{ $producto->precio_final }}"
+                                                           data-nombre="{{ $producto->nombre }}"
+                                                           readonly>
+                                                           
+                                                    <button type="button" onclick="ajustarCantidad('{{ $producto->id_producto }}', 1)" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-green-600 hover:bg-white rounded-md transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-
-                                <!-- Checkbox selección rápida -->
-                                <div class="mt-3 flex items-center">
-                                    <input type="checkbox" 
-                                        class="producto-checkbox w-5 h-5 cursor-pointer"
-                                        data-index="{{ $loop->index }}"
-                                    >
-                                    <span class="text-xs text-gray-600 ml-2">Seleccionar</span>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="col-span-3 text-center py-12">
-                                <p class="text-gray-600 text-lg">No hay productos disponibles</p>
-                            </div>
-                        @endforelse
-                    </div>
-
-                    <!-- Resumen -->
-                    <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-6 mb-6 max-w-sm ml-auto">
-                        <h3 class="font-semibold text-gray-900 mb-3">Resumen</h3>
-                        <div class="space-y-2 mb-3">
-                            <div class="flex justify-between text-sm">
-                                <span>Productos seleccionados:</span>
-                                <span id="contadorProductos" class="font-medium">0</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span>Total items:</span>
-                                <span id="totalItems" class="font-medium">0</span>
+                                @empty
+                                    <div class="col-span-full text-center py-12">
+                                        <p class="text-gray-500">No se encontraron productos.</p>
+                                    </div>
+                                @endforelse
                             </div>
                         </div>
-                        <div class="border-t pt-2 flex justify-between text-lg font-bold">
-                            <span>Total:</span>
-                            <span id="totalPrice" class="text-[#D88429]">$0</span>
-                        </div>
-                    </div>
 
-                    <!-- Botones de Acción -->
-                    <div class="flex justify-center gap-4">
-                        <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacionId]) }}" 
-                           class="px-6 py-3 bg-gray-400 text-white font-semibold rounded shadow hover:bg-gray-500 transition-colors">
-                            Cancelar
-                        </a>
-                        <button type="submit" 
-                                class="px-6 py-3 bg-[#D88429] text-white font-semibold rounded shadow hover:bg-[#c7731f] transition-colors disabled:opacity-50"
-                                id="btnAgregar"
-                                disabled>
-                            Agregar (0)
-                        </button>
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-24 overflow-hidden">
+                                <div class="p-5 border-b border-gray-100 bg-gray-50/50">
+                                    <h3 class="font-bold text-gray-800">Resumen del Pedido</h3>
+                                </div>
+
+                                <div class="p-5 max-h-[400px] overflow-y-auto space-y-3" id="lista-seleccionados">
+                                    <p class="text-sm text-gray-400 text-center italic py-4" id="mensaje-vacio">
+                                        Aún no has seleccionado productos.
+                                    </p>
+                                    </div>
+
+                                <div class="bg-gray-900 p-5 text-white mt-auto">
+                                    <div class="flex justify-between text-sm text-gray-400 mb-2">
+                                        <span>Acumulado Anterior</span>
+                                        <span>${{ number_format($cotizacion->precio_total / 100, 2, ',', '.') }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm text-gray-300 mb-4 pb-4 border-b border-gray-700">
+                                        <span>Nuevos Productos</span>
+                                        <span id="subtotal-nuevos">$0,00</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold text-lg">Total Estimado</span>
+                                        <span class="font-bold text-2xl text-[#D88429]" id="total-final">
+                                            ${{ number_format($cotizacion->precio_total / 100, 2, ',', '.') }}
+                                        </span>
+                                    </div>
+                                    
+                                    <button type="submit" class="w-full mt-6 py-3 bg-[#D88429] hover:bg-[#c7731f] text-white font-bold rounded-lg shadow-lg transition-all transform hover:-translate-y-1 flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed" id="btn-confirmar">
+                                        Confirmar Agregado
+                                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 text-center">
+                                <a href="{{ route('cliente.cotizacion.ver', $cotizacion->id) }}" class="text-sm text-gray-500 hover:text-gray-800 underline">Cancelar y volver</a>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
-
             </div>
         </main>
     </div>
 </div>
 
-<!-- Scripts -->
 <script>
+    const precioAnterior = {{ $cotizacion->precio_total }};
+    
+    // Función auxiliar para botones +/-
+    function ajustarCantidad(id, cambio) {
+        const input = document.getElementById('input-' + id);
+        let val = parseInt(input.value) || 0;
+        val += cambio;
+        if (val < 0) val = 0;
+        input.value = val;
+        // Disparar evento para recalcular
+        input.dispatchEvent(new Event('input'));
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const productosCards = document.querySelectorAll('.producto-card');
-        const cantidadInputs = document.querySelectorAll('.cantidad-input');
-        const searchInput = document.getElementById('searchInput');
-        const checkboxes = document.querySelectorAll('.producto-checkbox');
-        const btnAgregar = document.getElementById('btnAgregar');
-        const totalPriceEl = document.getElementById('totalPrice');
-        const contadorProductosEl = document.getElementById('contadorProductos');
-        const totalItemsEl = document.getElementById('totalItems');
-        let categoriaActual = null;
+        const inputs = document.querySelectorAll('.cantidad-input');
+        const listaSeleccionados = document.getElementById('lista-seleccionados');
+        const mensajeVacio = document.getElementById('mensaje-vacio');
+        const subtotalEl = document.getElementById('subtotal-nuevos');
+        const totalEl = document.getElementById('total-final');
+        const btnConfirmar = document.getElementById('btn-confirmar');
 
-        // Tabs - Filtrar por categoría
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                categoriaActual = this.dataset.categoria;
-                
-                // Actualizar estilos del tab
-                tabBtns.forEach(b => {
-                    b.style.borderColor = '#ccc';
-                    b.style.color = '#666';
-                });
-                this.style.borderColor = '#333';
-                this.style.color = '#000';
+        function actualizarEstado() {
+            let subtotalNuevos = 0;
+            let itemsHtml = '';
+            let hayItems = false;
 
-                filtrarProductos();
-            });
-        });
-
-        // Búsqueda
-        searchInput.addEventListener('input', filtrarProductos);
-
-        function filtrarProductos() {
-            const searchTerm = searchInput.value.toLowerCase();
-            let productosVisibles = 0;
-
-            productosCards.forEach(card => {
-                let mostrar = true;
-
-                // Filtro por categoría
-                if (categoriaActual && card.dataset.categoria !== categoriaActual) {
-                    mostrar = false;
-                }
-
-                // Filtro por búsqueda
-                if (mostrar && searchTerm) {
-                    const nombre = card.dataset.nombre;
-                    const descripcion = card.dataset.descripcion;
-                    if (!nombre.includes(searchTerm) && !descripcion.includes(searchTerm)) {
-                        mostrar = false;
-                    }
-                }
-
-                card.style.display = mostrar ? 'block' : 'none';
-                if (mostrar) productosVisibles++;
-            });
-
-            // Mensaje si no hay resultados
-            if (productosVisibles === 0) {
-                let container = document.getElementById('productosContainer');
-                if (!container.querySelector('.no-results')) {
-                    let msg = document.createElement('div');
-                    msg.className = 'no-results col-span-3 text-center py-8 text-gray-600';
-                    msg.textContent = 'No se encontraron productos';
-                    container.appendChild(msg);
-                }
-            }
-        }
-
-        // Calcular totales
-        function actualizarTotales() {
-            let totalPrice = 0;
-            let totalItems = 0;
-            let productosSeleccionados = 0;
-
-            cantidadInputs.forEach((input, index) => {
+            inputs.forEach(input => {
                 const cantidad = parseInt(input.value) || 0;
-                const precio = parseInt(input.dataset.precio) || 0;
                 
                 if (cantidad > 0) {
-                    totalPrice += cantidad * precio;
-                    totalItems += cantidad;
-                    productosSeleccionados++;
+                    hayItems = true;
+                    const precio = parseFloat(input.dataset.precio);
+                    const nombre = input.dataset.nombre;
+                    const totalItem = cantidad * precio;
+                    subtotalNuevos += totalItem;
+
+                    // Crear mini item para el resumen
+                    itemsHtml += `
+                        <div class="flex justify-between items-start text-sm animate-fade-in-up">
+                            <div class="flex-1 pr-2">
+                                <p class="font-medium text-gray-700">${nombre}</p>
+                                <p class="text-xs text-gray-500">x${cantidad} un.</p>
+                            </div>
+                            <span class="font-semibold text-gray-900">$${(totalItem/100).toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
+                        </div>
+                    `;
                 }
             });
 
-            totalPriceEl.textContent = '$' + (totalPrice / 100).toLocaleString('es-AR', { minimumFractionDigits: 0 });
-            contadorProductosEl.textContent = productosSeleccionados;
-            totalItemsEl.textContent = totalItems;
-            btnAgregar.textContent = `Agregar (${productosSeleccionados})`;
-            btnAgregar.disabled = productosSeleccionados === 0;
+            // Actualizar HTML
+            if (hayItems) {
+                listaSeleccionados.innerHTML = itemsHtml;
+                mensajeVacio.style.display = 'none';
+            } else {
+                listaSeleccionados.innerHTML = '';
+                listaSeleccionados.appendChild(mensajeVacio);
+                mensajeVacio.style.display = 'block';
+            }
+
+            // Actualizar montos
+            const totalFinal = subtotalNuevos + precioAnterior;
+            
+            subtotalEl.innerText = '$' + (subtotalNuevos/100).toLocaleString('es-AR', {minimumFractionDigits: 2});
+            totalEl.innerText = '$' + (totalFinal/100).toLocaleString('es-AR', {minimumFractionDigits: 2});
         }
 
-        cantidadInputs.forEach(input => {
-            input.addEventListener('input', actualizarTotales);
-            input.addEventListener('change', actualizarTotales);
+        // Listeners
+        inputs.forEach(input => {
+            input.addEventListener('input', actualizarEstado);
         });
 
-        // Checkboxes - Seleccionar cantidad predeterminada
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const index = this.dataset.index;
-                const input = cantidadInputs[index];
-                input.value = this.checked ? '1' : '0';
-                actualizarTotales();
-            });
-        });
-
-        // Validar antes de enviar
+        // Prevenir envío vacío
         document.getElementById('formProductos').addEventListener('submit', function(e) {
-            let tieneProductos = false;
-            cantidadInputs.forEach(input => {
-                if (parseInt(input.value) > 0) {
-                    tieneProductos = true;
-                }
-            });
-
-            if (!tieneProductos) {
+            let hayItems = false;
+            inputs.forEach(i => { if(i.value > 0) hayItems = true; });
+            
+            if(!hayItems) {
                 e.preventDefault();
-                alert('Por favor, selecciona al menos un producto con cantidad mayor a 0');
+                alert('Por favor selecciona al menos un producto.');
             }
         });
-
-        // Inicializar - mostrar productos del primer tab
-        if (tabBtns.length > 0) {
-            const primerTab = tabBtns[0];
-            categoriaActual = primerTab.dataset.categoria;
-            primerTab.style.borderColor = '#333';
-            primerTab.style.color = '#000';
-            filtrarProductos();
-        }
     });
 </script>
 
 <style>
-    .tab-btn {
-        cursor: pointer;
-        transition: all 0.3s ease;
+    /* Ocultar scrollbar en tabs pero permitir scroll */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
     }
-
-    .tab-btn:hover {
-        background-color: #f0f0f0;
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
-
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
+    /* Animación simple para nuevos items */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-
-    input[type="number"] {
-        -moz-appearance: textfield;
+    .animate-fade-in-up {
+        animation: fadeInUp 0.3s ease-out forwards;
     }
 </style>
-
 @endsection
