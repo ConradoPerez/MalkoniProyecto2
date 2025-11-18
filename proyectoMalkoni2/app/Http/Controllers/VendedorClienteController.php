@@ -27,15 +27,32 @@ class VendedorClienteController extends Controller
         $doc = $request->get('doc');
         
         // Consulta base: empresas que tienen cotizaciones del vendedor
-        $query = Empresa::whereHas('cotizaciones', function($q) use ($empleadoId) {
-            $q->where('id_empleados', $empleadoId);
-        });
+        // (tanto directas como a través de personas)
+        $query = Empresa::where(function($q) use ($empleadoId) {
+            // Cotizaciones directas a la empresa
+            $q->whereHas('cotizaciones', function($subQ) use ($empleadoId) {
+                $subQ->where('id_empleados', $empleadoId);
+            })
+            // O cotizaciones a personas de esta empresa
+            ->orWhereHas('personas.cotizaciones', function($subQ) use ($empleadoId) {
+                $subQ->where('id_empleados', $empleadoId);
+            });
+        })
+        ->distinct(); // Evitar duplicados
         
         // Filtro por número de pedido/cotización
         if ($pedido) {
-            $query->whereHas('cotizaciones', function($q) use ($pedido, $empleadoId) {
-                $q->where('id_empleados', $empleadoId)
-                  ->where('numero', 'like', "%{$pedido}%");
+            $query->where(function($q) use ($pedido, $empleadoId) {
+                // Buscar en cotizaciones directas de empresa
+                $q->whereHas('cotizaciones', function($subQ) use ($pedido, $empleadoId) {
+                    $subQ->where('id_empleados', $empleadoId)
+                         ->where('numero', 'like', "%{$pedido}%");
+                })
+                // O en cotizaciones de personas de la empresa
+                ->orWhereHas('personas.cotizaciones', function($subQ) use ($pedido, $empleadoId) {
+                    $subQ->where('id_empleados', $empleadoId)
+                         ->where('numero', 'like', "%{$pedido}%");
+                });
             });
         }
         
@@ -50,12 +67,19 @@ class VendedorClienteController extends Controller
         }
         
         // Obtener clientes con el conteo de cotizaciones del vendedor y estadísticas por estado
-        $clientes = $query->withCount(['cotizaciones' => function($q) use ($empleadoId) {
-            $q->where('id_empleados', $empleadoId);
-        }])
-        ->with(['cotizaciones' => function($q) use ($empleadoId) {
-            $q->where('id_empleados', $empleadoId);
-        }])
+        $clientes = $query->withCount([
+            'cotizaciones' => function($q) use ($empleadoId) {
+                $q->where('id_empleados', $empleadoId);
+            }
+        ])
+        ->with([
+            'cotizaciones' => function($q) use ($empleadoId) {
+                $q->where('id_empleados', $empleadoId);
+            },
+            'personas.cotizaciones' => function($q) use ($empleadoId) {
+                $q->where('id_empleados', $empleadoId);
+            }
+        ])
         ->orderBy('nombre')
         ->get();
 
@@ -68,6 +92,7 @@ class VendedorClienteController extends Controller
                 'En entrega' => 0
             ];
             
+            // Contar cotizaciones directas de la empresa
             foreach ($cliente->cotizaciones as $cotizacion) {
                 $estadoActual = $cotizacion->getEstadoActualDirecto();
                 $nombreEstado = $estadoActual ? $estadoActual->nombre : 'Nuevo';
@@ -77,7 +102,26 @@ class VendedorClienteController extends Controller
                 }
             }
             
+            // Contar cotizaciones de personas de la empresa
+            foreach ($cliente->personas as $persona) {
+                foreach ($persona->cotizaciones as $cotizacion) {
+                    $estadoActual = $cotizacion->getEstadoActualDirecto();
+                    $nombreEstado = $estadoActual ? $estadoActual->nombre : 'Nuevo';
+                    
+                    if (isset($estadisticas[$nombreEstado])) {
+                        $estadisticas[$nombreEstado]++;
+                    }
+                }
+            }
+            
             $cliente->estadisticas_estados = $estadisticas;
+            
+            // Calcular total de cotizaciones (directas + de personas)
+            $total_directas = $cliente->cotizaciones->count();
+            $total_personas = $cliente->personas->sum(function($persona) {
+                return $persona->cotizaciones->count();
+            });
+            $cliente->cotizaciones_count = $total_directas + $total_personas;
         }
         
         return view('vendedor.clientes.index', compact('clientes', 'empleadoId', 'vendedor'));

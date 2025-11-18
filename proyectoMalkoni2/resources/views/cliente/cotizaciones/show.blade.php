@@ -3,7 +3,7 @@
 @section('title', 'Detalle de Cotización')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 text-gray-900">
+<div class="min-h-screen text-gray-900" style="background-color: #e1dfd9;">
     <div class="flex">
         @include('cliente.components.sidebar')
 
@@ -15,7 +15,7 @@
                 <nav class="flex mb-6 mt-4" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 md:space-x-3">
                         <li>
-                            <a href="{{ route('cliente.cotizaciones') }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
+                            <a href="{{ route('cliente.cotizaciones', ['persona_id' => $personaId]) }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                                 Mis Cotizaciones
                             </a>
@@ -32,19 +32,15 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
                         <h2 class="text-2xl font-syncopate font-bold text-gray-800 flex items-center gap-3">
-                            Cotización <span class="text-[#D88429]">#{{ $cotizacion->numero }}</span>
+                            COTIZACIÓN <span class="text-[#D88429]">#{{ $cotizacion->numero }}</span>
                         </h2>
-                        <p class="text-sm text-gray-500 mt-1 flex items-center gap-2">
+                        <p class="text-sm text-gray-500 mt-1 flex items-center gap-2 font-medium">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            Creada el {{ $cotizacion->fyh->format('d/m/Y') }}
+                            Creada el {{ $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') }}
                         </p>
                     </div>
 
                     <div class="flex gap-3">
-                        <a href="{{ route('cliente.cotizacion.editar', ['id' => $cotizacion->id]) }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-[#D88429] hover:border-[#D88429] transition-all shadow-sm">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            Editar / Agregar
-                        </a>
                         <button class="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-all shadow-md">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                             Imprimir
@@ -58,7 +54,7 @@
                         
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-                                <h3 class="font-semibold text-gray-800">Productos Solicitados</h3>
+                                <h3 class="font-bold text-gray-800">Productos Solicitados</h3>
                                 <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
                                     {{ $cotizacion->items->count() }} Items
                                 </span>
@@ -108,7 +104,7 @@
                                             <tr>
                                                 <td colspan="4" class="px-6 py-10 text-center text-gray-500">
                                                     No hay items en esta cotización. 
-                                                    <a href="{{ route('cliente.cotizacion.productos', $cotizacion->id) }}" class="text-[#D88429] hover:underline ml-1">Agregar productos</a>
+                                                    <a href="{{ route('cliente.cotizacion.productos', ['id' => $cotizacion->id, 'persona_id' => $personaId]) }}" class="text-[#D88429] hover:underline ml-1">Agregar productos</a>
                                                 </td>
                                             </tr>
                                         @endforelse
@@ -117,7 +113,7 @@
                             </div>
                             
                             <div class="bg-gray-50 px-6 py-3 border-t border-gray-100">
-                                <a href="{{ route('cliente.cotizacion.productos', ['id' => $cotizacion->id]) }}" class="text-sm font-medium text-[#166379] hover:text-[#0e4555] hover:underline flex items-center justify-center sm:justify-start">
+                                <a href="{{ route('cliente.cotizacion.productos', ['id' => $cotizacion->id, 'persona_id' => $personaId]) }}" class="text-sm font-medium text-[#166379] hover:text-[#0e4555] hover:underline flex items-center justify-center sm:justify-start">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                     Agregar más productos
                                 </a>
@@ -125,7 +121,7 @@
                         </div>
 
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                            <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                                 Comunicación con el Vendedor
                             </h3>

@@ -15,22 +15,22 @@ class EstadoSeeder extends Seeder
         $estados = [
             [
                 'nombre' => 'Nuevo',
-                'descripcion' => 'Cotización recién creada, esperando ser procesada',
+                'descripcion' => 'Cotización recién creada por el cliente, esperando ser procesada por el vendedor',
                 'fecha_hora' => now()
             ],
             [
                 'nombre' => 'Abierto',
-                'descripcion' => 'Cotización en proceso de elaboración o revisión',
+                'descripcion' => 'Cotización abierta por el vendedor, en proceso de elaboración o revisión',
                 'fecha_hora' => now()
             ],
             [
                 'nombre' => 'Cotizado',
-                'descripcion' => 'Cotización completada y enviada al cliente',
+                'descripcion' => 'Cotización completada con precios por el vendedor y lista para el cliente',
                 'fecha_hora' => now()
             ],
             [
                 'nombre' => 'En entrega',
-                'descripcion' => 'Cotización aprobada, productos en proceso de entrega',
+                'descripcion' => 'Cotización aprobada por el cliente, productos en proceso de entrega',
                 'fecha_hora' => now()
             ]
         ];

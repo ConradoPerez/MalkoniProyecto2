@@ -93,7 +93,12 @@
                                         <span class="text-sm text-gray-700">{{ $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') }}</span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        @if($cotizacion->precio_total && $cotizacion->precio_total > 0)
+                                        @php
+                                            $estadoNombre = $cotizacion->estado;
+                                            $esCotizable = in_array($estadoNombre, ['Nuevo', 'Abierto']);
+                                            $tienePrecio = !$esCotizable && $cotizacion->precio_total && $cotizacion->precio_total > 0;
+                                        @endphp
+                                        @if($tienePrecio)
                                             <span class="text-sm font-bold text-gray-900">${{ number_format($cotizacion->precio_total, 2, ',', '.') }}</span>
                                         @else
                                             <span class="text-sm text-gray-500 italic">Sin cotizar</span>
@@ -101,11 +106,6 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-center gap-2">
-                                            @php
-                                                $tienePrecio = $cotizacion->precio_total && $cotizacion->precio_total > 0;
-                                                $esCotizable = in_array($cotizacion->estado, ['Nuevo', 'Abierto']);
-                                            @endphp
-                                            
                                             @if($esCotizable || ($cotizacion->estado == 'Cotizado' && $tienePrecio))
                                                 <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id', 1), 'from_cliente' => $empresa->id_empresa]) }}"
                                                    class="inline-flex items-center px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition hover:opacity-90"

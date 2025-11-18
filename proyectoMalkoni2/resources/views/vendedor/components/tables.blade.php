@@ -51,8 +51,18 @@
                                     @endif
                                 </td>
                                 <td class="py-3 px-2 text-gray-900">#{{ str_pad($cotizacion->numero, 3, '0', STR_PAD_LEFT) }}</td>
-                                <td class="py-3 px-2 text-gray-900">{{ $cotizacion->empresa->nombre ?? 'Sin cliente' }}</td>
-                                <td class="py-3 px-2 text-gray-900">${{ number_format($cotizacion->precio_total, 0, ',', '.') }}</td>
+                                <td class="py-3 px-2 text-gray-900">{{ $cotizacion->cliente_nombre }}</td>
+                                <td class="py-3 px-2 text-gray-900">
+                                    @php
+                                        $estadoActual = $cotizacion->estadoActual->nombre ?? 'Nuevo';
+                                        $sinPrecio = in_array($estadoActual, ['Nuevo', 'Abierto']) || !$cotizacion->precio_total || $cotizacion->precio_total <= 0;
+                                    @endphp
+                                    @if($sinPrecio)
+                                        <span class="text-gray-500 text-sm italic">Sin Cotizar</span>
+                                    @else
+                                        ${{ number_format($cotizacion->precio_total, 0, ',', '.') }}
+                                    @endif
+                                </td>
                                 <td class="py-3 px-2">
                                     <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => isset($vendedor) ? $vendedor->id_empleado : 1]) }}" 
                                        class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 text-xs font-medium bg-white hover:bg-gray-50 transition-colors shadow-sm hover:shadow">

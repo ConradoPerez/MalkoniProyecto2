@@ -30,7 +30,7 @@ class VendedorCotizacionController extends Controller
         $estados = Estado::orderBy('nombre')->get();
 
         // Construir query base para las cotizaciones del vendedor
-        $query = Cotizacion::with(['empresa', 'empleado'])
+        $query = Cotizacion::with(['empresa', 'persona.empresa', 'empleado'])
             ->where('id_empleados', $empleadoId);
 
         // Aplicar filtros de búsqueda
@@ -39,14 +39,28 @@ class VendedorCotizacionController extends Controller
         }
 
         if ($request->filled('cliente')) {
-            $query->whereHas('empresa', function($q) use ($request) {
-                $q->where('nombre', 'like', '%' . $request->cliente . '%');
+            $query->where(function($q) use ($request) {
+                // Buscar en empresa directa
+                $q->whereHas('empresa', function($subQ) use ($request) {
+                    $subQ->where('nombre', 'like', '%' . $request->cliente . '%');
+                })
+                // O en empresa de persona
+                ->orWhereHas('persona.empresa', function($subQ) use ($request) {
+                    $subQ->where('nombre', 'like', '%' . $request->cliente . '%');
+                });
             });
         }
 
         if ($request->filled('doc')) {
-            $query->whereHas('empresa', function($q) use ($request) {
-                $q->where('cuit', 'like', '%' . $request->doc . '%');
+            $query->where(function($q) use ($request) {
+                // Buscar en empresa directa
+                $q->whereHas('empresa', function($subQ) use ($request) {
+                    $subQ->where('cuit', 'like', '%' . $request->doc . '%');
+                })
+                // O en empresa de persona
+                ->orWhereHas('persona.empresa', function($subQ) use ($request) {
+                    $subQ->where('cuit', 'like', '%' . $request->doc . '%');
+                });
             });
         }
 
@@ -77,8 +91,8 @@ class VendedorCotizacionController extends Controller
         }
 
         // Ordenamiento
-        $orderBy = $request->get('orderby', 'fecha');
-        $orderDirection = $request->get('direction', 'desc');
+        $orderBy = $request->get('orderby', 'estado'); // CAMBIO: orden por defecto es por estado
+        $orderDirection = $request->get('direction', 'asc'); // CAMBIO: ascendente para mostrar Nuevo primero
 
         switch ($orderBy) {
             case 'estado':
@@ -101,6 +115,7 @@ class VendedorCotizacionController extends Controller
                         WHEN 'En entrega' THEN 4 
                         ELSE 5 
                     END " . ($orderDirection == 'desc' ? 'DESC' : 'ASC'))
+                ->orderBy('cotizaciones.fyh', 'desc') // Ordenar por fecha dentro de cada estado
                 ->select('cotizaciones.*');
                 break;
             case 'numero':
@@ -171,7 +186,7 @@ class VendedorCotizacionController extends Controller
         }
 
         // Obtener la cotización con sus relaciones
-        $cotizacion = Cotizacion::with(['empresa', 'items.producto', 'cambios.estado'])
+        $cotizacion = Cotizacion::with(['empresa', 'persona.empresa', 'items.producto', 'cambios.estado'])
             ->where('id', $id)
             ->where('id_empleados', $empleadoId)
             ->firstOrFail();

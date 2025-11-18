@@ -283,12 +283,27 @@
                                             </td>
                                             <td class="px-6 py-4">
                                                 <div class="flex flex-col">
-                                                    <span class="text-sm font-medium text-gray-900">{{ $cotizacion->empresa->nombre ?? 'Cliente no encontrado' }}</span>
+                                                    <span class="text-sm font-medium text-gray-900">{{ $cotizacion->cliente_nombre }}</span>
                                                     <span class="text-xs text-gray-500">{{ $cotizacion->titulo ?? 'Sin título' }}</span>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <span class="text-sm text-gray-700">{{ $cotizacion->empresa->cuit ?? 'Sin CUIT' }}</span>
+                                                @php
+                                                    $cuit = null;
+                                                    if ($cotizacion->empresa) {
+                                                        // Cotización directa a empresa
+                                                        $cuit = $cotizacion->empresa->cuit_formateado;
+                                                    } elseif ($cotizacion->persona && $cotizacion->persona->empresa) {
+                                                        // Cotización a persona de empresa
+                                                        $cuit = $cotizacion->persona->empresa->cuit_formateado;
+                                                    }
+                                                @endphp
+                                                
+                                                @if($cuit)
+                                                    <span class="text-sm text-gray-700">{{ $cuit }}</span>
+                                                @else
+                                                    <span class="text-sm text-gray-400 italic">Sin CUIT</span>
+                                                @endif
                                             </td>
                                             <td class="px-6 py-4">
                                                 <span class="text-sm text-gray-700">{{ $cotizacion->fyh ? $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') : 'Sin fecha' }}</span>
@@ -303,12 +318,12 @@
                                             <td class="px-6 py-4 text-right">
                                                 @php
                                                     $estadoNombre = $cotizacion->estado_actual->nombre ?? 'Sin estado';
-                                                    $tienePrecio = $cotizacion->precio_total && $cotizacion->precio_total > 0;
                                                     $esCotizable = in_array($estadoNombre, ['Nuevo', 'Abierto']);
+                                                    $tienePrecio = !$esCotizable && $cotizacion->precio_total && $cotizacion->precio_total > 0;
                                                 @endphp
                                                 
                                                 @if($tienePrecio)
-                                                    <span class="text-sm font-bold text-gray-900">${{ number_format($cotizacion->precio_total, 2, ',', '.') }}</span>
+                                                    <span class="text-sm font-bold text-gray-900">${{ number_format($cotizacion->precio_total, 0, ',', '.') }}</span>
                                                 @else
                                                     <span class="text-sm text-gray-500 italic">Sin cotizar</span>
                                                 @endif

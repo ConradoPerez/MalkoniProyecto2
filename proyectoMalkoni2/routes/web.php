@@ -86,13 +86,17 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
     Route::get('/nueva-cotizacion', [ClienteDashboardController::class, 'createQuotation'])->name('nueva_cotizacion'); 
 
     // --- NUEVAS RUTAS DE CREACIÓN Y FLUJO DE COTIZACIÓN ---
-    // 1. Guarda la cotización inicial (POST del formulario)
-    Route::post('/cotizacion/store', [ClienteDashboardController::class, 'storeQuotation'])->name('cotizacion.store');
-    // 2. Vista para agregar productos a la cotización recién creada
-    Route::get('/cotizacion/{id}/productos', [ClienteDashboardController::class, 'addProductsToQuotation'])->name('cotizacion.productos');
-    // 3. Guarda productos a una cotización (POST)
+    // 1. Procesa la selección de vendedor y va a selección de productos (POST del formulario)
+    Route::post('/cotizacion/preparar', [ClienteDashboardController::class, 'prepareQuotation'])->name('cotizacion.preparar');
+    // 2. Vista para agregar productos (sin cotización creada aún)
+    Route::get('/nueva-cotizacion/productos', [ClienteDashboardController::class, 'selectProducts'])->name('cotizacion.productos');
+    // 3. Crea cotización y guarda productos (POST)
+    Route::post('/cotizacion/crear-con-productos', [ClienteDashboardController::class, 'createQuotationWithProducts'])->name('cotizacion.crear_con_productos');
+    // 4. Vista para agregar productos a cotización existente
+    Route::get('/cotizacion/{id}/productos', [ClienteDashboardController::class, 'addProductsToQuotation'])->name('cotizacion.agregar_productos');
+    // 5. Guarda productos adicionales a una cotización existente (POST)
     Route::post('/cotizacion/{id}/guardar-productos', [ClienteDashboardController::class, 'storeProductsToQuotation'])->name('cotizacion.guardar_productos');
-    // 4. Elimina un item de la cotización
+    // 6. Elimina un item de la cotización
     Route::delete('/cotizacion/{cotizacionId}/item/{itemId}', [ClienteDashboardController::class, 'removeProductFromQuotation'])->name('cotizacion.eliminar_item');
     // ────────────────────────────────────────────────────
 
@@ -104,9 +108,8 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
     Route::get('/pedidos-sin-cotizar', [ClienteDashboardController::class, 'unquotedOrders'])->name('pedidos_sin_cotizar');
     Route::get('/pedidos-en-entrega', [ClienteDashboardController::class, 'deliveryOrders'])->name('pedidos_en_entrega');
 
-    // Rutas de Acción de la Tabla (Ver/Editar Cotización)
+    // Rutas de Acción de la Tabla (Ver Cotización)
     Route::get('/cotizacion/{id}/ver', [ClienteDashboardController::class, 'viewQuotation'])->name('cotizacion.ver');
-    Route::get('/cotizacion/{id}/editar', [ClienteDashboardController::class, 'editQuotation'])->name('cotizacion.editar');
     
     // Rutas de Productos
     Route::get('/cotizacion/{cotizacionId}/agregar-productos-catalogo', [ProductoClienteController::class, 'agregarProducto'])->name('agregar_productos_catalogo');

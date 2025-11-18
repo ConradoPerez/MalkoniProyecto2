@@ -13,10 +13,13 @@ class ProductoClienteController extends Controller
      * Muestra el formulario para agregar productos a una cotización.
      * Usado por el cliente al crear/editar una cotización.
      */
-    public function agregarProducto($cotizacionId)
+    public function agregarProducto(Request $request, $cotizacionId)
     {
-        // Verificar que la cotización existe y pertenece al cliente autenticado
-        $cotizacion = Cotizacion::where('id_personas', auth()->id())
+        // Obtener el ID del cliente desde la request
+        $clienteId = $request->get('cliente_id', 1);
+        
+        // Verificar que la cotización existe y pertenece al cliente
+        $cotizacion = Cotizacion::where('id_personas', $clienteId)
             ->findOrFail($cotizacionId);
 
         // Obtener todas las categorías con sus subcategorías y productos
@@ -31,7 +34,8 @@ class ProductoClienteController extends Controller
             'cotizacionId',
             'categorias',
             'productos',
-            'cotizacion'
+            'cotizacion',
+            'clienteId'
         ));
     }
 

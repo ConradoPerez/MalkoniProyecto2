@@ -57,7 +57,7 @@
                                 </svg>
                             </div>
                             <div class="text-sm">
-                                <div class="font-semibold text-gray-900">{{ $cotizacion->empresa->nombre ?? 'Sin cliente' }}</div>
+                                <div class="font-semibold text-gray-900">{{ $cotizacion->cliente_nombre }}</div>
                                 <div class="text-gray-500">CUIT: {{ $cotizacion->empresa->cuit ?? 'N/A' }}</div>
                             </div>
                         </div>
@@ -144,7 +144,7 @@
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Monto total</p>
                                 @if($cotizacion->precio_total && $cotizacion->precio_total > 0)
-                                    <p id="monto-total" class="text-xl font-bold text-green-600">${{ number_format($cotizacion->precio_total, 2, ',', '.') }}</p>
+                                    <p id="monto-total" class="text-xl font-bold text-green-600">${{ number_format($cotizacion->precio_total, 0, ',', '.') }}</p>
                                 @else
                                     <p id="monto-total" class="text-xl font-bold text-gray-400">$0,00</p>
                                 @endif

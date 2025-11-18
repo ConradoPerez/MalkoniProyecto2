@@ -15,65 +15,170 @@ class CambioSeeder extends Seeder
      */
     public function run(): void
     {
-        // Obtener todas las cotizaciones y estados
-        $cotizaciones = Cotizacion::all();
+        // Obtener todas las cotizaciones agrupadas por empresa
+        $cotizaciones = Cotizacion::orderBy('fyh', 'asc')->get();
         $estados = Estado::all();
         
         $cambios = [];
         
-        foreach ($cotizaciones as $cotizacion) {
-            // Simular progresión de estados para cada cotización
-            $fechaBase = $cotizacion->created_at ?? now()->subDays(rand(1, 30));
+        // Agrupar cotizaciones por empresa
+        $cotizacionesPorEmpresa = $cotizaciones->groupBy('id_empresas');
+        
+        foreach ($cotizacionesPorEmpresa as $idEmpresa => $cotizacionesEmpresa) {
+            // Ordenar por fecha (más antiguas primero)
+            $cotizacionesEmpresa = $cotizacionesEmpresa->sortBy('fyh')->values();
             
-            // Si la cotización NO tiene precio, debe estar en Nuevo o Abierto
-            if (!$cotizacion->precio_total || $cotizacion->precio_total <= 0) {
-                // Estado Nuevo
+            // Asignar estados: 2 de cada uno (excepto Nuevo, solo 1)
+            $indice = 0;
+            
+            // 2 cotizaciones en "En entrega" (las más antiguas)
+            for ($i = 0; $i < 2 && $indice < $cotizacionesEmpresa->count(); $i++, $indice++) {
+                $cotizacion = $cotizacionesEmpresa[$indice];
+                $fechaBase = $cotizacion->fyh;
+                
+                // Nuevo
                 $cambios[] = [
                     'fyH' => $fechaBase,
                     'id_cotizaciones' => $cotizacion->id,
                     'id_estado' => $estados->where('nombre', 'Nuevo')->first()->id_estado,
                 ];
                 
-                // 50% pasan a Abierto (sin cotizar aún)
-                if (rand(1, 100) <= 50) {
-                    $cambios[] = [
-                        'fyH' => $fechaBase->copy()->addHours(rand(2, 12)),
-                        'id_cotizaciones' => $cotizacion->id,
-                        'id_estado' => $estados->where('nombre', 'Abierto')->first()->id_estado,
-                    ];
-                }
-            } else {
-                // Si tiene precio, debe haber pasado por Nuevo -> Abierto -> Cotizado
-                
-                // Estado Nuevo
+                // Abierto (1-2 días después)
                 $cambios[] = [
-                    'fyH' => $fechaBase,
-                    'id_cotizaciones' => $cotizacion->id,
-                    'id_estado' => $estados->where('nombre', 'Nuevo')->first()->id_estado,
-                ];
-                
-                // Pasar a Abierto
-                $cambios[] = [
-                    'fyH' => $fechaBase->copy()->addHours(rand(2, 12)),
+                    'fyH' => $fechaBase->copy()->addDays(rand(1, 2)),
                     'id_cotizaciones' => $cotizacion->id,
                     'id_estado' => $estados->where('nombre', 'Abierto')->first()->id_estado,
                 ];
                 
-                // Pasar a Cotizado (ya tiene precio)
+                // Cotizado (3-7 días después)
                 $cambios[] = [
-                    'fyH' => $fechaBase->copy()->addDays(rand(1, 5)),
+                    'fyH' => $fechaBase->copy()->addDays(rand(3, 7)),
                     'id_cotizaciones' => $cotizacion->id,
                     'id_estado' => $estados->where('nombre', 'Cotizado')->first()->id_estado,
                 ];
                 
-                // 40% pasan a En entrega
-                if (rand(1, 100) <= 40) {
+                // En entrega (10-20 días después)
+                $cambios[] = [
+                    'fyH' => $fechaBase->copy()->addDays(rand(10, 20)),
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'En entrega')->first()->id_estado,
+                ];
+            }
+            
+            // 2 cotizaciones en "Cotizado" (siguientes más antiguas)
+            for ($i = 0; $i < 2 && $indice < $cotizacionesEmpresa->count(); $i++, $indice++) {
+                $cotizacion = $cotizacionesEmpresa[$indice];
+                $fechaBase = $cotizacion->fyh;
+                
+                // Nuevo
+                $cambios[] = [
+                    'fyH' => $fechaBase,
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'Nuevo')->first()->id_estado,
+                ];
+                
+                // Abierto (1-3 días después)
+                $cambios[] = [
+                    'fyH' => $fechaBase->copy()->addDays(rand(1, 3)),
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'Abierto')->first()->id_estado,
+                ];
+                
+                // Cotizado (5-10 días después)
+                $cambios[] = [
+                    'fyH' => $fechaBase->copy()->addDays(rand(5, 10)),
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'Cotizado')->first()->id_estado,
+                ];
+            }
+            
+            // 2 cotizaciones en "Abierto" (medianas)
+            for ($i = 0; $i < 2 && $indice < $cotizacionesEmpresa->count(); $i++, $indice++) {
+                $cotizacion = $cotizacionesEmpresa[$indice];
+                $fechaBase = $cotizacion->fyh;
+                
+                // Nuevo
+                $cambios[] = [
+                    'fyH' => $fechaBase,
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'Nuevo')->first()->id_estado,
+                ];
+                
+                // Abierto (1-3 días después)
+                $cambios[] = [
+                    'fyH' => $fechaBase->copy()->addDays(rand(1, 3)),
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'Abierto')->first()->id_estado,
+                ];
+            }
+            
+            // Solo 1 cotización en "Nuevo" (la más reciente)
+            for ($i = 0; $i < 1 && $indice < $cotizacionesEmpresa->count(); $i++, $indice++) {
+                $cotizacion = $cotizacionesEmpresa[$indice];
+                $fechaBase = $cotizacion->fyh;
+                
+                // Nuevo
+                $cambios[] = [
+                    'fyH' => $fechaBase,
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'Nuevo')->first()->id_estado,
+                ];
+            }
+            
+            // El resto de cotizaciones (si hay más) se distribuyen en estados avanzados
+            while ($indice < $cotizacionesEmpresa->count()) {
+                $cotizacion = $cotizacionesEmpresa[$indice];
+                $fechaBase = $cotizacion->fyh;
+                $diasDesdeCreacion = now()->diffInDays($fechaBase);
+                
+                // Nuevo
+                $cambios[] = [
+                    'fyH' => $fechaBase,
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estados->where('nombre', 'Nuevo')->first()->id_estado,
+                ];
+                
+                // Según antigüedad, avanzar más o menos
+                if ($diasDesdeCreacion > 60) {
+                    // Muy antiguas -> En entrega
                     $cambios[] = [
-                        'fyH' => $fechaBase->copy()->addDays(rand(5, 15)),
+                        'fyH' => $fechaBase->copy()->addDays(rand(1, 2)),
+                        'id_cotizaciones' => $cotizacion->id,
+                        'id_estado' => $estados->where('nombre', 'Abierto')->first()->id_estado,
+                    ];
+                    $cambios[] = [
+                        'fyH' => $fechaBase->copy()->addDays(rand(3, 7)),
+                        'id_cotizaciones' => $cotizacion->id,
+                        'id_estado' => $estados->where('nombre', 'Cotizado')->first()->id_estado,
+                    ];
+                    $cambios[] = [
+                        'fyH' => $fechaBase->copy()->addDays(rand(10, 20)),
                         'id_cotizaciones' => $cotizacion->id,
                         'id_estado' => $estados->where('nombre', 'En entrega')->first()->id_estado,
                     ];
+                } elseif ($diasDesdeCreacion > 30) {
+                    // Antiguas -> Cotizado
+                    $cambios[] = [
+                        'fyH' => $fechaBase->copy()->addDays(rand(1, 3)),
+                        'id_cotizaciones' => $cotizacion->id,
+                        'id_estado' => $estados->where('nombre', 'Abierto')->first()->id_estado,
+                    ];
+                    $cambios[] = [
+                        'fyH' => $fechaBase->copy()->addDays(rand(5, 10)),
+                        'id_cotizaciones' => $cotizacion->id,
+                        'id_estado' => $estados->where('nombre', 'Cotizado')->first()->id_estado,
+                    ];
+                } elseif ($diasDesdeCreacion > 10) {
+                    // Medianas -> Abierto
+                    $cambios[] = [
+                        'fyH' => $fechaBase->copy()->addDays(rand(1, 3)),
+                        'id_cotizaciones' => $cotizacion->id,
+                        'id_estado' => $estados->where('nombre', 'Abierto')->first()->id_estado,
+                    ];
                 }
+                // Recientes se quedan en Nuevo
+                
+                $indice++;
             }
         }
         

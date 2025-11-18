@@ -3,7 +3,7 @@
 @section('title', 'Mis Cotizaciones')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 text-gray-900">
+<div class="min-h-screen text-gray-900" style="background-color: #e1dfd9;">
     <div class="flex">
         @include('cliente.components.sidebar')
 
@@ -14,13 +14,13 @@
 
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 mt-8">
                     <div>
-                        <h2 class="text-xl font-syncopate font-bold text-gray-800">
-                            Mis Cotizaciones
+                        <h2 class="text-2xl font-syncopate font-bold text-gray-800">
+                            MIS COTIZACIONES
                         </h2>
-                        <p class="text-sm text-gray-500 mt-1">Gestiona y revisa el historial de tus solicitudes</p>
+                        <p class="text-sm text-gray-500 mt-1 font-medium">Gestiona y revisa el historial de tus solicitudes</p>
                     </div>
                     
-                    <a href="{{ route('cliente.nueva_cotizacion') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-[#D88429] hover:bg-[#c7731f] text-white text-sm font-medium rounded-lg transition-colors shadow-sm hover:shadow md:w-auto w-full">
+                    <a href="{{ route('cliente.nueva_cotizacion', ['persona_id' => $personaId]) }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-[#D88429] hover:bg-[#c7731f] text-white text-sm font-medium rounded-lg transition-colors shadow-sm hover:shadow md:w-auto w-full">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
@@ -71,23 +71,20 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-50">
+                                    @php
+                                        $estadoColores = [
+                                            'Nuevo' => 'bg-blue-100 text-blue-800',
+                                            'Abierto' => 'bg-yellow-100 text-yellow-800',
+                                            'Cotizado' => 'bg-green-100 text-green-800',
+                                            'En entrega' => 'bg-purple-100 text-purple-800',
+                                        ];
+                                    @endphp
                                     @foreach($cotizaciones as $cotizacion)
                                         <tr class="hover:bg-gray-50/80 transition-colors group">
-                                            <td class="px-6 py-4 text-center">
-                                                @php
-                                                    $estado = $cotizacion->estado ?? 'Pendiente';
-                                                    $colorMap = [
-                                                        'Nuevo' => 'bg-orange-500 shadow-orange-200',
-                                                        'Abierto' => 'bg-yellow-400 shadow-yellow-200',
-                                                        'Cotizado' => 'bg-green-500 shadow-green-200',
-                                                        'En entrega' => 'bg-blue-600 shadow-blue-200',
-                                                        'Pendiente' => 'bg-gray-400 shadow-gray-200'
-                                                    ];
-                                                    $colorClass = $colorMap[$estado] ?? 'bg-gray-400 shadow-gray-200';
-                                                @endphp
-                                                <div class="flex justify-center">
-                                                    <span class="h-3 w-3 rounded-full {{ $colorClass }} shadow-sm ring-2 ring-white" title="{{ $estado }}"></span>
-                                                </div>
+                                            <td class="px-6 py-4">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $estadoColores[$cotizacion->estado_actual->nombre ?? 'Nuevo'] ?? 'bg-gray-100 text-gray-800' }}">
+                                                    {{ $cotizacion->estado_actual->nombre ?? 'Nuevo' }}
+                                                </span>
                                             </td>
 
                                             <td class="px-6 py-4">
@@ -97,7 +94,7 @@
                                             </td>
                                             <td class="px-6 py-4">
                                                 <span class="text-sm text-gray-600">
-                                                    {{ $cotizacion->fyh->format('d M, Y') }}
+                                                    {{ $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4">
@@ -109,15 +106,29 @@
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 text-right">
-                                                <span class="text-sm font-bold text-gray-900">
-                                                    ${{ number_format($cotizacion->precio_total / 100, 2, ',', '.') }}
-                                                </span>
+                                                @php
+                                                    $estadoActual = $cotizacion->estado_actual->nombre ?? 'Nuevo';
+                                                    $sinPrecio = in_array($estadoActual, ['Nuevo', 'Abierto']) || !$cotizacion->precio_total || $cotizacion->precio_total <= 0;
+                                                @endphp
+                                                @if($sinPrecio)
+                                                    <span class="text-sm text-gray-500 italic">Sin Cotizar</span>
+                                                @else
+                                                    <span class="text-sm font-bold text-gray-900">
+                                                        ${{ number_format($cotizacion->precio_total, 0, ',', '.') }}
+                                                    </span>
+                                                @endif
                                             </td>
                                             
                                             <td class="px-6 py-4 text-center">
-                                                <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacion->id]) }}" class="inline-flex items-center px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 bg-white hover:bg-gray-50 hover:text-[#166379] hover:border-[#166379] transition-all">
-                                                    Ver Detalle
-                                                </a>
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacion->id, 'persona_id' => $personaId]) }}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 text-sm font-medium bg-white hover:bg-gray-50 transition-colors">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                        </svg>
+                                                        Ver detalle
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -141,29 +152,53 @@
                             </div>
                             <h3 class="text-lg font-medium text-gray-900">Aún no tienes cotizaciones</h3>
                             <p class="text-gray-500 mt-1 mb-6 max-w-sm">Comienza solicitando un presupuesto para tus productos de interés.</p>
-                            <a href="{{ route('cliente.nueva_cotizacion') }}" class="px-6 py-2 bg-[#D88429] text-white font-semibold rounded-lg shadow hover:bg-[#c7731f] transition-colors">
+                            <a href="{{ route('cliente.nueva_cotizacion', ['persona_id' => $personaId]) }}" class="px-6 py-2 bg-[#D88429] text-white font-semibold rounded-lg shadow hover:bg-[#c7731f] transition-colors">
                                 Crear mi primera cotización
                             </a>
                         </div>
                     @endif
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-center space-x-3">
-                        <span class="h-2.5 w-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-200"></span>
-                        <span class="text-xs font-medium text-gray-600">Nuevo</span>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-center space-x-3">
-                        <span class="h-2.5 w-2.5 rounded-full bg-yellow-400 shadow-sm shadow-yellow-200"></span>
-                        <span class="text-xs font-medium text-gray-600">Abierto</span>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-center space-x-3">
-                        <span class="h-2.5 w-2.5 rounded-full bg-green-500 shadow-sm shadow-green-200"></span>
-                        <span class="text-xs font-medium text-gray-600">Cotizado</span>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex items-center space-x-3">
-                        <span class="h-2.5 w-2.5 rounded-full bg-blue-600 shadow-sm shadow-blue-200"></span>
-                        <span class="text-xs font-medium text-gray-600">En entrega</span>
+                <!-- Leyenda de estados -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Referencia de Estados</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-block w-3 h-3 rounded-full" style="background-color: #95c4ecff;"></span>
+                                <div>
+                                    <span class="text-xs font-bold text-gray-900">Nuevo</span>
+                                    <p class="text-xs text-gray-500">Recién creado</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-block w-3 h-3 rounded-full" style="background-color: #ecee80ff;"></span>
+                                <div>
+                                    <span class="text-xs font-bold text-gray-900">Abierto</span>
+                                    <p class="text-xs text-gray-500">En análisis</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-block w-3 h-3 rounded-full" style="background-color: #72d89bff;"></span>
+                                <div>
+                                    <span class="text-xs font-bold text-gray-900">Cotizado</span>
+                                    <p class="text-xs text-gray-500">Precio definido</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-block w-3 h-3 rounded-full" style="background-color: #ae74dadc;"></span>
+                                <div>
+                                    <span class="text-xs font-bold text-gray-900">En entrega</span>
+                                    <p class="text-xs text-gray-500">Preparando pedido</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

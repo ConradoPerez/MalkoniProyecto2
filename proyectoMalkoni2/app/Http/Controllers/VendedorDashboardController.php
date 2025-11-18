@@ -82,11 +82,26 @@ class VendedorDashboardController extends Controller
         $cotizacionesPorTiempo = $this->getCotizacionesPorTiempo($empleadoId, $intervalo);
 
         // Últimas cotizaciones del vendedor
-        $ultimasCotizaciones = Cotizacion::with(['empresa', 'estadoActual'])
+        $todasCotizaciones = Cotizacion::with(['empresa', 'persona.empresa'])
             ->where('id_empleados', $empleadoId)
             ->orderByDesc('fyh')
-            ->limit(6)
             ->get();
+        
+        // Para cada cotización, obtener su estado actual
+        foreach ($todasCotizaciones as $cotizacion) {
+            $ultimoCambio = \App\Models\Cambio::where('id_cotizaciones', $cotizacion->id)
+                ->with('estado')
+                ->latest('fyH')
+                ->first();
+            $cotizacion->estado_actual = $ultimoCambio ? $ultimoCambio->estado : null;
+        }
+        
+        // Ordenar por estado: Nuevo > Abierto > Cotizado > En entrega
+        $ordenEstados = ['Nuevo' => 1, 'Abierto' => 2, 'Cotizado' => 3, 'En entrega' => 4];
+        $ultimasCotizaciones = $todasCotizaciones->sortBy([
+            fn($a, $b) => ($ordenEstados[$a->estado_actual->nombre ?? 'Nuevo'] ?? 5) <=> ($ordenEstados[$b->estado_actual->nombre ?? 'Nuevo'] ?? 5),
+            fn($a, $b) => $b->fyh <=> $a->fyh
+        ])->take(6);
 
         // Ranking de productos más cotizados por este vendedor
         $productosRanking = DB::table('items')

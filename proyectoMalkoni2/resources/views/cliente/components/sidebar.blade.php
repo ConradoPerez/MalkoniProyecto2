@@ -10,7 +10,7 @@
     <!-- Navigation -->
     <nav class="space-y-2 mb-8">
         <!-- Dashboard -->
-        <a href="{{ route('cliente.dashboard') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.dashboard') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('cliente.dashboard', ['persona_id' => request('persona_id', 1)]) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.dashboard') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('cliente.dashboard') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M3 13h2v8H3zm4-8h2v16H7zm4-2h2v18h-2zm4 4h2v14h-2zm4-4h2v18h-2z"/>
@@ -19,7 +19,7 @@
         </a>
 
         <!-- Cotizaciones -->
-        <a href="{{ route('cliente.cotizaciones') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.cotizaciones') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('cliente.cotizaciones', ['persona_id' => request('persona_id', 1)]) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.cotizaciones') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('cliente.cotizaciones') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10.5 1.5H2v9l8.5 8.5 9-9-8.5-8.5zm-2 5.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
@@ -28,7 +28,7 @@
         </a>
 
         <!-- Nueva Cotización -->
-        <a href="{{ route('cliente.nueva_cotizacion') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.nueva_cotizacion') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('cliente.nueva_cotizacion', ['persona_id' => request('persona_id', 1)]) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.nueva_cotizacion') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('cliente.nueva_cotizacion') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>

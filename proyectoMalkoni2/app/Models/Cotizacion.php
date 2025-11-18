@@ -43,10 +43,14 @@ class Cotizacion extends Model
             $existeCambio = Cambio::where('id_cotizaciones', $cotizacion->id)->exists();
             
             if (!$existeCambio) {
+                // Buscar el estado "Nuevo" (estado 1)
+                $estadoNuevo = Estado::where('nombre', 'Nuevo')->first();
+                $idEstadoNuevo = $estadoNuevo ? $estadoNuevo->id_estado : 1;
+                
                 Cambio::create([
                     'fyH' => now(),
                     'id_cotizaciones' => $cotizacion->id,
-                    'id_estado' => 4, // Estado inicial: Pendiente
+                    'id_estado' => $idEstadoNuevo, // Estado inicial: Nuevo
                 ]);
             }
         });
@@ -207,11 +211,23 @@ class Cotizacion extends Model
      */
     public function getClienteNombreAttribute()
     {
-        if ($this->empresa) {
-            return $this->empresa->nombre;
-        } elseif ($this->persona) {
-            return 'Cliente Persona'; // O usar algún campo de persona si existe
+        // Cargar relaciones si no están cargadas
+        if (!$this->relationLoaded('empresa')) {
+            $this->load('empresa');
         }
-        return 'Sin cliente';
+        if (!$this->relationLoaded('persona')) {
+            $this->load('persona.empresa');
+        }
+
+        // Prioridad: si hay id_empresas, usar esa empresa directamente
+        if ($this->id_empresas && $this->empresa) {
+            return $this->empresa->nombre ?? 'Empresa sin nombre';
+        } 
+        // Si no hay empresa directa, buscar a través de la persona
+        elseif ($this->id_personas && $this->persona && $this->persona->empresa) {
+            return $this->persona->empresa->nombre ?? 'Cliente sin nombre';
+        }
+        
+        return 'Sin cliente asignado';
     }
 }

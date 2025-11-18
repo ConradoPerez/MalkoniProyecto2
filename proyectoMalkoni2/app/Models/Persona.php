@@ -13,9 +13,18 @@ class Persona extends Model
     protected $primaryKey = 'id_persona';
 
     protected $fillable = [
+        'id_empresa',
         'foto',
         'token_opt',
     ];
+
+    /**
+     * Relación con empresa
+     */
+    public function empresa()
+    {
+        return $this->belongsTo(Empresa::class, 'id_empresa', 'id_empresa');
+    }
 
     /**
      * Relación con cotizaciones

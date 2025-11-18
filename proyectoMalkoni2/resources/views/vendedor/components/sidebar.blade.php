@@ -66,6 +66,9 @@
                 ->whereNotNull('fecha_cotizado')
                 ->whereMonth('fecha_cotizado', now()->month)
                 ->whereYear('fecha_cotizado', now()->year)
+                ->whereHas('estadoActual', function($q) {
+                    $q->whereNotIn('nombre', ['Nuevo', 'Abierto']);
+                })
                 ->sum('precio_total');
         @endphp
 

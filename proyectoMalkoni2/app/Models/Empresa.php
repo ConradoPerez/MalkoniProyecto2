@@ -27,6 +27,14 @@ class Empresa extends Model
     }
 
     /**
+     * Relación con personas
+     */
+    public function personas()
+    {
+        return $this->hasMany(Persona::class, 'id_empresa', 'id_empresa');
+    }
+
+    /**
      * Relación muchos a muchos con grupos
      */
     public function grupos()

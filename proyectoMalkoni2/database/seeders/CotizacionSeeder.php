@@ -16,12 +16,12 @@ class CotizacionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Obtener IDs de vendedores
+        // Obtener datos base
         $vendedores = Empleado::vendedores()->get();
-        $empresas = Empresa::all();
-        $personas = Persona::all();
-
-        // Plantillas de cotizaciones variadas
+        $personas = Persona::with('empresa')->get(); // Cargar empresa para referencia
+        $estados = ['Nuevo', 'Abierto', 'Cotizado', 'En entrega'];
+        
+        // Plantillas de cotizaciones determinísticas
         $titulos_base = [
             'Reforma integral oficina comercial',
             'Aberturas para vivienda unifamiliar', 
@@ -42,106 +42,73 @@ class CotizacionSeeder extends Seeder
             'Frente completo de local comercial',
             'Pérgola con techo corredizo',
             'Muebles empotrados dormitorio',
-            'Canceles de vidrio para oficina',
-            'Estantería industrial personalizada',
-            'Mampara de baño premium',
-            'Closet completo con cajones',
-            'Divisor de ambientes moderno',
-            'Mesa de reuniones ejecutiva',
-            'Biblioteca empotrada',
-            'Cocina integral premium',
-            'Ventanas termopanel eficientes',
-            'Puerta de entrada luxury',
-            'Parrilla con techo de madera'
+            'Canceles de vidrio para oficina'
         ];
 
         $cotizaciones = [];
-        $numero_actual = 9001; // Empezamos con números más bajos para las generadas automáticamente
+        $numero_actual = 9001; // Número base determinístico
+        $titulo_index = 0;
 
-        // Generar 25 cotizaciones por cada vendedor
-        for ($i = 0; $i < count($vendedores); $i++) {
-            for ($j = 0; $j < 25; $j++) {
-                $dias_atras = rand(1, 365); // Entre 1 día y 1 año atrás
-                $empresa_index = rand(0, count($empresas) - 1);
-                $persona_index = rand(0, count($personas) - 1);
-                $titulo_index = ($i * 25 + $j) % count($titulos_base);
-
-                // Determinar si esta cotización tendrá precio o no
-                // 30% sin precio (Nuevo/Abierto), 70% con precio (Cotizado/En entrega)
-                $tiene_precio = rand(1, 100) > 30;
-                $precio = $tiene_precio ? rand(50, 1000) * 1000 : 0; // Entre $50.000 y $1.000.000 o 0
+        // Crear 1 cotización por estado para cada persona
+        foreach ($personas as $persona_index => $persona) {
+            // Asignar vendedor de manera cíclica (determinística)
+            $vendedor = $vendedores[$persona_index % count($vendedores)];
+            
+            foreach ($estados as $estado_index => $estado) {
+                // Fechas determinísticas basadas en el estado
+                $dias_atras = match($estado) {
+                    'Nuevo' => 1,      // Cotización muy reciente
+                    'Abierto' => 7,    // Cotización de la semana pasada
+                    'Cotizado' => 30,  // Cotización del mes pasado
+                    'En entrega' => 60 // Cotización de hace 2 meses
+                };
                 
-                // Si tiene precio, establecer fecha_cotizado (entre la fecha de creación y ahora)
-                $fecha_cotizado = null;
-                if ($tiene_precio) {
-                    $dias_desde_creacion = rand(0, $dias_atras);
-                    $fecha_cotizado = Carbon::now()->subDays($dias_desde_creacion);
-                }
-
+                // Precios determinísticos según estado y persona
+                $precio_total = match($estado) {
+                    'Nuevo' => 0,      // Sin precio
+                    'Abierto' => 0,    // Sin precio
+                    'Cotizado' => ($persona_index + 1) * 100000,     // 100k, 200k, 300k, etc.
+                    'En entrega' => ($persona_index + 1) * 150000    // 150k, 300k, 450k, etc.
+                };
+                
+                // Fecha cotizado solo para estados con precio
+                $fecha_cotizado = in_array($estado, ['Cotizado', 'En entrega']) 
+                    ? Carbon::now()->subDays($dias_atras - 3) 
+                    : null;
+                
+                // Título determinístico
+                $titulo = $titulos_base[$titulo_index % count($titulos_base)];
+                $titulo_index++;
+                
+                // ESTRATEGIA HÍBRIDA: Alternar entre persona y empresa
+                // Las cotizaciones pares van a la empresa, las impares a la persona
+                $usar_empresa = ($persona_index + $estado_index) % 2 === 0;
+                
                 $cotizaciones[] = [
-                    'titulo' => $titulos_base[$titulo_index],
+                    'titulo' => $titulo . " - " . $persona->empresa->nombre,
                     'numero' => $numero_actual++,
                     'fyh' => Carbon::now()->subDays($dias_atras),
                     'fecha_cotizado' => $fecha_cotizado,
-                    'precio_total' => $precio,
-                    'id_empleados' => $vendedores[$i]->id_empleado,
-                    'id_empresas' => $empresas[$empresa_index]->id_empresa,
-                    'id_personas' => $personas[$persona_index]->id_persona,
+                    'precio_total' => $precio_total,
+                    'id_empleados' => $vendedor->id_empleado,
+                    'id_empresas' => $usar_empresa ? $persona->empresa->id_empresa : null,
+                    'id_personas' => $usar_empresa ? null : $persona->id_persona,
                 ];
             }
         }
 
-        // Agregar algunas cotizaciones específicas con títulos únicos para testing
-        $cotizaciones_especiales = [
-            // Cotizaciones del último mes
-            [
-                'titulo' => 'Proyecto especial - Oficina ejecutiva',
-                'numero' => 10001,
-                'fyh' => Carbon::now()->subDays(5),
-                'fecha_cotizado' => Carbon::now()->subDays(3),
-                'precio_total' => 485000,
-                'id_empleados' => $vendedores[0]->id_empleado,
-                'id_empresas' => $empresas[0]->id_empresa,
-                'id_personas' => $personas[0]->id_persona,
-            ],
-            // Cotizaciones especiales adicionales para variedad
-            [
-                'titulo' => 'Showroom premium - Muebles exhibit',
-                'numero' => 10002,
-                'fyh' => Carbon::now()->subDays(12),
-                'fecha_cotizado' => Carbon::now()->subDays(10),
-                'precio_total' => 720000,
-                'id_empleados' => $vendedores[1]->id_empleado,
-                'id_empresas' => $empresas[1]->id_empresa,
-                'id_personas' => $personas[1]->id_persona,
-            ],
-            [
-                'titulo' => 'Restaurante completo - Carpintería',
-                'numero' => 10003,
-                'fyh' => Carbon::now()->subDays(8),
-                'fecha_cotizado' => Carbon::now()->subDays(7),
-                'precio_total' => 850000,
-                'id_empleados' => $vendedores[2]->id_empleado,
-                'id_empresas' => $empresas[2]->id_empresa,
-                'id_personas' => $personas[2]->id_persona,
-            ],
-            [
-                'titulo' => 'Edificio corporativo - Lobby',
-                'numero' => 10004,
-                'fyh' => Carbon::now()->subDays(3),
-                'fecha_cotizado' => Carbon::now()->subDays(2),
-                'precio_total' => 1200000,
-                'id_empleados' => $vendedores[3]->id_empleado,
-                'id_empresas' => $empresas[3]->id_empresa,
-                'id_personas' => $personas[3]->id_persona,
-            ]
-        ];
-
-        // Combinar todas las cotizaciones
-        $todas_cotizaciones = array_merge($cotizaciones, $cotizaciones_especiales);
-
-        foreach ($todas_cotizaciones as $cotizacion) {
+        // Crear todas las cotizaciones
+        foreach ($cotizaciones as $cotizacion) {
             Cotizacion::create($cotizacion);
         }
+        
+        $this->command->info('✅ Cotizaciones determinísticas creadas (estrategia híbrida):');
+        $this->command->info("   📊 " . count($personas) . " personas × " . count($estados) . " estados = " . count($cotizaciones) . " cotizaciones");
+        $this->command->info("   🔢 Números del " . ($numero_actual - count($cotizaciones)) . " al " . ($numero_actual - 1));
+        
+        // Contar cuántas van a empresa vs persona
+        $cotizaciones_empresa = collect($cotizaciones)->where('id_empresas', '!=', null)->count();
+        $cotizaciones_persona = collect($cotizaciones)->where('id_personas', '!=', null)->count();
+        $this->command->info("   🏢 Empresas: {$cotizaciones_empresa} | 👤 Personas: {$cotizaciones_persona}");
     }
 }

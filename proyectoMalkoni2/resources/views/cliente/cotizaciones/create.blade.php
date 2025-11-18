@@ -3,7 +3,7 @@
 @section('title', 'Nueva Cotización')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 text-gray-900">
+<div class="min-h-screen text-gray-900" style="background-color: #e1dfd9;">
     <div class="flex">
         @include('cliente.components.sidebar')
 
@@ -15,7 +15,7 @@
                 <nav class="flex mb-6 mt-4" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 md:space-x-3">
                         <li>
-                            <a href="{{ route('cliente.cotizaciones') }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
+                            <a href="{{ route('cliente.cotizaciones', ['persona_id' => $personaId]) }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                                 Volver
                             </a>
@@ -33,14 +33,14 @@
                     
                     <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                         <div>
-                            <h2 class="text-2xl font-syncopate font-bold text-gray-800">Nueva Solicitud</h2>
-                            <p class="text-gray-500 mt-1">Completa los datos para iniciar el proceso de cotización.</p>
+                            <h2 class="text-2xl font-syncopate font-bold text-gray-800">NUEVA SOLICITUD</h2>
+                            <p class="text-gray-500 mt-1 font-medium">Completa los datos para iniciar el proceso de cotización.</p>
                         </div>
                         
                         <div class="bg-white px-5 py-3 rounded-lg border border-gray-200 shadow-sm flex gap-6 text-sm">
                             <div>
                                 <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Fecha</span>
-                                <span class="font-mono font-medium text-gray-700">{{ now()->format('d/m/Y') }}</span>
+                                <span class="font-mono font-medium text-gray-700">{{ now()->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') }}</span>
                             </div>
                             <div class="border-l border-gray-200 pl-6">
                                 <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Nº Pedido</span>
@@ -49,9 +49,10 @@
                         </div>
                     </div>
 
-                    <form action="{{ route('cliente.cotizacion.store') }}" method="POST" id="formCotizacion">
+                    <form action="{{ route('cliente.cotizacion.preparar') }}" method="POST" id="formCotizacion">
                         @csrf
                         <input type="hidden" name="numero_pedido" value="{{ $numero_pedido }}">
+                        <input type="hidden" name="persona_id" value="{{ $personaId }}">
 
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
                             <div class="p-6 border-b border-gray-100 bg-gray-50/50">
@@ -117,7 +118,7 @@
                         </div>
 
                         <div class="flex flex-col-reverse md:flex-row items-center justify-end gap-4 pt-4">
-                            <a href="{{ route('cliente.dashboard') }}" class="w-full md:w-auto px-6 py-3 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors text-center shadow-sm">
+                            <a href="{{ route('cliente.dashboard', ['persona_id' => $personaId]) }}" class="w-full md:w-auto px-6 py-3 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors text-center shadow-sm">
                                 Cancelar
                             </a>
                             
