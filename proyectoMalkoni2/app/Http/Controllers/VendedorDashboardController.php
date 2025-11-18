@@ -120,20 +120,36 @@ class VendedorDashboardController extends Controller
      */
     private function getCotizacionesPorTiempo($empleadoId, $intervalo)
     {
+        // Configurar zona horaria de Argentina
+        $timezone = 'America/Argentina/Buenos_Aires';
+        $now = Carbon::now($timezone);
+        
         $query = Cotizacion::where('id_empleados', $empleadoId);
         
         switch($intervalo) {
             case '7dias':
-                $fechaInicio = Carbon::now()->subDays(6)->startOfDay();
-                return $query
+                $fechaInicio = $now->copy()->subDays(6)->startOfDay();
+                $results = $query
                     ->where('fyh', '>=', $fechaInicio)
                     ->select(
-                        DB::raw('DATE(fyh) as fecha'),
+                        DB::raw('DATE(CONVERT_TZ(fyh, "+00:00", "-03:00")) as fecha'),
                         DB::raw('COUNT(*) as total')
                     )
                     ->groupBy('fecha')
                     ->orderBy('fecha')
                     ->get();
+                
+                // Llenar los días faltantes con 0
+                $allDays = collect();
+                for ($i = 6; $i >= 0; $i--) {
+                    $date = $now->copy()->subDays($i)->format('Y-m-d');
+                    $found = $results->firstWhere('fecha', $date);
+                    $allDays->push([
+                        'fecha' => $date,
+                        'total' => $found ? $found->total : 0
+                    ]);
+                }
+                return $allDays;
                     
             case '3meses':
                 $fechaInicio = Carbon::now()->subMonths(3)->startOfMonth();

@@ -104,6 +104,12 @@
                     const total = found ? parseInt(found.total) : 0;
                     return total;
                 });
+                
+                // Si todos los valores son 0, mostrar barras mínimas visuales
+                const hasData = chartData.some(val => val > 0);
+                if (!hasData) {
+                    chartData = chartData.map(() => 0.3); // Valor mínimo visible
+                }
             } else {
                 // Para meses
                 labels = data.map(item => {
@@ -164,7 +170,9 @@
                             },
                             callbacks: {
                                 label: function(context) {
-                                    return `Cotizaciones: ${context.parsed.y}`;
+                                    // Mostrar 0 si el valor es menor a 1 (valores mínimos visuales)
+                                    const value = context.parsed.y < 1 ? 0 : Math.floor(context.parsed.y);
+                                    return `Cotizaciones: ${value}`;
                                 }
                             }
                         }
@@ -173,6 +181,7 @@
                         y: {
                             beginAtZero: true,
                             grace: '2%',
+                            suggestedMax: Math.max(...chartData) > 1 ? undefined : 5,
                             ticks: {
                                 stepSize: 1,
                                 font: {
@@ -181,7 +190,11 @@
                                     weight: '500'
                                 },
                                 color: '#6B7280',
-                                padding: config.padding
+                                padding: config.padding,
+                                callback: function(value) {
+                                    // Ocultar decimales cuando hay valores mínimos
+                                    return Math.floor(value) === value ? value : '';
+                                }
                             },
                             grid: {
                                 color: '#F3F4F6',

@@ -28,14 +28,25 @@
 
                     <div class="flex items-center gap-4">
                         {{-- Botón volver --}}
-                        <a href="{{ route('vendedor.app.cotizaciones.index', ['empleado_id' => request('empleado_id')]) }}" 
-                           class="inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold transition hover:opacity-90 shadow-md"
-                           style="background-color:#D88429;">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                            </svg>
-                            Volver a Cotizaciones
-                        </a>
+                        @if(request('from_cliente'))
+                            <a href="{{ route('vendedor.app.clientes.cotizaciones', ['empresa' => request('from_cliente'), 'empleado_id' => request('empleado_id')]) }}" 
+                               class="inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold transition hover:opacity-90 shadow-md"
+                               style="background-color:#D88429;">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                                </svg>
+                                Volver a Clientes
+                            </a>
+                        @else
+                            <a href="{{ route('vendedor.app.cotizaciones.index', ['empleado_id' => request('empleado_id')]) }}" 
+                               class="inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold transition hover:opacity-90 shadow-md"
+                               style="background-color:#D88429;">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                                </svg>
+                                Volver a Cotizaciones
+                            </a>
+                        @endif
 
                         {{-- Tarjeta del cliente --}}
                         <div class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
@@ -85,7 +96,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Fecha de creación</p>
-                                <p class="text-xl font-bold text-gray-900">{{ $cotizacion->fyh ? $cotizacion->fyh->format('d/m/Y') : 'N/A' }}</p>
+                                <p class="text-xl font-bold text-gray-900">{{ $cotizacion->fyh ? $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') : 'N/A' }}</p>
                             </div>
                             <div class="w-12 h-12 rounded-full bg-blue-100 grid place-items-center">
                                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,8 +111,8 @@
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Última modificación</p>
                                 @if($cotizacion->updated_at && $cotizacion->updated_at != $cotizacion->created_at)
-                                    <p class="text-xl font-bold text-gray-900">{{ $cotizacion->updated_at->format('d/m/Y') }}</p>
-                                    <p class="text-xs text-gray-500">{{ $cotizacion->updated_at->format('H:i') }}</p>
+                                    <p class="text-xl font-bold text-gray-900">{{ $cotizacion->updated_at->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') }}</p>
+                                    <p class="text-xs text-gray-500">{{ $cotizacion->updated_at->timezone('America/Argentina/Buenos_Aires')->format('H:i') }}</p>
                                 @else
                                     <p class="text-xl font-bold text-gray-400">Sin modificar</p>
                                 @endif
@@ -269,7 +280,7 @@
                                     <div class="flex-1">
                                         <div class="flex items-center justify-between">
                                             <span class="text-sm font-semibold text-gray-900">{{ $cambio->estado->nombre ?? 'Estado desconocido' }}</span>
-                                            <span class="text-xs text-gray-500">{{ $cambio->fyH ? $cambio->fyH->format('d/m/Y H:i') : 'N/A' }}</span>
+                                            <span class="text-xs text-gray-500">{{ $cambio->fyH ? $cambio->fyH->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') : 'N/A' }}</span>
                                         </div>
                                         @if($cambio->estado->nombre == 'Cotizado')
                                             <p class="text-xs text-gray-600 mt-1">Cotización completada por el vendedor</p>

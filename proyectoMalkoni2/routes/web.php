@@ -52,6 +52,8 @@ Route::prefix('supervisor/productos')->name('productos.')->group(function () {
 Route::prefix('vendedor')->name('vendedor.app.')->group(function () {
 
     Route::get('/clientes', [VendedorClienteController::class, 'index'])->name('clientes.index');
+    Route::get('/clientes/{empresa}/cotizaciones', [VendedorClienteController::class, 'cotizaciones'])->name('clientes.cotizaciones');
+    Route::get('/clientes/{empresa}/ficha', [VendedorClienteController::class, 'ficha'])->name('clientes.ficha');
 
     Route::get('/cotizaciones', [VendedorCotizacionController::class, 'index'])->name('cotizaciones.index');
     Route::get('/cotizaciones/{id}', [VendedorCotizacionController::class, 'detalle'])->name('cotizaciones.detalle');

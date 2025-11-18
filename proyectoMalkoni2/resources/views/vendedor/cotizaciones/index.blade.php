@@ -30,7 +30,7 @@
                         </div>
                         <div class="text-sm">
                             <div class="font-semibold text-gray-900">{{ isset($vendedor) ? $vendedor->nombre : 'Vendedor' }}</div>
-                            <div class="text-gray-500">{{ isset($vendedor) ? $vendedor->rol->nombre ?? 'Vendedor' : 'Vendedor activo' }}</div>
+                            <div class="text-gray-500">Vendedor activo</div>
                         </div>
                     </div>
                 </div>
@@ -291,11 +291,11 @@
                                                 <span class="text-sm text-gray-700">{{ $cotizacion->empresa->cuit ?? 'Sin CUIT' }}</span>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <span class="text-sm text-gray-700">{{ $cotizacion->fyh ? $cotizacion->fyh->format('d/m/Y H:i') : 'Sin fecha' }}</span>
+                                                <span class="text-sm text-gray-700">{{ $cotizacion->fyh ? $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') : 'Sin fecha' }}</span>
                                             </td>
                                             <td class="px-6 py-4">
                                                 @if($cotizacion->updated_at && $cotizacion->updated_at != $cotizacion->created_at)
-                                                    <span class="text-sm text-gray-700">{{ $cotizacion->updated_at->format('d/m/Y H:i') }}</span>
+                                                    <span class="text-sm text-gray-700">{{ $cotizacion->updated_at->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') }}</span>
                                                 @else
                                                     <span class="text-sm text-gray-400 italic">Sin modificar</span>
                                                 @endif
@@ -315,21 +315,44 @@
                                             </td>
                                             <td class="px-6 py-4">
                                                 <div class="flex items-center justify-center gap-2">
-                                                    @if($esCotizable || ($estadoNombre == 'Cotizado' && $tienePrecio))
+                                                    @php
+                                                        $esEnEntrega = $estadoNombre == 'En entrega';
+                                                    @endphp
+                                                    
+                                                    @if(!$tienePrecio && $esCotizable)
+                                                        {{-- Botón Cotizar (solo cuando no tiene precio y es cotizable - estados Nuevo/Abierto) --}}
                                                         <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id')]) }}" 
                                                            class="inline-flex items-center px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition hover:opacity-90"
                                                            style="background-color:#D88429;">
                                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                @if($tienePrecio)
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                                                @else
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                                                @endif
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                                                             </svg>
-                                                            {{ $tienePrecio ? 'Editar' : 'Cotizar' }}
+                                                            Cotizar
                                                         </a>
+                                                    @elseif($tienePrecio)
+                                                        {{-- Botón Editar (solo cuando ya tiene precio - estados Cotizado/En entrega) --}}
+                                                        @if($esEnEntrega)
+                                                            <button disabled
+                                                                    class="inline-flex items-center px-3 py-1.5 rounded-lg text-gray-400 text-sm font-semibold cursor-not-allowed bg-gray-200"
+                                                                    title="No se puede editar una cotización en entrega">
+                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                                </svg>
+                                                                Editar
+                                                            </button>
+                                                        @else
+                                                            <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id')]) }}" 
+                                                               class="inline-flex items-center px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition hover:opacity-90"
+                                                               style="background-color:#172A32;">
+                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                                </svg>
+                                                                Editar
+                                                            </a>
+                                                        @endif
                                                     @endif
                                                     
+                                                    {{-- Botón Ver detalle (siempre visible) --}}
                                                     <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id')]) }}" 
                                                        class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 text-sm font-medium bg-white hover:bg-gray-50 transition-colors">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
