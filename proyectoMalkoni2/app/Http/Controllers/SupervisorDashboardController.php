@@ -13,8 +13,27 @@ use Illuminate\Support\Facades\DB;
 
 class SupervisorDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Por ahora simulo un supervisor específico (ID 1)
+        // En un sistema real esto vendría de la autenticación
+        $supervisorId = $request->get('supervisor_id', 1);
+        
+        $supervisor = Empleado::with('rol')
+            ->whereHas('rol', function($q) {
+                $q->where('nombre', 'supervisor');
+            })
+            ->find($supervisorId);
+        
+        if (!$supervisor) {
+            // Si no encuentra el supervisor específico, toma el primero disponible
+            $supervisor = Empleado::with('rol')
+                ->whereHas('rol', function($q) {
+                    $q->where('nombre', 'supervisor');
+                })
+                ->first();
+        }
+        
         // Métricas principales actualizadas según nueva estructura
         $metrics = [
             // Total de clientes (empresas + personas)
@@ -56,6 +75,7 @@ class SupervisorDashboardController extends Controller
             ->get();
 
         return view('supervisor.dashboard', compact(
+            'supervisor',
             'metrics',
             'cotizacionesPorVendedor', 
             'ultimasCotizaciones',

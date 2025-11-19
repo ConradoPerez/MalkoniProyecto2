@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Producto;
+use App\Models\Empleado;
 
 class SupervisorProductoController extends Controller
 {
@@ -12,6 +13,9 @@ class SupervisorProductoController extends Controller
      */
     public function index(Request $request)
     {
+        // Obtener supervisor actual
+        $supervisor = $this->getSupervisorActual($request);
+        
         // Cargar estadísticas básicas
         $estadisticas = [
             'total_productos' => Producto::count(),
@@ -44,7 +48,7 @@ class SupervisorProductoController extends Controller
         // Cargar productos con paginación
         $productos = $query->paginate(10);
         
-        return view('supervisor.productos.index', compact('productos', 'estadisticas', 'ordenar'));
+        return view('supervisor.productos.index', compact('supervisor', 'productos', 'estadisticas', 'ordenar'));
     }
 
     /**
@@ -52,6 +56,9 @@ class SupervisorProductoController extends Controller
      */
     public function search(Request $request)
     {
+        // Obtener supervisor actual
+        $supervisor = $this->getSupervisorActual($request);
+        
         $codigo = $request->get('codigo');
         $nombre = $request->get('nombre');
         $ordenar = $request->get('ordenar', 'mas_vendidos');
@@ -95,27 +102,33 @@ class SupervisorProductoController extends Controller
             'ingresos_totales' => Producto::sum('precio_final'),
         ];
         
-        return view('supervisor.productos.index', compact('productos', 'estadisticas', 'codigo', 'nombre', 'ordenar'));
+        return view('supervisor.productos.index', compact('supervisor', 'productos', 'estadisticas', 'codigo', 'nombre', 'ordenar'));
     }
 
     /**
      * Mostrar detalles de un producto específico
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
+        // Obtener supervisor actual
+        $supervisor = $this->getSupervisorActual($request);
+        
         // Cargar el producto con sus relaciones
         $producto = Producto::with(['subtipo', 'subcategoria'])
             ->where('id_producto', $id)
             ->firstOrFail();
         
-        return view('supervisor.productos.show', compact('producto'));
+        return view('supervisor.productos.show', compact('supervisor', 'producto'));
     }
 
     /**
      * Mostrar estadísticas de ventas de un producto
      */
-    public function estadisticas($id)
+    public function estadisticas($id, Request $request)
     {
+        // Obtener supervisor actual
+        $supervisor = $this->getSupervisorActual($request);
+        
         // Cargar el producto
         $producto = Producto::with(['subtipo', 'subcategoria'])
             ->where('id_producto', $id)
@@ -123,6 +136,31 @@ class SupervisorProductoController extends Controller
         
         // TODO: Implementar estadísticas detalladas cuando tengas modelo de ventas
         
-        return view('supervisor.productos.estadisticas', compact('producto'));
+        return view('supervisor.productos.estadisticas', compact('supervisor', 'producto'));
+    }
+    
+    /**
+     * Obtener supervisor actual
+     */
+    private function getSupervisorActual($request)
+    {
+        $supervisorId = $request->get('supervisor_id', 1);
+        
+        $supervisor = Empleado::with('rol')
+            ->whereHas('rol', function($q) {
+                $q->where('nombre', 'supervisor');
+            })
+            ->find($supervisorId);
+        
+        if (!$supervisor) {
+            // Si no encuentra el supervisor específico, toma el primero disponible
+            $supervisor = Empleado::with('rol')
+                ->whereHas('rol', function($q) {
+                    $q->where('nombre', 'supervisor');
+                })
+                ->first();
+        }
+        
+        return $supervisor;
     }
 }

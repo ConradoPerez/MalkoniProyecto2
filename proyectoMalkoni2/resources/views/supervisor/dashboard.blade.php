@@ -21,7 +21,21 @@
                     <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-8 w-auto">
                 </div>
                 <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-full bg-gray-300"></div>
+                    <span class="text-xs font-medium text-gray-900">
+                        {{ isset($supervisor) && $supervisor ? $supervisor->nombre : 'Supervisor' }}
+                    </span>
+                    <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                        @if(isset($supervisor) && $supervisor->foto)
+                            <img class="w-8 h-8 rounded-full object-cover" 
+                                 src="{{ asset('storage/' . $supervisor->foto) }}" 
+                                 alt="{{ $supervisor->nombre }}">
+                        @else
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
