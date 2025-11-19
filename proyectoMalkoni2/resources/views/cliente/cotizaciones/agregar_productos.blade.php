@@ -35,14 +35,12 @@
                     </ol>
                 </nav>
 
-                <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
-                    <div>
-                        <h2 class="text-2xl font-syncopate font-bold text-gray-800">{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? 'SELECCIONAR PRODUCTOS' : 'AGREGAR PRODUCTOS' }}</h2>
-                        <p class="text-sm text-gray-500 mt-1">{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? 'Elige los productos para tu nueva cotización' : 'Agrega items a la cotización' }} @if(!isset($esNuevaCotizacion) || !$esNuevaCotizacion)<span class="font-semibold text-[#D88429]">#{{ $cotizacion->numero_cotizacion }}</span>@endif</p>
-                    </div>
+                <div class="mb-8">
+                    <h2 class="text-2xl font-syncopate font-bold text-gray-800 text-center mb-2">{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? 'SELECCIONAR PRODUCTOS' : 'AGREGAR PRODUCTOS' }}</h2>
+                    <p class="text-sm text-gray-500 text-center mb-6">{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? 'Elige los productos para tu nueva cotización' : 'Agrega items a la cotización' }} @if(!isset($esNuevaCotizacion) || !$esNuevaCotizacion)<span class="font-semibold text-[#D88429]">#{{ $cotizacion->numero_cotizacion }}</span>@endif</p>
                     
-                    <div class="w-full md:w-1/3 relative">
-                        <input type="text" placeholder="Buscar productos..." class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 focus:border-[#D88429] focus:ring-2 focus:ring-[#D88429]/20 outline-none transition-all shadow-sm text-sm" id="buscar-productos">
+                    <div class="max-w-xl mx-auto relative">
+                        <input type="text" placeholder="Buscar productos..." class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-[#D88429] focus:ring-2 focus:ring-[#D88429]/20 outline-none transition-all shadow-md" id="buscar-productos">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -71,166 +69,198 @@
                 <form action="{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? route('cliente.cotizacion.crear_con_productos', ['persona_id' => $personaId]) : route('cliente.cotizacion.guardar_productos', ['id' => $cotizacion->id ?? 0, 'persona_id' => $personaId]) }}" method="POST" id="formProductos">
                     @csrf
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         
-                        <div class="lg:col-span-2">
+                        <!-- Contenido principal: 3 columnas -->
+                        <div class="lg:col-span-3">
                             
-                            <!-- Filtros por categoría -->
-                            <div class="flex gap-2 overflow-x-auto pb-4 mb-4 no-scrollbar">
-                                <button type="button" class="filtro-categoria px-4 py-2 bg-gray-800 text-white rounded-full text-sm font-medium whitespace-nowrap shadow-md" data-categoria="todos">Todos</button>
-                                @foreach($categorias as $cat)
-                                    @if($cat->subcategorias->sum(function($sub) { return $sub->productos->count(); }) > 0)
-                                        <button type="button" class="filtro-categoria px-4 py-2 bg-white text-gray-600 border border-gray-200 rounded-full text-sm font-medium whitespace-nowrap hover:bg-gray-50 hover:border-gray-300 transition-colors" data-categoria="{{ $cat->id_categoria }}">{{ $cat->nombre }}</button>
-                                    @endif
-                                @endforeach
-                            </div>
-
-                            <!-- Grid de productos -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" id="productos-grid">
-                                @php $productoIndex = 0; @endphp
-                                @foreach($categorias as $categoria)
-                                    @foreach($categoria->subcategorias as $subcategoria)
-                                        @foreach($subcategoria->productos as $producto)
-                                            @php 
-                                                $tipoNombre = '';
-                                                $subtipoNombre = '';
-                                                
-                                                // Verificación más robusta para evitar errores
-                                                if (isset($producto->subtipo) && $producto->subtipo !== null) {
-                                                    $subtipoNombre = $producto->subtipo->nombre ?? '';
-                                                    if (isset($producto->subtipo->tipo) && $producto->subtipo->tipo !== null) {
-                                                        $tipoNombre = $producto->subtipo->tipo->nombre ?? '';
-                                                    }
-                                                }
-                                            @endphp
-                                            <div class="producto-card bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group flex flex-col h-full" 
-                                                 data-categoria="{{ $categoria->id_categoria }}"
-                                                 data-nombre="{{ strtolower($producto->nombre) }}"
-                                                 data-descripcion="{{ strtolower($producto->descripcion ?? '') }}"
-                                                 data-tipo="{{ strtolower($tipoNombre . ' ' . $subtipoNombre) }}">
-                                                
-                                                <div class="relative h-48 bg-gray-100 overflow-hidden">
-                                                    @if($producto->foto)
-                                                        <img src="{{ asset($producto->foto) }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" alt="{{ $producto->nombre }}">
-                                                    @else
-                                                        <div class="flex items-center justify-center h-full text-gray-300">
-                                                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                                        </div>
-                                                    @endif
-                                                </div>
-
-                                                <div class="p-5 flex-1 flex flex-col">
-                                                    <div class="mb-auto">
-                                                        <h3 class="font-bold text-gray-900 text-base mb-1 leading-tight">{{ $producto->nombre }}</h3>
-                                                        
-                                                        @if($tipoNombre || $subtipoNombre)
-                                                            <p class="text-xs text-[#D88429] mb-2 font-medium">
-                                                                @if($tipoNombre)
-                                                                    {{ $tipoNombre }}
-                                                                    @if($subtipoNombre) - @endif
-                                                                @endif
-                                                                {{ $subtipoNombre }}
-                                                            </p>
-                                                        @endif
-                                                        
-                                                        @if($producto->descripcion)
-                                                            <p class="text-xs text-gray-500 line-clamp-2 mb-3">{{ $producto->descripcion }}</p>
-                                                        @endif
-                                                    </div>
-
-                                                    <div class="mt-4 pt-4 border-t border-gray-50">
-                                                        <div class="flex items-center bg-gray-50 rounded-lg border border-gray-200 p-1">
-                                                            <button type="button" onclick="ajustarCantidad('{{ $producto->id_producto }}', -1)" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white rounded-md transition-colors">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
-                                                            </button>
-                                                            
-                                                            <input type="hidden" name="productos[{{ $productoIndex }}][id_producto]" value="{{ $producto->id_producto }}">
-                                                            <input type="number" 
-                                                                   id="input-{{ $producto->id_producto }}"
-                                                                   name="productos[{{ $productoIndex }}][cantidad]" 
-                                                                   value="0" 
-                                                                   min="0"
-                                                                   class="flex-1 w-full text-center bg-transparent border-none focus:ring-0 text-gray-900 font-semibold p-0 cantidad-input"
-                                                                   data-producto="{{ $producto->id_producto }}"
-                                                                   data-nombre="{{ $producto->nombre }}"
-                                                                   readonly>
-                                                                   
-                                                            <button type="button" onclick="ajustarCantidad('{{ $producto->id_producto }}', 1)" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-green-600 hover:bg-white rounded-md transition-colors">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                            <!-- Organización jerárquica por Categorías -->
+                            @php $productoIndex = 0; @endphp
+                            
+                            @foreach($categorias as $categoria)
+                                @php
+                                    // Contar productos en esta categoría
+                                    $totalProductosCategoria = $categoria->subcategorias->sum(function($sub) {
+                                        return $sub->productos->count();
+                                    });
+                                @endphp
+                                
+                                @if($totalProductosCategoria > 0)
+                                    <div class="mb-10 categoria-section" data-categoria="{{ $categoria->id_categoria }}">
+                                        <!-- Header de Categoría -->
+                                        <div class="flex items-center mb-6">
+                                            <div class="flex-1">
+                                                <h3 class="text-xl font-bold text-gray-800 uppercase">{{ $categoria->nombre }}</h3>
+                                                @if($categoria->descripcion)
+                                                    <p class="text-sm text-gray-500 mt-1">{{ $categoria->descripcion }}</p>
+                                                @endif
                                             </div>
-                                            @php $productoIndex++; @endphp
+                                            <span class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                                                {{ $totalProductosCategoria }} productos
+                                            </span>
+                                        </div>
+
+                                        <!-- Subcategorías dentro de esta categoría -->
+                                        @foreach($categoria->subcategorias as $subcategoria)
+                                            @if($subcategoria->productos->count() > 0)
+                                                <div class="mb-8 subcategoria-section" data-subcategoria="{{ $subcategoria->id_subcategoria }}">
+                                                    <h4 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                                                        <span class="w-1 h-6 bg-[#D88429] mr-3 rounded-full"></span>
+                                                        {{ $subcategoria->nombre }}
+                                                        <span class="ml-2 text-xs text-gray-400 font-normal">({{ $subcategoria->productos->count() }})</span>
+                                                    </h4>
+
+                                                    <!-- Grid de productos -->
+                                                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                                                        @foreach($subcategoria->productos as $producto)
+                                                            @php 
+                                                                $tipoNombre = '';
+                                                                $subtipoNombre = '';
+                                                                
+                                                                if (isset($producto->subtipo) && $producto->subtipo !== null) {
+                                                                    $subtipoNombre = $producto->subtipo->nombre ?? '';
+                                                                    if (isset($producto->subtipo->tipo) && $producto->subtipo->tipo !== null) {
+                                                                        $tipoNombre = $producto->subtipo->tipo->nombre ?? '';
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            
+                                                            <div class="producto-card bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group flex flex-col" 
+                                                                 data-producto-id="{{ $producto->id_producto }}"
+                                                                 data-categoria="{{ $categoria->id_categoria }}"
+                                                                 data-subcategoria="{{ $subcategoria->id_subcategoria }}"
+                                                                 data-nombre="{{ strtolower($producto->nombre) }}"
+                                                                 data-descripcion="{{ strtolower($producto->descripcion ?? '') }}"
+                                                                 data-tipo="{{ strtolower($tipoNombre . ' ' . $subtipoNombre) }}">
+                                                                
+                                                                <div class="relative h-44 bg-gray-100 overflow-hidden">
+                                                                    @if($producto->foto)
+                                                                        <img src="{{ asset($producto->foto) }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" alt="{{ $producto->nombre }}">
+                                                                    @else
+                                                                        <div class="flex items-center justify-center h-full text-gray-300">
+                                                                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+
+                                                                <div class="p-4 flex-1 flex flex-col">
+                                                                    <div class="mb-auto">
+                                                                        <h5 class="font-bold text-gray-900 text-sm mb-1 leading-tight">{{ $producto->nombre }}</h5>
+                                                                        
+                                                                        @if($tipoNombre || $subtipoNombre)
+                                                                            <p class="text-xs text-[#D88429] mb-2 font-medium">
+                                                                                @if($tipoNombre)
+                                                                                    {{ $tipoNombre }}
+                                                                                    @if($subtipoNombre) • @endif
+                                                                                @endif
+                                                                                {{ $subtipoNombre }}
+                                                                            </p>
+                                                                        @endif
+                                                                        
+                                                                        @if($producto->descripcion)
+                                                                            <p class="text-xs text-gray-500 line-clamp-2">{{ $producto->descripcion }}</p>
+                                                                        @endif
+                                                                    </div>
+
+                                                                    <div class="mt-3 pt-3 border-t border-gray-50">
+                                                                        <div class="flex items-center bg-gray-50 rounded-lg border border-gray-200 p-1">
+                                                                            <button type="button" onclick="ajustarCantidad({{ $producto->id_producto }}, -1)" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white rounded-md transition-colors">
+                                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                                                                            </button>
+                                                                            
+                                                                            <input type="hidden" name="productos[{{ $productoIndex }}][id_producto]" value="{{ $producto->id_producto }}">
+                                                                            <input type="number" 
+                                                                                   id="input-{{ $producto->id_producto }}"
+                                                                                   name="productos[{{ $productoIndex }}][cantidad]" 
+                                                                                   value="0" 
+                                                                                   min="0"
+                                                                                   class="flex-1 w-full text-center bg-transparent border-none focus:ring-0 text-gray-900 font-semibold p-0 cantidad-input"
+                                                                                   data-producto="{{ $producto->id_producto }}"
+                                                                                   data-nombre="{{ $producto->nombre }}"
+                                                                                   readonly>
+                                                                                   
+                                                                            <button type="button" onclick="ajustarCantidad({{ $producto->id_producto }}, 1)" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-green-600 hover:bg-white rounded-md transition-colors">
+                                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            @php $productoIndex++; @endphp
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
                                         @endforeach
-                                    @endforeach
-                                @endforeach
-                            </div>
+                                    </div>
+                                @endif
+                            @endforeach
                             
-                            <div id="no-productos" class="hidden text-center py-12">
+                            <div id="no-productos" class="hidden text-center py-12 bg-white rounded-xl border border-gray-200">
                                 <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.5-1.006-6-2.709V19a1 1 0 001 1h10a1 1 0 001-1v-6.709z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                                 <p class="text-gray-500">No se encontraron productos que coincidan con tu búsqueda.</p>
                             </div>
                         </div>
 
-                        <!-- Sidebar: Resumen de Cotización -->
+                        <!-- Sidebar: Resumen de Cotización (Sticky) - 1 columna -->
                         <div class="lg:col-span-1">
-                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 sticky top-4">
-                                <div class="p-6">
-                                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                                        <svg class="w-5 h-5 mr-2 text-[#D88429]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                                        </svg>
-                                        Resumen de Cotización
-                                    </h3>
+                            <div class="lg:sticky lg:top-8">
+                                <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+                                    <div class="p-6">
+                                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-[#D88429]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                            </svg>
+                                            Resumen de Cotización
+                                        </h3>
 
-                                    <div class="space-y-4 mb-6">
-                                        <div class="flex items-start justify-between text-sm">
-                                            <span class="text-gray-600">Cliente:</span>
-                                            <span class="font-medium text-gray-900 text-right max-w-[140px]">{{ $cotizacion->cliente_nombre }}</span>
+                                        <div class="space-y-3 mb-6 pb-4 border-b border-gray-100">
+                                            <div class="flex items-start justify-between text-sm">
+                                                <span class="text-gray-600">Cliente:</span>
+                                                <span class="font-medium text-gray-900 text-right max-w-[140px]">{{ $cotizacion->cliente_nombre }}</span>
+                                            </div>
+                                            <div class="flex items-center justify-between text-sm">
+                                                <span class="text-gray-600">Código:</span>
+                                                <span class="font-mono text-gray-900">{{ $cotizacion->numero_cotizacion }}</span>
+                                            </div>
+                                            <div class="flex items-center justify-between text-sm">
+                                                <span class="text-gray-600">Estado:</span>
+                                                <span class="px-2 py-1 rounded-full text-xs font-medium
+                                                    {{ $cotizacion->estado_actual === 'Nuevo' ? 'bg-blue-100 text-blue-800' : 
+                                                       ($cotizacion->estado_actual === 'Abierto' ? 'bg-yellow-100 text-yellow-800' : 
+                                                       ($cotizacion->estado_actual === 'Cerrado' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800')) }}">
+                                                    {{ $cotizacion->estado_actual }}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div class="flex items-center justify-between text-sm">
-                                            <span class="text-gray-600">Código:</span>
-                                            <span class="font-mono text-gray-900">{{ $cotizacion->numero_cotizacion }}</span>
-                                        </div>
-                                        <div class="flex items-center justify-between text-sm">
-                                            <span class="text-gray-600">Estado:</span>
-                                            <span class="px-2 py-1 rounded-full text-xs font-medium
-                                                {{ $cotizacion->estado_actual === 'Nuevo' ? 'bg-blue-100 text-blue-800' : 
-                                                   ($cotizacion->estado_actual === 'Abierto' ? 'bg-yellow-100 text-yellow-800' : 
-                                                   ($cotizacion->estado_actual === 'Cerrado' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800')) }}">
-                                                {{ $cotizacion->estado_actual }}
-                                            </span>
-                                        </div>
-                                    </div>
 
-                                    <div class="border-t border-gray-100 pt-4 mb-4">
-                                        <div class="flex items-center justify-between text-sm mb-3">
-                                            <span class="font-medium text-gray-900">Productos Seleccionados</span>
-                                            <span id="total-productos" class="px-2 py-1 bg-[#D88429] text-white text-xs font-bold rounded-full min-w-[20px] text-center">0</span>
-                                        </div>
-                                        
-                                        <div id="productos-seleccionados" class="space-y-2 max-h-64 overflow-y-auto">
-                                            <div id="mensaje-vacio" class="text-sm text-gray-500 text-center py-4 border border-dashed border-gray-200 rounded-lg">
-                                                <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                                </svg>
-                                                Aún no has seleccionado productos
+                                        <div class="mb-4">
+                                            <div class="flex items-center justify-between text-sm mb-3">
+                                                <span class="font-medium text-gray-900">Productos Seleccionados</span>
+                                                <span id="total-productos" class="px-2.5 py-1 bg-[#D88429] text-white text-xs font-bold rounded-full min-w-[24px] text-center">0</span>
+                                            </div>
+                                            
+                                            <div id="productos-seleccionados" class="space-y-2 max-h-80 overflow-y-auto">
+                                                <div id="mensaje-vacio" class="text-sm text-gray-500 text-center py-8 border border-dashed border-gray-200 rounded-lg">
+                                                    <svg class="w-10 h-10 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                                    </svg>
+                                                    <p class="text-xs">Aún no has seleccionado productos</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-xl">
-                                    <button type="submit" id="btnGuardar" class="w-full bg-[#D88429] hover:bg-[#c17623] text-white py-3 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                        {{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? 'Crear Cotización' : 'Agregar Productos' }}
-                                    </button>
+                                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+                                        <button type="submit" id="btnGuardar" class="w-full bg-[#D88429] hover:bg-[#c17623] text-white py-3 px-4 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md hover:shadow-lg" disabled>
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            {{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? 'Crear Cotización' : 'Agregar Productos' }}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -281,73 +311,33 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const cantidadInputs = document.querySelectorAll('.cantidad-input');
-        const searchInput = document.getElementById('search-input');
-        const filtrosCategorias = document.querySelectorAll('.filtro-categoria');
-        const productosGrid = document.getElementById('productos-grid');
+        const buscarInput = document.getElementById('buscar-productos');
         const noProductos = document.getElementById('no-productos');
         const totalProductos = document.getElementById('total-productos');
         const productosSeleccionados = document.getElementById('productos-seleccionados');
         const mensajeVacio = document.getElementById('mensaje-vacio');
         const btnGuardar = document.getElementById('btnGuardar');
+        const formProductos = document.getElementById('formProductos');
 
-        // Variables para el estado
-        let categoriaActiva = 'todos';
-        let terminoBusqueda = '';
         let productosEnResumen = {};
+        let terminoBusqueda = '';
 
-        // Función para filtrar productos
-        function filtrarProductos() {
-            const productos = document.querySelectorAll('.producto-card');
-            let productosVisibles = 0;
-
-            productos.forEach(producto => {
-                const categoriaProducto = producto.getAttribute('data-categoria');
-                const nombreProducto = producto.getAttribute('data-nombre') || '';
-                const descripcionProducto = producto.getAttribute('data-descripcion') || '';
-                const tipoProducto = producto.getAttribute('data-tipo') || '';
-                
-                const textoCompleto = nombreProducto + ' ' + descripcionProducto + ' ' + tipoProducto;
-                
-                // Verificar categoría
-                const coincideCategoria = categoriaActiva === 'todos' || categoriaProducto === categoriaActiva;
-                
-                // Verificar búsqueda
-                const coincideBusqueda = terminoBusqueda === '' || textoCompleto.includes(terminoBusqueda);
-                
-                if (coincideCategoria && coincideBusqueda) {
-                    producto.style.display = 'flex';
-                    productosVisibles++;
-                } else {
-                    producto.style.display = 'none';
-                }
-            });
-
-            // Mostrar/ocultar mensaje de no productos
-            if (productosVisibles === 0) {
-                noProductos.classList.remove('hidden');
-                productosGrid.style.display = 'none';
-            } else {
-                noProductos.classList.add('hidden');
-                productosGrid.style.display = 'grid';
-            }
-        }
-
-        // Función para ajustar cantidad
-        function ajustarCantidad(productoId, cambio) {
+        // Función global para ajustar cantidad
+        window.ajustarCantidad = function(productoId, cambio) {
             const input = document.getElementById(`input-${productoId}`);
-            const nuevaCantidad = Math.max(0, parseInt(input.value) + cambio);
+            if (!input) return;
+            
+            const nuevaCantidad = Math.max(0, parseInt(input.value || 0) + cambio);
             input.value = nuevaCantidad;
             
-            // Actualizar resumen
             actualizarResumen();
-        }
+        };
 
         // Función para actualizar el resumen
         function actualizarResumen() {
             productosEnResumen = {};
             let totalCount = 0;
 
-            // Recorrer todos los inputs de cantidad
             cantidadInputs.forEach(input => {
                 const cantidad = parseInt(input.value) || 0;
                 if (cantidad > 0) {
@@ -361,13 +351,8 @@
                 }
             });
 
-            // Actualizar contador
             totalProductos.textContent = totalCount;
-
-            // Actualizar lista de productos seleccionados
             actualizarListaResumen();
-
-            // Habilitar/deshabilitar botón
             btnGuardar.disabled = totalCount === 0;
         }
 
@@ -380,13 +365,13 @@
             } else {
                 Object.entries(productosEnResumen).forEach(([id, producto]) => {
                     const item = document.createElement('div');
-                    item.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200';
+                    item.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors';
                     item.innerHTML = `
                         <div class="flex-1 min-w-0">
                             <p class="font-medium text-gray-900 text-sm truncate">${producto.nombre}</p>
-                            <p class="text-xs text-gray-600">Cantidad: ${producto.cantidad}</p>
+                            <p class="text-xs text-gray-600 mt-0.5">Cantidad: <span class="font-semibold">${producto.cantidad}</span></p>
                         </div>
-                        <button type="button" onclick="ajustarCantidad('${id}', -${producto.cantidad})" class="ml-2 p-1 text-red-500 hover:bg-red-50 rounded">
+                        <button type="button" onclick="ajustarCantidad(${id}, -${producto.cantidad})" class="ml-2 p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -397,50 +382,96 @@
             }
         }
 
-        // Event listeners para búsqueda
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
+        // Función para filtrar productos
+        function filtrarProductos() {
+            const categorias = document.querySelectorAll('.categoria-section');
+            const subcategorias = document.querySelectorAll('.subcategoria-section');
+            const productos = document.querySelectorAll('.producto-card');
+            
+            let productosVisibles = 0;
+            let categoriasVisibles = new Set();
+            let subcategoriasVisibles = new Set();
+
+            productos.forEach(producto => {
+                const nombreProducto = producto.getAttribute('data-nombre') || '';
+                const descripcionProducto = producto.getAttribute('data-descripcion') || '';
+                const tipoProducto = producto.getAttribute('data-tipo') || '';
+                const textoCompleto = nombreProducto + ' ' + descripcionProducto + ' ' + tipoProducto;
+                
+                const coincideBusqueda = terminoBusqueda === '' || textoCompleto.includes(terminoBusqueda);
+                
+                if (coincideBusqueda) {
+                    producto.style.display = 'flex';
+                    productosVisibles++;
+                    
+                    const categoriaId = producto.getAttribute('data-categoria');
+                    const subcategoriaId = producto.getAttribute('data-subcategoria');
+                    
+                    if (categoriaId) categoriasVisibles.add(categoriaId);
+                    if (subcategoriaId) subcategoriasVisibles.add(subcategoriaId);
+                } else {
+                    producto.style.display = 'none';
+                }
+            });
+
+            // Mostrar/ocultar subcategorías
+            subcategorias.forEach(sub => {
+                const subId = sub.getAttribute('data-subcategoria');
+                if (subcategoriasVisibles.has(subId)) {
+                    sub.style.display = 'block';
+                } else {
+                    sub.style.display = 'none';
+                }
+            });
+
+            // Mostrar/ocultar categorías
+            categorias.forEach(cat => {
+                const catId = cat.getAttribute('data-categoria');
+                if (categoriasVisibles.has(catId)) {
+                    cat.style.display = 'block';
+                } else {
+                    cat.style.display = 'none';
+                }
+            });
+
+            // Mostrar mensaje de no productos
+            if (productosVisibles === 0) {
+                noProductos.classList.remove('hidden');
+            } else {
+                noProductos.classList.add('hidden');
+            }
+        }
+
+        // Event listener para búsqueda
+        if (buscarInput) {
+            buscarInput.addEventListener('input', function() {
                 terminoBusqueda = this.value.toLowerCase();
                 filtrarProductos();
             });
         }
-
-        // Event listeners para filtros de categoría
-        filtrosCategorias.forEach(filtro => {
-            filtro.addEventListener('click', function() {
-                // Remover clase activa de todos los filtros
-                filtrosCategorias.forEach(f => {
-                    f.classList.remove('bg-gray-800', 'text-white');
-                    f.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
-                });
-                
-                // Agregar clase activa al filtro clickeado
-                this.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
-                this.classList.add('bg-gray-800', 'text-white');
-                
-                categoriaActiva = this.getAttribute('data-categoria');
-                filtrarProductos();
-            });
-        });
 
         // Event listeners para inputs de cantidad
         cantidadInputs.forEach(input => {
             input.addEventListener('change', actualizarResumen);
         });
 
-        // Hacer función global para los botones
-        window.ajustarCantidad = ajustarCantidad;
-
         // Validar envío del formulario
-        document.getElementById('formProductos').addEventListener('submit', function(e) {
+        formProductos.addEventListener('submit', function(e) {
             let tieneProductos = false;
+            let productosConCantidad = 0;
             
-            // Primero, verificar si hay productos seleccionados
+            // Verificar si hay productos seleccionados Y contar los que tienen cantidad
             cantidadInputs.forEach(input => {
-                if (parseInt(input.value) > 0) {
+                const cantidad = parseInt(input.value) || 0;
+                if (cantidad > 0) {
                     tieneProductos = true;
+                    productosConCantidad++;
+                    console.log('Producto:', input.getAttribute('data-nombre'), 'Cantidad:', cantidad);
                 }
             });
+
+            console.log('Total productos con cantidad:', productosConCantidad);
+            console.log('Total inputs en el formulario:', cantidadInputs.length);
 
             if (!tieneProductos) {
                 e.preventDefault();
@@ -448,24 +479,13 @@
                 return false;
             }
             
-            // Eliminar inputs de productos con cantidad 0 para evitar envío innecesario
-            cantidadInputs.forEach(input => {
-                const cantidad = parseInt(input.value) || 0;
-                if (cantidad === 0) {
-                    // Encontrar el input hidden correspondiente y removerlo también
-                    const productoId = input.getAttribute('data-producto');
-                    const hiddenInput = document.querySelector(`input[type="hidden"][value="${productoId}"]`);
-                    if (hiddenInput) {
-                        hiddenInput.remove();
-                    }
-                    input.remove();
-                }
-            });
+            console.log('✓ Formulario válido, enviando...');
+            // Permitir que el formulario se envíe normalmente
+            return true;
         });
 
         // Inicializar
         actualizarResumen();
-        filtrarProductos();
     });
 </script>
 

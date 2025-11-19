@@ -15,7 +15,7 @@
                 <nav class="flex mb-6 mt-4" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 md:space-x-3">
                         <li>
-                            <a href="{{ route('cliente.cotizaciones', ['persona_id' => $personaId]) }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
+                            <a href="{{ route('cliente.dashboard', ['persona_id' => $personaId]) }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                                 Mis Cotizaciones
                             </a>
@@ -104,7 +104,7 @@
                                             <tr>
                                                 <td colspan="4" class="px-6 py-10 text-center text-gray-500">
                                                     No hay items en esta cotización. 
-                                                    <a href="{{ route('cliente.cotizacion.productos', ['id' => $cotizacion->id, 'persona_id' => $personaId]) }}" class="text-[#D88429] hover:underline ml-1">Agregar productos</a>
+                                                    <a href="{{ route('cliente.cotizacion.agregar_productos', ['id' => $cotizacion->id, 'persona_id' => $personaId]) }}" class="text-[#D88429] hover:underline ml-1">Agregar productos</a>
                                                 </td>
                                             </tr>
                                         @endforelse
@@ -113,7 +113,7 @@
                             </div>
                             
                             <div class="bg-gray-50 px-6 py-3 border-t border-gray-100">
-                                <a href="{{ route('cliente.cotizacion.productos', ['id' => $cotizacion->id, 'persona_id' => $personaId]) }}" class="text-sm font-medium text-[#166379] hover:text-[#0e4555] hover:underline flex items-center justify-center sm:justify-start">
+                                <a href="{{ route('cliente.cotizacion.agregar_productos', ['id' => $cotizacion->id, 'persona_id' => $personaId]) }}" class="text-sm font-medium text-[#166379] hover:text-[#0e4555] hover:underline flex items-center justify-center sm:justify-start">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                     Agregar más productos
                                 </a>

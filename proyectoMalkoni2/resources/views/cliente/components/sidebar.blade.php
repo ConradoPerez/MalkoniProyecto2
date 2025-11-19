@@ -15,16 +15,7 @@
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M3 13h2v8H3zm4-8h2v16H7zm4-2h2v18h-2zm4 4h2v14h-2zm4-4h2v18h-2z"/>
             </svg>
-            <span>Dashboard</span>
-        </a>
-
-        <!-- Cotizaciones -->
-        <a href="{{ route('cliente.cotizaciones', ['persona_id' => request('persona_id', 1)]) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.cotizaciones') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
-           style="{{ request()->routeIs('cliente.cotizaciones') ? 'background-color: #D88429;' : '' }}">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10.5 1.5H2v9l8.5 8.5 9-9-8.5-8.5zm-2 5.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
-            </svg>
-            <span>Cotizaciones</span>
+            <span>Mis Cotizaciones</span>
         </a>
 
         <!-- Nueva Cotización -->

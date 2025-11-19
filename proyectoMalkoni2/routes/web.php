@@ -80,9 +80,6 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
     
     // Dashboard principal del Cliente
     Route::get('/dashboard', [ClienteDashboardController::class, 'dashboard'])->name('dashboard');
-
-    // Rutas de Navegación del Sidebar
-    Route::get('/cotizaciones', [ClienteDashboardController::class, 'cotizaciones'])->name('cotizaciones');
     Route::get('/nueva-cotizacion', [ClienteDashboardController::class, 'createQuotation'])->name('nueva_cotizacion'); 
 
     // --- NUEVAS RUTAS DE CREACIÓN Y FLUJO DE COTIZACIÓN ---

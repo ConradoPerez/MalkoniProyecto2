@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class ClienteDashboardController extends Controller
 {
     /**
-     * Muestra la vista principal del Dashboard del Cliente.
+     * Muestra la vista principal del Dashboard del Cliente con cotizaciones paginadas.
      */
     public function dashboard(Request $request)
     {
@@ -30,60 +30,35 @@ class ClienteDashboardController extends Controller
         // Obtener el nombre de la empresa asociada a la persona
         $nombreEmpresa = $cliente->empresa ? $cliente->empresa->nombre : 'Sin empresa';
 
-        // 1. Obtener las últimas cotizaciones para la tabla del dashboard del cliente.
-        $ultimasCotizaciones = Cotizacion::with(['empresa', 'empleado'])
-            // Filtra solo las cotizaciones del cliente (usando id_personas)
-            ->where('id_personas', $personaId) 
-            ->orderByDesc('fyh')
-            ->get();
-        
-        // Para cada cotización, obtener su estado actual
-        foreach ($ultimasCotizaciones as $cotizacion) {
-            $ultimoCambio = \App\Models\Cambio::where('id_cotizaciones', $cotizacion->id)
-                ->with('estado')
-                ->latest('fyH')
-                ->first();
-            
-            $cotizacion->estado_actual = $ultimoCambio ? $ultimoCambio->estado : null;
+        // Obtener parámetros de búsqueda y filtrado
+        $search = $request->get('search');
+        $estado = $request->get('estado');
+        $fechaDesde = $request->get('fecha_desde');
+        $fechaHasta = $request->get('fecha_hasta');
+
+        // Query base para las cotizaciones del cliente
+        $query = Cotizacion::with(['empresa', 'empleado'])
+            ->where('id_personas', $personaId);
+
+        // Aplicar filtros de búsqueda
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('numero', 'like', "%{$search}%")
+                  ->orWhere('titulo', 'like', "%{$search}%");
+            });
         }
-        
-        // Ordenar por prioridad de estado: Nuevo > Abierto > Cotizado > En entrega
-        // Dentro de cada estado, ordenar por fecha descendente (más reciente primero)
-        $ordenEstados = ['Nuevo' => 1, 'Abierto' => 2, 'Cotizado' => 3, 'En entrega' => 4];
-        $ultimasCotizaciones = $ultimasCotizaciones->sortBy([
-            fn($a, $b) => ($ordenEstados[$a->estado_actual->nombre ?? 'Nuevo'] ?? 5) <=> ($ordenEstados[$b->estado_actual->nombre ?? 'Nuevo'] ?? 5),
-            fn($a, $b) => $b->fyh <=> $a->fyh
-        ])->take(5);
-        
-        return view('cliente.dashboard', compact(
-            'ultimasCotizaciones',
-            'personaId',
-            'cliente',
-            'nombreEmpresa'
-        ));
-    }
-    
-    // =========================================================================
-    // MÉTODOS DE NAVEGACIÓN Y COTIZACIONES
-    // =========================================================================
 
-    public function cotizaciones(Request $request)
-    {
-        // Obtener el ID de la persona desde la request
-        $personaId = $request->get('persona_id', 1);
-        
-        // Obtener información del cliente con su empresa
-        $cliente = \App\Models\Persona::with('empresa')->find($personaId);
-        
-        // Obtener el nombre de la empresa asociada a la persona
-        $nombreEmpresa = $cliente && $cliente->empresa ? $cliente->empresa->nombre : 'Sin empresa';
-        
-        // Obtener todas las cotizaciones del cliente
-        $todasCotizaciones = Cotizacion::with(['empresa', 'empleado'])
-            ->where('id_personas', $personaId)
-            ->orderByDesc('fyh')
-            ->get();
+        // Filtro por rango de fechas
+        if ($fechaDesde) {
+            $query->whereDate('fyh', '>=', $fechaDesde);
+        }
+        if ($fechaHasta) {
+            $query->whereDate('fyh', '<=', $fechaHasta);
+        }
 
+        // Obtener todas las cotizaciones que cumplen los filtros
+        $todasCotizaciones = $query->orderByDesc('fyh')->get();
+        
         // Para cada cotización, obtener su estado actual
         foreach ($todasCotizaciones as $cotizacion) {
             $ultimoCambio = \App\Models\Cambio::where('id_cotizaciones', $cotizacion->id)
@@ -93,6 +68,13 @@ class ClienteDashboardController extends Controller
             
             $cotizacion->estado_actual = $ultimoCambio ? $ultimoCambio->estado : null;
         }
+
+        // Aplicar filtro por estado después de cargar el estado actual
+        if ($estado) {
+            $todasCotizaciones = $todasCotizaciones->filter(function($cotizacion) use ($estado) {
+                return ($cotizacion->estado_actual->nombre ?? 'Nuevo') === $estado;
+            });
+        }
         
         // Ordenar por prioridad de estado: Nuevo > Abierto > Cotizado > En entrega
         // Dentro de cada estado, ordenar por fecha descendente (más reciente primero)
@@ -101,20 +83,48 @@ class ClienteDashboardController extends Controller
             fn($a, $b) => ($ordenEstados[$a->estado_actual->nombre ?? 'Nuevo'] ?? 5) <=> ($ordenEstados[$b->estado_actual->nombre ?? 'Nuevo'] ?? 5),
             fn($a, $b) => $b->fyh <=> $a->fyh
         ]);
-        
+
         // Paginar manualmente
-        $page = request()->get('page', 1);
+        $page = $request->get('page', 1);
         $perPage = 10;
         $cotizaciones = new \Illuminate\Pagination\LengthAwarePaginator(
             $cotizacionesOrdenadas->forPage($page, $perPage),
             $cotizacionesOrdenadas->count(),
             $perPage,
             $page,
-            ['path' => request()->url(), 'query' => request()->query()]
+            [
+                'path' => $request->url(),
+                'query' => $request->query()
+            ]
         );
 
-        return view('cliente.cotizaciones.index', compact('cotizaciones', 'personaId', 'nombreEmpresa'));
+        // Estadísticas para mostrar
+        $estadisticas = [
+            'total' => $todasCotizaciones->count(),
+            'nuevo' => $todasCotizaciones->filter(fn($c) => ($c->estado_actual->nombre ?? 'Nuevo') === 'Nuevo')->count(),
+            'abierto' => $todasCotizaciones->filter(fn($c) => ($c->estado_actual->nombre ?? 'Nuevo') === 'Abierto')->count(),
+            'cotizado' => $todasCotizaciones->filter(fn($c) => ($c->estado_actual->nombre ?? 'Nuevo') === 'Cotizado')->count(),
+            'en_entrega' => $todasCotizaciones->filter(fn($c) => ($c->estado_actual->nombre ?? 'Nuevo') === 'En entrega')->count(),
+        ];
+
+        // Estadísticas para el sidebar (cotizaciones activas = Nuevo + Abierto)
+        $cotizacionesActivas = $estadisticas['nuevo'] + $estadisticas['abierto'];
+        
+        return view('cliente.dashboard', compact(
+            'cotizaciones',
+            'estadisticas',
+            'cotizacionesActivas',
+            'personaId',
+            'cliente',
+            'nombreEmpresa'
+        ));
     }
+    
+    // =========================================================================
+    // MÉTODOS DE NAVEGACIÓN Y COTIZACIONES
+    // =========================================================================
+    // MÉTODOS DE NAVEGACIÓN Y COTIZACIONES
+    // =========================================================================
     
     /**
      * Muestra el formulario para iniciar una nueva cotización.
@@ -242,28 +252,32 @@ class ClienteDashboardController extends Controller
         $datosCotizacion = session('nueva_cotizacion');
         $personaId = $request->get('persona_id', 1);
         
+        \Log::info('=== CREAR COTIZACIÓN ===');
+        \Log::info('Request completo:', $request->all());
+        \Log::info('Sesión:', $datosCotizacion);
+        
         if (!$datosCotizacion || $datosCotizacion['persona_id'] != $personaId) {
+            \Log::error('Sesión inválida');
             return back()->with('error', 'Sesión expirada. Inicia una nueva cotización.');
         }
         
-        // Validar productos
-        $request->validate([
-            'productos' => 'required|array|min:1',
-            'productos.*.id_producto' => 'required|exists:productos,id_producto',
-            'productos.*.cantidad' => 'required|integer|min:0',
-        ]);
-        
-        // Verificar que al menos un producto tenga cantidad > 0
-        $productosSeleccionados = collect($request->productos)->filter(function($item) {
-            return isset($item['cantidad']) && $item['cantidad'] > 0;
+        // PRIMERO: Filtrar productos con cantidad > 0 ANTES de validar
+        $productosArray = $request->input('productos', []);
+        $productosFiltrados = array_filter($productosArray, function($producto) {
+            return isset($producto['cantidad']) && intval($producto['cantidad']) > 0;
         });
         
-        if ($productosSeleccionados->isEmpty()) {
+        \Log::info('Productos después del filtro:', ['total' => count($productosFiltrados), 'productos' => $productosFiltrados]);
+        
+        if (empty($productosFiltrados)) {
             return back()->withErrors(['productos' => 'Debe seleccionar al menos un producto con cantidad mayor a 0.'])->withInput();
         }
         
+        // Reindexar el array para que tenga índices consecutivos
+        $productosFiltrados = array_values($productosFiltrados);
+        
         try {
-            $cotizacion = DB::transaction(function () use ($datosCotizacion, $request) {
+            $cotizacion = DB::transaction(function () use ($datosCotizacion, $productosFiltrados, $personaId) {
                 // 1. Crear la cotización
                 $cotizacion = Cotizacion::create([
                     'titulo' => 'Cotización #' . $datosCotizacion['numero_pedido'],
@@ -271,29 +285,46 @@ class ClienteDashboardController extends Controller
                     'fyh' => now(),
                     'precio_total' => 0,
                     'id_empleados' => $datosCotizacion['id_empleados'],
-                    'id_personas' => $datosCotizacion['persona_id'],
+                    'id_personas' => $personaId,
                 ]);
                 
+                \Log::info('Cotización creada:', ['id' => $cotizacion->id]);
+                
                 // 2. Agregar productos seleccionados
-                foreach ($productosSeleccionados as $productoData) {
-                    Item::create([
-                        'id_Producto' => $productoData['id_producto'],
-                        'cantidad' => $productoData['cantidad'],
-                        'id_cotizaciones' => $cotizacion->id,
-                    ]);
+                $precioTotal = 0;
+                foreach ($productosFiltrados as $productoData) {
+                    $producto = \App\Models\Producto::find($productoData['id_producto']);
+                    
+                    if ($producto) {
+                        Item::create([
+                            'id_Producto' => $productoData['id_producto'],
+                            'cantidad' => $productoData['cantidad'],
+                            'id_cotizaciones' => $cotizacion->id,
+                        ]);
+                        
+                        $precioTotal += ($producto->precio_final ?? 0) * $productoData['cantidad'];
+                        \Log::info('Item agregado:', ['producto' => $productoData['id_producto'], 'cantidad' => $productoData['cantidad']]);
+                    }
                 }
+                
+                // Actualizar precio total
+                $cotizacion->update(['precio_total' => $precioTotal]);
                 
                 return $cotizacion;
             });
+            
+            \Log::info('✓ Cotización creada exitosamente:', ['id' => $cotizacion->id, 'items' => count($productosFiltrados)]);
             
             // Limpiar sesión
             session()->forget('nueva_cotizacion');
             
             // Redirigir al detalle de la cotización
             return redirect()->route('cliente.cotizacion.ver', ['id' => $cotizacion->id, 'persona_id' => $personaId])
-                           ->with('success', 'Cotización creada exitosamente con ' . $productosSeleccionados->count() . ' productos.');
+                           ->with('success', 'Cotización creada exitosamente con ' . count($productosFiltrados) . ' productos.');
                            
         } catch (\Exception $e) {
+            \Log::error('Error al crear cotización: ' . $e->getMessage());
+            \Log::error($e->getTraceAsString());
             return back()->with('error', 'Error al crear la cotización: ' . $e->getMessage())
                         ->withInput();
         }
