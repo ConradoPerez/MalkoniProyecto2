@@ -471,7 +471,7 @@
     Swal.fire({
         icon: 'success',
         title: '{{ session('cotizacion_guardada')['modificada'] ?? false ? '¡Cotización actualizada!' : '¡Cotización guardada!' }}',
-        html: `La cotización N° <strong>{{ session('cotizacion_guardada')['numero'] }}</strong> ha sido {{ session('cotizacion_guardada')['modificada'] ?? false ? 'actualizada' : 'cotizada' }} con éxito.{{ session('cotizacion_guardada')['modificada'] ?? false ? '' : '<br>Se le notificará al cliente.' }}`,
+        html: `La cotización N° <strong>{{ session('cotizacion_guardada')['numero'] }}</strong> ha sido {{ session('cotizacion_guardada')['modificada'] ?? false ? 'actualizada' : 'cotizada' }} con éxito.{{ session('cotizacion_guardada')['modificada'] ?? false ? '' : " Se le notificará al cliente." }}`,
         confirmButtonText: 'Entendido',
         confirmButtonColor: '#D88429',
         timer: 5000,
