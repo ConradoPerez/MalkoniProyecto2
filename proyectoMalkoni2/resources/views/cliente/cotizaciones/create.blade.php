@@ -10,7 +10,7 @@
         <main class="flex-1 overflow-y-auto md:ml-64 transition-all duration-300">
             
             <div class="p-4 lg:p-8">
-                @include('cliente.components.header')
+
 
                 <nav class="flex mb-6 mt-4" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 md:space-x-3">
