@@ -4,42 +4,66 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 @endpush
 
+@section('title', 'Grupos de Clientes - Vendedor - Malkoni Hnos')
+
 @section('content')
-<div class="min-h-screen bg-background text-gray-900">
-    <div class="flex">
-        {{-- Sidebar --}}
-        @include('vendedor.components.sidebar')
+<div class="min-h-screen text-gray-900">
+    <!-- Sidebar -->
+    @include('vendedor.components.sidebar')
 
-        {{-- Contenido principal --}}
-        <main class="flex-1 overflow-y-auto ml-56">
-            <div class="p-4 lg:p-8">
+    <!-- Main content -->
+    <main class="lg:ml-56">
+        <!-- Mobile Header -->
+        <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+            <div class="flex items-center justify-between">
+                <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="flex items-center">
+                    <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-8 w-auto">
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-medium text-gray-900">Grupos</span>
+                    <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                {{-- Título principal --}}
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4">
+        <div class="p-4 lg:p-8">
+
+                {{-- Título principal responsive --}}
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6 lg:mb-8 gap-4">
                     <div>
-                        <h1 class="text-3xl font-syncopate font-bold text-gray-900 tracking-wide">
-                            GRUPOS DE CLIENTES
+                        <h1 class="text-2xl lg:text-3xl font-bold tracking-tight">
+                            Grupos de Clientes
                         </h1>
                         <p class="text-gray-600 mt-1">
                             Organiza y gestiona grupos de clientes de {{ isset($vendedor) ? $vendedor->nombre : 'Vendedor' }}
                         </p>
                     </div>
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                         {{-- Botón Crear Nuevo Grupo --}}
                         <button onclick="showCreateGroupModal()" 
-                                class="px-6 py-3 rounded-lg text-white font-semibold shadow-sm transition-colors hover:opacity-90 flex items-center"
+                                class="px-4 lg:px-6 py-2 lg:py-3 rounded-lg text-white font-semibold shadow-sm transition-colors hover:opacity-90 flex items-center justify-center"
                                 style="background-color:#D88429;">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                             </svg>
-                            Crear Nuevo Grupo
+                            <span class="hidden sm:inline">Crear Nuevo Grupo</span>
+                            <span class="sm:hidden">Crear Grupo</span>
                         </button>
 
-                        {{-- Info del vendedor --}}
-                        <div class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 grid place-items-center">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        {{-- Info del vendedor (oculto en móvil) --}}
+                        <div class="hidden md:flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-3 lg:px-4 py-2 lg:py-3 shadow-sm">
+                            <div class="w-8 lg:w-10 h-8 lg:h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 grid place-items-center">
+                                <svg class="w-4 lg:w-6 h-4 lg:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                           d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
