@@ -1,0 +1,299 @@
+/* validarUsuarioStyles.css */
+
+/* RESET Y FONDO */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background-image: url('FondoLogin.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  display: flex;
+  height: 600px;
+}
+.left-panel {
+  background-color: #166379;
+  color: white;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40%;
+}
+.logo-img {
+  max-width: 300px;
+}
+.right-panel {
+  background-color: #e1dfd9;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 60%;
+}
+
+/* FORMULARIO */
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.form-title {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  color: #166379;
+  font-size: 2.7rem;
+  margin-bottom: 15px;
+}
+.form-subtitle {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 700;
+  color: #4F4A44;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 500px;
+  margin: 0 auto 10px;
+}
+
+/* INPUTS: ancho aumentado */
+.form-group {
+  width: 100%;
+  max-width: 700px; /* antes 500px */
+  margin: 0 auto 20px;
+}
+.form-input {
+  width: 100%;
+  height: 50px;
+  border: 2px solid #4F4A44;
+  border-radius: 25px;
+  padding: 0 20px;
+  font-size: 1rem;
+  text-align: center;
+  background: white;
+  transition: all 0.3s ease;
+}
+.form-input:focus {
+  outline: none;
+  border-color: #166379;
+  box-shadow: 0 0 0 3px rgba(22, 99, 121, 0.1);
+}
+.form-input::placeholder {
+  color: #999;
+}
+
+/* BOTONES GENERALES */
+.submit-btn {
+  background-color: #D88429;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Satoshi', sans-serif;
+  width: 100%;
+  min-width: 200px;
+  height: 50px;
+}
+.submit-btn:hover {
+  background-color: #c67424;
+  transform: translateY(-2px);
+}
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+/* BOTÓN VOLVER */
+.submit-btn.back {
+  background: #8A9A9C;
+  font-size: 1rem;
+}
+
+/* BOTÓN NUEVA EMPRESA */
+.submit-btn.nueva {
+  background-color: #166379;
+  color: white;
+  font-size: 1rem;
+}
+.submit-btn.nueva:hover {
+  background-color: #0f4e5e;
+}
+
+/* GRUPO DE BOTONES: ocupa mismo ancho que inputs */
+.button-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "verify verify"
+    "back   nueva";
+  gap: 12px;
+  width: 100%;
+  max-width: 700px; /* antes 500px */
+  margin: 20px auto 0;
+}
+.button-group button[type="submit"] {
+  grid-area: verify;
+  width: 100%;
+  height: 50px;
+  margin: 0;
+}
+.button-group .submit-btn.back {
+  grid-area: back;
+  width: 100%;
+  height: 50px;
+  margin: 0;
+}
+.button-group .submit-btn.nueva {
+  grid-area: nueva;
+  width: 100%;
+  height: 50px;
+  margin: 0;
+}
+
+/* OVERLAY */
+#overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  backdrop-filter: blur(5px);
+}
+
+/* MODAL */
+#modal {
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 15px;
+  z-index: 1000;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+.modal-header {
+  padding: 20px 30px;
+  color: #166379;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+.modal-body {
+  padding: 20px 30px;
+  overflow-y: auto;
+  flex: 1;
+}
+#empresa-listado {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+#empresa-listado li {
+  margin-bottom: 15px;
+}
+.empresa-btn {
+  padding: 15px;
+  border: 2px solid #166379;
+  border-radius: 10px;
+  background: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+}
+.empresa-btn:hover {
+  background: #f8f9fa;
+  box-shadow: 0 5px 15px rgba(22, 99, 121, 0.1);
+}
+.empresa-name {
+  font-weight: bold;
+  color: #172A32;
+  margin-bottom: 5px;
+}
+.empresa-info {
+  font-size: 0.85rem;
+  color: #555;
+}
+input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #166379;
+}
+.modal-footer {
+  padding: 15px 30px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  background: white;
+}
+.close-btn,
+.select-btn {
+  border: none;
+  padding: 10px 25px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.close-btn {
+  background-color: #166379;
+  color: white;
+}
+.close-btn:hover {
+  background-color: #0f4e5e;
+}
+.select-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+.select-btn:hover {
+  background-color: #45a049;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    margin: 10px;
+  }
+  .left-panel,
+  .right-panel {
+    padding: 30px 20px;
+  }
+  .form-title {
+    font-size: 2rem;
+  }
+  .form-group,
+  .button-group {
+    max-width: 100%; /* aprovecha todo el ancho en móvil */
+  }
+}

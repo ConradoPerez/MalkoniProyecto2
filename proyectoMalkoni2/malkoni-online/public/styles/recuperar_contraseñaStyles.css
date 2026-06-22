@@ -1,0 +1,200 @@
+:root {
+    font-size: 16px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Fondo igual al login */
+body {
+    background-image: url('FondoLogin.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1.25rem;
+}
+
+/* Contenedor principal */
+.login-container {
+    display: flex;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    box-shadow: 0 1.25rem 2.5rem rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 68.75rem;
+    height: 90vh;
+    max-height: 37.5rem;
+}
+
+/* Panel izquierdo: solo logo, centrado */
+.left-panel {
+    background-color: #166379;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+    padding: 0;
+}
+
+.logo-img {
+    max-width: 300px;
+}
+
+/* Panel derecho: formulario */
+.right-panel {
+    background-color: #e1dfd9;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+    position: relative;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 28rem;
+    padding: 1.25rem;
+}
+
+/* Título y texto */
+.form-container h1 {
+    font-family: 'Syncopate', sans-serif;
+    font-weight: 700;
+    color: #166379;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.form-container p {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 0.95rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Inputs */
+.form-group {
+    margin-bottom: 1rem;
+}
+.form-group input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: 1px solid #d9d9d9;
+    border-radius: 50px;
+    background-color: white;
+    font-size: 1.125rem;
+    outline: none;
+}
+
+/* Mostrar/ocultar contraseña */
+.password-wrapper {
+    position: relative;
+}
+.password-wrapper input {
+    padding-right: 3rem;
+}
+.password-wrapper .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+.password-wrapper .toggle-password i {
+    font-size: 1.25rem;
+    color: #666;
+}
+.password-wrapper .toggle-password:focus {
+    outline: none;
+}
+
+/* Mensaje de error */
+.error-message {
+    background-color: #ffe6e6;
+    border-left: 4px solid #e74c3c;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    color: #c0392b;
+    font-weight: bold;
+}
+
+/* Contenedor de botones */
+.form-submit {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+/* Estilo base de botones */
+.btn-volver,
+.btn-enviar {
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.125rem;
+    font-weight: bold;
+    font-family: 'Satoshi', sans-serif;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+    min-width: 140px;
+}
+
+/* Botón Volver (gris) */
+.btn-volver {
+    background-color: #aaa;
+    color: #fff;
+}
+.btn-volver:hover {
+    background-color: #999;
+}
+
+/* Botón Enviar (teal) */
+.btn-enviar {
+    background-color: #166379;
+    color: #e1dfd9;
+}
+.btn-enviar:hover {
+    background-color: #0f4e5e;
+}
+
+/* Adaptativo */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        width: 95%;
+        height: auto;
+    }
+    .left-panel,
+    .right-panel {
+        width: 100%;
+        padding: 1.5rem;
+    }
+    .form-submit {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}

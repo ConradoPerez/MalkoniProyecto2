@@ -1,0 +1,155 @@
+:root {
+    font-size: 18px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-image: url('FondoLogin.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+    padding: 1.25rem;
+}
+
+.login-container {
+    display: flex;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 68.75rem;
+    height: 90vh;
+    max-height: 37.5rem;
+}
+
+/* Panel izquierdo */
+.left-panel {
+    background-color: #166379;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+}
+
+.logo-img {
+    max-width: 300px;
+}
+
+/* Panel derecho */
+.right-panel {
+    background-color: #e1dfd9;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 30rem;
+    text-align: center;
+}
+
+.form-container h2 {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 2.25rem;
+    font-weight: bold;
+    color: #166379;
+
+    /* más aire con los botones */
+    margin-bottom: 2rem;
+}
+
+/* Botonera */
+.d-grid {
+    --gap: 1rem;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap);
+
+    /* baja el bloque completo de botones */
+    margin-top: 0.75rem;
+}
+
+.btn {
+    width: 100%;
+    padding: 1.25rem 0;
+    border-radius: 999px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Botón principal */
+.btn-teal {
+    background-color: #166379;
+    color: #e1dfd9;
+    border-color: #166379;
+}
+.btn-teal:hover {
+    background-color: #0f4e5e;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+
+/* Botón secundario (empresa) */
+.btn-gray {
+    background-color: #D88429;
+    color: #e1dfd9;
+}
+.btn-gray:hover {
+    background-color: #E69F27;
+    color: #e1dfd9;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+
+/* Nueva empresa: misma largura que los otros (50%), pero centrado y otro tono */
+.d-grid .btn:nth-child(3) {
+    grid-column: 1 / -1;                /* baja a nueva fila */
+    width: calc(50% - (var(--gap) / 2));/* mismo ancho que cada botón de arriba */
+    justify-self: center;               /* centrado */
+    background-color: #C5742A;          /* tono similar, un poco distinto */
+}
+.d-grid .btn:nth-child(3):hover {
+    background-color: #D88733;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        width: 95%;
+        height: auto;
+    }
+
+    .left-panel,
+    .right-panel {
+        width: 100%;
+        padding: 1.5rem;
+    }
+
+    .d-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .d-grid .btn:nth-child(3) {
+        width: 100%;
+    }
+}

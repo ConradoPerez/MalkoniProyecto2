@@ -1,0 +1,175 @@
+/* ===========================
+   validar_mailStyles.css
+   Ajuste: título más arriba y botón/footer más abajo
+   =========================== */
+
+:root {
+    font-size: 16px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* -- Fondo idéntico al login -- */
+body {
+    background-image: url('FondoLogin.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1.25rem;
+}
+
+/* -- Contenedor principal igual al login -- */
+.login-container {
+    display: flex;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    box-shadow: 0 1.25rem 2.5rem rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 68.75rem;
+    height: 90vh;
+    max-height: 37.5rem;
+    background-color: #fff;
+}
+
+/* -- Panel izquierdo idéntico -- */
+.left-panel {
+    background-color: #166379;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+    padding: 20px;
+}
+.left-panel .logo-img {
+    max-width: 250px;
+}
+
+/* -- Panel derecho: empezar desde arriba -- */
+.right-panel {
+    background-color: #e1dfd9;
+    padding: 3rem 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* ya no space-between */
+    width: 60%;
+}
+
+/* -- Contenedor del mensaje (título + alerta) -- */
+.message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    text-align: center;
+    padding-top: 2rem;          /* empuja el título hacia abajo un poco */
+}
+
+/* Título en mayúsculas como en el login */
+.message-container h2 {
+    font-family: 'Syncopate', sans-serif;
+    color: #166379;
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+/* Mensajes de estado */
+.error-message,
+.info-message,
+.success-message {
+    width: 100%;
+    padding: 1.25rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.error-message {
+    background-color: #ffe6e6;
+    border-left: 6px solid #e74c3c;
+    color: #c0392b;
+}
+
+.info-message {
+    background-color: #e6f9fd;
+    border-left: 6px solid #17a2b8;
+    color: #17a2b8;
+}
+
+.success-message {
+    background-color: #e6f4ea;
+    border-left: 6px solid #28a745;
+    color: #28a745;
+}
+
+/* -- Contenedor de acciones (botón + instrucción) -- */
+.action-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: auto;           /* empuja el bloque al fondo */
+    margin-bottom: 2.3rem;        /* espacio antes del footer */
+}
+
+/* Botón destacado */
+.btn-validate {
+    padding: 1rem 3rem;
+    border-radius: 50px;
+    font-size: 1.125rem;
+    font-weight: bold;
+    background-color: #166379;
+    color: #e1dfd9;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover del botón */
+.btn-validate:hover {
+    background-color: #0f4e5e;
+}
+
+/* Texto de instrucción secundaria */
+.action-container p.instruction {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 0.9rem;
+    color: #444444;
+    max-width: 80%;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Pie de página abajo */
+.footer {
+    font-size: 1rem;
+    color: #444;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 2rem;        /* espacio desde el fondo */
+}
+
+/* Responsive idéntico al login */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        width: 95%;
+        height: auto;
+    }
+    .left-panel,
+    .right-panel {
+        width: 100%;
+        padding: 1.5rem;
+    }
+}

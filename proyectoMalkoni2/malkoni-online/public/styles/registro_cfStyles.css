@@ -1,0 +1,359 @@
+/* registro_cfStyles.css */
+
+/* — RESET Y TIPOGRAFÍA BASE — */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* — FONDO — */
+body {
+  background: url('FondoLogin.jpg') center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* — CONTENEDOR PRINCIPAL — */
+.container {
+  width: 1100px;
+  max-width: 100%;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  display: flex;
+  min-height: 650px;
+}
+
+/* — PANEL IZQUIERDO — */
+.left-panel {
+  width: 40%;
+  background-color: #166379;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 30px 32px 16px;
+  gap: 5px;
+  text-align: center;
+}
+.left-panel .logo-img {
+  max-width: 80%;
+  margin-bottom: 160px;
+  margin-top: 60px;
+}
+.left-panel h1 {
+  color: #E1DFD9;
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+}
+.left-panel p {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+}
+
+/* — PANEL DERECHO — */
+.right-panel {
+  width: 60%;
+  background-color: #e1dfd9;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* — STEP INDICATOR — */
+.step-indicator {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+.step-indicator::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  right: 18px;
+  height: 2px;
+  background: #ccc;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+.step {
+  position: relative;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ccc;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+.step.active    { background: #166379; }
+.step.completed { background: #D88429; }
+
+/* — ENCABEZADOS DEL FORM — */
+.form-header {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+.form-title {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  color: #166379;
+  font-size: 2.2rem;
+  margin-bottom: 6px;
+}
+
+/* — CONTENEDOR DEL FORMULARIO — */
+.form-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* — GRUPOS DE CAMPOS — */
+.form-group {
+  margin-bottom: 16px;
+  position: relative;
+}
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #4F4A44;
+  font-weight: 600;
+}
+
+/* — INPUTS, SELECTS Y TEXTAREA — */
+.form-input,
+select {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 2px solid #4F4A44;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.form-input:focus,
+select:focus {
+  border-color: #166379;
+  box-shadow: 0 0 0 3px rgba(22,99,121,0.1);
+}
+.form-input::placeholder {
+  color: #999;
+}
+
+/* — TEXTAREA DE OBSERVACIONES — */
+.form-input3 {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 2px solid #4F4A44;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  resize: vertical;
+  line-height: 1.2;
+}
+.form-input3:focus {
+  border-color: #166379;
+  box-shadow: 0 0 0 3px rgba(22,99,121,0.1);
+}
+.form-input3::placeholder {
+  color: #999;
+}
+.form-input3:placeholder-shown {
+  display: flex;
+  align-items: center;
+}
+
+/* — DOS COLUMNAS (FLEX) — */
+.two-columns-form {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.two-columns-form .column {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* — WRAPPER PARA CONTRASEÑAS — */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 16px;
+}
+.password-wrapper .form-input {
+  padding-right: 3rem;
+}
+.password-wrapper .toggle-password {
+  position: absolute;
+  top: 70%;
+  right: 1rem;
+  transform: translateY(-70%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.password-wrapper .toggle-password i {
+  font-size: 1.1rem;
+}
+.password-wrapper .toggle-password:focus {
+  outline: none;
+}
+
+/* — BOTÓN DE SUBMIT — */
+.submit-btn {
+  display: block;
+  margin: 24px auto 0;
+  width: 200px;
+  height: 48px;
+  background: #D88429;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+.submit-btn:hover {
+  background: #c67424;
+  transform: translateY(-2px);
+}
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+/* Inputs deshabilitados (gris) */
+.form-input:disabled,
+.form-input3:disabled,
+select.form-input:disabled {
+  background: #e9ecef !important;
+  color: #6c757d !important;
+  cursor: not-allowed !important;
+}
+
+
+/* — RESPONSIVE — */
+@media (max-width: 900px) {
+  .two-columns-form {
+    flex-direction: column;
+    gap: 0;
+  }
+  .two-columns-form .column {
+    flex: 1 1 100%;
+  }
+}
+@media (max-width: 500px) {
+  .submit-btn {
+    width: 100%;
+  }
+  .container {
+    flex-direction: column;
+  }
+  .left-panel,
+  .right-panel {
+    width: 100%;
+    padding: 20px;
+  }
+}
+
+
+.submit-btn.back {
+  width: 200px;
+  height: 48px;
+  background: #8A9A9C;           /* color “Volver” */
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.button-group .submit-btn {
+  width: 180px;
+}
+
+.button-group .submit-btn.back {
+  width: 120px;
+  background: #8A9A9C;
+  font-size: 0.95rem;
+}
+
+/* — PASSWORD BOX REQUISITOS — */
+.password-box{
+  display: none;
+  background: #fff;
+  border: 2px solid #4F4A44;
+  border-radius: 18px;
+  padding: 12px 14px;
+  margin: -6px 0 16px;
+  font-size: 0.92rem;
+}
+.password-box.active{ display:block; }
+
+.password-box h4{
+  margin: 0 0 8px 0;
+  color: #4F4A44;
+  font-size: 0.95rem;
+}
+
+.password-box ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.password-box li{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  color: #6c757d;
+}
+
+.password-box li.valid{
+  color: #166379;
+  font-weight: 600;
+}
+
+.password-box li i{
+  font-size: 0.8rem;
+}
+

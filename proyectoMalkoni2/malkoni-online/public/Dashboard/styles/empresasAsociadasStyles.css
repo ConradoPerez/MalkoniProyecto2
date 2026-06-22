@@ -1,0 +1,381 @@
+/* =========================================================
+   empresasAsociadasStyles.css
+   Paleta:
+   - #172A32 (teal oscuro)
+   - #E1DFD9 (gris claro)
+   - #D88429 (naranja)
+   - #4F4A44 (gris oscuro)
+   - #166379 (teal)
+   Neutros:
+   - #414141, #71716F, #8A9A9C, #9AA2A8, #B1B7BB
+   ========================================================= */
+
+/* Font base */
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600');
+
+/* Reset */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root{
+  --teal-dark: #172A32;
+  --teal:      #166379;
+  --orange:    #D88429;
+  --paper:     #E1DFD9;
+  --dark:      #4F4A44;
+
+  --gray-900:  #414141;
+  --gray-700:  #71716F;
+  --gray-600:  #8A9A9C;
+  --gray-500:  #9AA2A8;
+  --gray-300:  #B1B7BB;
+
+  --shadow-1:  0 10px 30px rgba(0,0,0,.14);
+  --shadow-2:  0 6px 18px rgba(0,0,0,.12);
+
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --ring: 0 0 0 4px rgba(22, 99, 121, .18);
+}
+
+/* Background (similar a perfil) */
+body{
+  font-family: 'Montserrat', sans-serif;
+  padding-top: 100px; /* espacio navbar */
+  background: #f4f4f4;
+  overflow-x: hidden;
+  color: var(--gray-900);
+  position: relative;
+}
+
+body::before{
+  content:'';
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: url('../../FondoLogin.jpg') center/cover no-repeat;
+  filter: blur(8px) brightness(.62);
+  z-index:-2;
+}
+
+/* Layout container */
+.empresas-container{
+  max-width: 1200px;
+  margin: 90px auto 1rem;
+  padding: 0 12px;
+}
+
+/* Cards base */
+.card{
+  border: none !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+/* Left summary card */
+.summary-card{
+  background: linear-gradient(145deg, rgba(23,42,50,.88), rgba(22,99,121,.55));
+  color: #fff;
+}
+
+.summary-card .card-body{
+  padding: 1.6rem 1.2rem;
+}
+
+.summary-icon{
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(225,223,217,.14);
+  border: 1px solid rgba(225,223,217,.18);
+  box-shadow: 0 10px 25px rgba(0,0,0,.18);
+}
+
+.summary-icon i{
+  font-size: 28px;
+  color: var(--paper);
+}
+
+.summary-title{
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: .3px;
+  color: var(--paper);
+}
+
+.summary-sub{
+  color: rgba(225,223,217,.92);
+  font-size: .93rem;
+  line-height: 1.35rem;
+}
+
+/* Right section card */
+.section-card{
+  background: rgba(225,223,217,.92);
+  border-radius: var(--radius-lg);
+}
+
+/* Header */
+.section-card .card-header{
+  background: rgba(225,223,217,.75);
+  border-bottom: 1px solid rgba(79,74,68,.12);
+  padding: .9rem 1.1rem;
+  font-weight: 700;
+  color: var(--teal-dark);
+}
+
+.section-card .badge{
+  border-radius: 999px !important;
+  padding: .4rem .7rem !important;
+  background: rgba(255,255,255,.8) !important;
+  border: 1px solid rgba(79,74,68,.10);
+  color: var(--dark) !important;
+  font-weight: 700;
+}
+
+/* Body */
+.section-card .card-body{
+  padding: 1.05rem 1.1rem;
+}
+
+/* List container */
+.empresas-list{
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+/* List item */
+.empresa-item{
+  border: 1px solid rgba(79,74,68,.12) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 1rem 1rem;
+  background: rgba(255,255,255,.72) !important;
+  box-shadow: var(--shadow-2);
+}
+
+.empresa-title{
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: var(--teal-dark);
+}
+
+.empresa-meta{
+  margin-top: .2rem;
+  color: var(--gray-700);
+  font-size: .86rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.empresa-meta strong{ color: var(--dark); font-weight: 700; }
+
+.empresa-meta .dot{
+  color: var(--gray-500);
+  margin: 0 .2rem;
+}
+
+/* Pills / tags */
+.empresa-badges{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+}
+
+.pill{
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 700;
+  border: 1px solid rgba(79,74,68,.12);
+  background: rgba(225,223,217,.7);
+  color: var(--dark);
+}
+
+.pill i{ font-size: .9rem; }
+
+.pill-principal{
+  background: rgba(216,132,41,.16);
+  border-color: rgba(216,132,41,.26);
+  color: #7a4a10;
+}
+
+.pill-activa{
+  background: rgba(22,99,121,.16);
+  border-color: rgba(22,99,121,.28);
+  color: var(--teal);
+}
+
+.pill-ok{
+  background: rgba(138,154,156,.18);
+  border-color: rgba(138,154,156,.35);
+  color: var(--teal-dark);
+}
+
+.pill-no{
+  background: rgba(65,65,65,.12);
+  border-color: rgba(65,65,65,.22);
+  color: var(--gray-900);
+}
+
+/* Actions */
+.empresa-actions{
+  min-width: 110px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Buttons base */
+.btn{
+  border-radius: .8rem !important;
+  font-weight: 800 !important;
+  letter-spacing: .2px;
+}
+
+.btn:focus{ box-shadow: var(--ring) !important; }
+
+/* Usar (primary) */
+.btn-primary.btn-sm{
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark)) !important;
+  border: none !important;
+  padding: .45rem .95rem !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,.14);
+  color: #fff !important;
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+.btn-primary.btn-sm:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(0,0,0,.18);
+  filter: brightness(1.03);
+}
+
+/* En uso (secondary) */
+.btn-secondary.btn-sm{
+  background: rgba(79,74,68,.22) !important;
+  border: 1px solid rgba(79,74,68,.20) !important;
+  color: var(--dark) !important;
+  padding: .45rem .95rem !important;
+}
+
+/* No disponible */
+.btn-outline-danger.btn-sm{
+  border: 1.5px solid rgba(65,65,65,.45) !important;
+  color: rgba(65,65,65,.9) !important;
+  background: rgba(255,255,255,.55) !important;
+  padding: .45rem .95rem !important;
+}
+
+/* Footer */
+.section-card .card-footer{
+  background: rgba(225,223,217,.75);
+  border-top: 1px solid rgba(79,74,68,.12);
+  padding: 1rem 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Volver (secondary) */
+.btn-outline-light.btn-sm{
+  color: var(--teal-dark) !important;
+  border: 1.5px solid rgba(23,42,50,.55) !important;
+  background: rgba(255,255,255,.68) !important;
+  font-weight: 800 !important;
+  padding: .5rem 1.15rem !important;
+  border-radius: .8rem !important;
+  transition: all .18s ease;
+}
+
+.btn-outline-light.btn-sm:hover{
+  background: var(--teal-dark) !important;
+  color: var(--paper) !important;
+  transform: translateY(-1px);
+}
+
+/* Buscar otra empresa (CTA) */
+.btn-outline-warning.btn-sm{
+  background: linear-gradient(135deg, #FFB347, var(--orange)) !important;
+  color: var(--teal-dark) !important;
+  border: none !important;
+  padding: .55rem 1.25rem !important;
+  border-radius: .85rem !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,.16);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+.btn-outline-warning.btn-sm:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(0,0,0,.2);
+  filter: brightness(1.03);
+}
+
+/* Small helper for disabled buttons */
+button[disabled], .btn:disabled{
+  opacity: .85 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+/* Botón desasociar deshabilitado (empresa principal) */
+.desasociar-btn.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+  border-style: dashed;
+}
+
+/* Tooltip visual extra (opcional pero recomendado) */
+.desasociar-btn.is-disabled:hover::after {
+  content: "No te podés desasociar de esta empresa porque es la principal";
+  position: absolute;
+  background: #172A32;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  top: -40px;
+  right: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+}
+
+/* Evita que el tooltip se corte */
+.empresa-actions {
+  position: relative;
+}
+
+/* Responsive */
+@media (max-width: 768px){
+  body{ padding-top: 92px; }
+  .empresas-container{ margin-top: 80px; }
+
+  .section-card .card-header{
+    flex-direction: column;
+    gap: .5rem;
+    align-items: flex-start !important;
+  }
+
+  .empresa-actions{ min-width: auto; }
+
+  .section-card .card-footer{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-card .card-footer .btn{
+    width: 100%;
+    justify-content: center;
+  }
+}

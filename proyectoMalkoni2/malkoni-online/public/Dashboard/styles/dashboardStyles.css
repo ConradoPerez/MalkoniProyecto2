@@ -1,0 +1,242 @@
+/* ========================================
+   dashboardStyles.css — Paleta ajustada, sin amarillo
+   ======================================== */
+
+/* — IMPORTAR FUENTES — */
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/satoshi@4.5.12/index.css');
+
+/* ---------- VARIABLES ---------- */
+:root {
+  /* Paleta cromática */
+  --bg-dark:        #172A32;
+  --light-neutral:  #E1DFD9;
+  --accent-orange:  #D88429;
+  --dark-brown:     #4F4A44;
+  --primary-blue:   #006178;
+  --black:          #000000;
+  --gray-dark:      #414141;
+  --gray-light:     #B1B7BB;
+  --gray-bluish:    #9AA2A8;
+  --gray-mid:       #71716F;
+  --gray-accent:    #8A9A9C;
+  --white:          #FFFFFF;
+  --text-light:     rgba(255,255,255,0.9);
+  --overlay:        rgba(0,0,0,0.6);
+
+  /* Espaciado */
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 3rem;
+
+  /* Tipografía */
+  --font-base:    'Satoshi', sans-serif;
+  --font-heading: clamp(2rem, 5vw, 2.5rem);
+  --font-sub:     1.5rem;
+
+  /* Sombras */
+  --shadow-md: 0 8px 15px rgba(0,0,0,0.2);
+  --shadow-lg: 0 15px 25px rgba(0,0,0,0.3);
+
+  --transition: all 0.3s ease;
+}
+
+/* ---------- RESET & BASE ---------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+  background: linear-gradient(to bottom, #172A32, #166379);
+  color: var(--white);
+  font-family: var(--font-base);
+  line-height: 1.5;
+}
+
+/* ---------- HEADING GLOBAL: SYNCOPATE BOLD ---------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Syncopate', sans-serif !important;
+  font-weight: 700 !important;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+}
+
+/* ---------- LOGO ---------- */
+.logo-container {
+  text-align: left;
+  padding: 0 var(--space-md) var(--space-sm) var(--space-md);
+}
+.logo-img {
+  max-height: 180px;
+  width: auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+/* ---------- HERO SECTION ---------- */
+.hero-section {
+  position: relative;
+  background-color: var(--primary-blue);
+  text-align: center;
+  padding: var(--space-sm) var(--space-md);
+}
+.hero-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--overlay);
+}
+.hero-section h1 {
+  position: relative;
+  color: var(--accent-orange) !important;
+  font-size: var(--font-heading);
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+
+/* ---------- OVERRIDES PARA BOOTSTRAP Y TEXTOS ---------- */
+.text-warning {
+  color: var(--accent-orange) !important;
+}
+.btn-warning {
+  background-color: var(--accent-orange) !important;
+  color: var(--dark-brown) !important;
+  border-color: var(--accent-orange) !important;
+}
+.btn-warning:hover,
+.btn-warning:focus {
+  background-color: var(--light-neutral) !important;
+  color: var(--dark-brown) !important;
+  border-color: var(--light-neutral) !important;
+}
+
+/* ---------- GRID DE SERVICIOS ---------- */
+main {
+  padding: var(--space-lg) var(--space-md);
+  margin-top: var(--space-lg);
+  overflow: hidden;
+}
+main .row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-md);
+  justify-content: center;
+}
+main .row > [class*="col-"] {
+  flex: 0 0 calc((100% - 2 * var(--space-md)) / 3);
+  max-width: calc((100% - 2 * var(--space-md)) / 3);
+}
+
+/* ---------- SERVICE CARD ---------- */
+.service-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  background-color: var(--gray-mid);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  min-height: 350px;
+}
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+.service-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.4) blur(2px);
+  transition: var(--transition);
+}
+
+/* ---------- CARD BODY ---------- */
+.card-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-md);
+  flex: 1;
+}
+/* Títulos de cada servicio (ya cubiertos por h2) */
+.card-body h2,
+.card-body h5 {
+  font-size: var(--font-sub);
+  color: var(--light-neutral);
+}
+/* Descripciones en Satoshi Regular */
+.card-body p {
+  flex: 1;
+  color: var(--text-light);
+  margin-bottom: var(--space-md);
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+/* — BOTONES DE CADA CARD EN SATOSHI BOLD — */
+.service-card + a.btn {
+  font-family: 'Satoshi', sans-serif !important;
+  font-weight: 700 !important;
+}
+
+/* ---------- BOTÓN EN OPTIMIZADOR ---------- */
+.service-card.module-opt {
+  padding-bottom: calc(var(--space-lg) + 2.5rem);
+}
+.service-card.module-opt .btn-primary,
+.service-card.module-opt .btn-warning {
+  position: absolute;
+  bottom: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--accent-orange);
+  color: var(--black);
+  border: none;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  transition: var(--transition);
+  z-index: 1;
+}
+.service-card.module-opt .btn-warning:hover {
+  background-color: var(--light-neutral) !important;
+  color: var(--dark-brown) !important;
+}
+
+/* ---------- IMÁGENES DE SERVICIOS ---------- */
+.service-bg.module-opt       { background-image: url('FotoOPT.png'); }
+.service-bg.module-pedidos   { background-image: url('ImagenPedidosOnline.jpg'); }
+.service-bg.module-ecommerce { background-image: url('bisagra3.webp'); }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 992px) {
+  main .row {
+    flex-wrap: wrap;
+  }
+  main .row > [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* ---------- ADJUST HERO PADDING ---------- */
+.hero {
+  padding-top: var(--space-md) !important;
+  padding-bottom: var(--space-lg) !important;
+  margin-bottom: var(--space-lg);
+}
+
+/* ---------- FOOTER ---------- */
+footer {
+  font-family: var(--font-base);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: var(--space-sm) 0;
+}

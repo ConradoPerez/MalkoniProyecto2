@@ -1,0 +1,183 @@
+/* 1) Import Google Font */
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600');
+
+/* 2) Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 3) Fondo borroso + overlay */
+body {
+  position: relative;
+  min-height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+  padding-top: 130px;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('../../FondoLogin.jpg') center/cover no-repeat;
+  filter: blur(8px) brightness(0.6);
+  z-index: -2;
+}
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: -1;
+}
+
+/* 4) Contenedor principal: vuelvo a layout normal para usar scroll de la página */
+.main-container {
+  margin: 100px auto 1rem;
+  width: 100%;
+  max-width: 1100px;
+  padding: 0 1rem;
+}
+
+/* 5) Cards */
+.table-card,
+.form-card {
+  background: #fff;
+  border: none;
+  border-radius: .5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 100%;
+}
+.table-card .card-header,
+.form-card .card-header {
+  background: #166379;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+.table-card .card-body,
+.form-card .card-body {
+  padding: 1.5rem;
+}
+
+/* 6) Tabla */
+.table-responsive { overflow-x: auto; }
+.table th,
+.table td {
+  vertical-align: middle;
+  padding: .75rem;
+  font-size: .95rem;
+}
+.table-hover tbody tr:hover {
+  background: rgba(24, 120, 156, 0.1);
+}
+
+/* 7) Botón naranja */
+.btn-orange {
+  background: #d88429;
+  color: #fff;
+  transition: background .3s;
+}
+.btn-orange:hover {
+  background: #bd6d1f;
+}
+
+/* 8) Inputs */
+.form-control,
+.form-select {
+  border-radius: 6px;
+  transition: all .3s;
+}
+
+/* 9) Modales */
+.modal-content {
+  border-radius: .5rem;
+}
+.modal-header {
+  background: #f8f9fa;
+  border-bottom: none;
+}
+.modal-title {
+  font-weight: 600;
+  color: #333;
+}
+.modal-body .form-label {
+  font-weight: 500;
+  color: #555;
+}
+.modal-body .form-control,
+.modal-body .form-select {
+  background: #fff;
+  border: 1px solid #ccc;
+}
+
+/* 10) Ajustes específicos para encabezado amarillo */
+.card-header.bg-warning {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+/* 11) Botones de acción */
+.btn-action {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* 12) Botón azul personalizado */
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+/* Consistencia en botones de tabla */
+.table td .btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+  min-width: 32px;
+}
+
+/* 13) Scroll global */
+html,
+body {
+  overflow: auto;
+  height: auto;
+}
+
+/* 14) Responsive móvil: scroll completo y layout normal */
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow: auto;
+    height: auto;
+  }
+
+  .main-container {
+    margin: 100px auto 1rem;
+    padding: 0 1rem;
+  }
+
+  .table-card,
+  .form-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .table th,
+  .table td {
+    padding: .5rem;
+    font-size: .85rem;
+  }
+
+  .btn-orange {
+    width: 100%;
+  }
+}

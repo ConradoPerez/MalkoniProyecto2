@@ -1,0 +1,18 @@
+{
+  "require": {
+    "php": "^7.4",
+    "doctrine/orm": "^2.14",
+    "symfony/cache": "^5.4",
+    "doctrine/annotations": "^2.0"
+  },
+  "config": {
+    "platform": {
+      "php": "7.4.33"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Entities\\": "src/Entities/"
+    }
+  }
+}

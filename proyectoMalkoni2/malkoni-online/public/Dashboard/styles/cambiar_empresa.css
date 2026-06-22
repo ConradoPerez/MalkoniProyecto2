@@ -1,0 +1,296 @@
+/* cambiar_empresa.css */
+
+/* RESET Y FONDO */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background-image: url('../../FondoLogin.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  display: flex;
+  height: 600px;
+}
+
+/* PANEL IZQUIERDO */
+.left-panel {
+  background-color: #166379;
+  color: white;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* ✅ le damos un poco menos para ganar ancho en el form */
+  width: 35%;
+}
+
+.logo-img {
+  max-width: 300px;
+}
+
+/* PANEL DERECHO */
+.right-panel {
+  background-color: #e1dfd9;
+  padding: 32px 40px; /* ✅ más aire lateral */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  /* ✅ clave: estirar el contenido para que no quede angosto/centrado */
+  align-items: stretch;
+
+  /* ✅ más ancho para el formulario */
+  width: 65%;
+}
+
+/* FORM HEADER */
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.form-title {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  color: #166379;
+  font-size: 2.7rem;
+  margin-bottom: 15px;
+}
+.form-subtitle {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 700;
+  color: #4F4A44;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 520px;
+  margin: 0 auto 10px;
+}
+
+/* ✅ FORM A TODO EL ANCHO DEL PANEL, CON UN TOPE PROLIJO */
+form {
+  width: 100%;
+  max-width: 720px; /* podés subir a 760/800 si querés más ancho */
+  margin: 0 auto;
+}
+
+/* INPUTS */
+.form-group {
+  width: 100%;
+  max-width: 100%; /* ✅ no limitamos acá */
+  margin: 0 auto 20px;
+}
+.form-input {
+  width: 100%;
+  height: 54px; /* ✅ un poquito más alto */
+  border: 2px solid #4F4A44;
+  border-radius: 27px;
+  padding: 0 20px;
+  font-size: 1rem;
+  text-align: center;
+  background: white;
+  transition: all 0.3s ease;
+}
+.form-input:focus {
+  outline: none;
+  border-color: #166379;
+  box-shadow: 0 0 0 3px rgba(22, 99, 121, 0.1);
+}
+.form-input::placeholder {
+  color: #999;
+}
+
+/* BOTONES */
+.submit-btn {
+  background-color: #D88429;
+  color: white;
+  border: none;
+  border-radius: 27px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Satoshi', sans-serif;
+}
+.submit-btn:hover {
+  background-color: #c67424;
+  transform: translateY(-2px);
+}
+.submit-btn:active {
+  transform: translateY(0);
+}
+.submit-btn.back {
+  background: #8A9A9C;
+  font-size: 1.05rem;
+}
+
+/* GRUPO DE BOTONES */
+.button-group {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 100%; /* ✅ que use el ancho real */
+  margin: 20px auto 0;
+}
+.button-group .submit-btn,
+.button-group .submit-btn.back {
+  flex: 1;
+  height: 54px; /* ✅ match con inputs */
+  margin: 0;
+}
+
+/* OVERLAY Y MODAL */
+#overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  backdrop-filter: blur(5px);
+}
+#modal {
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 15px;
+  z-index: 1000;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+.modal-header {
+  padding: 20px 30px;
+  color: #166379;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+.modal-body {
+  padding: 20px 30px;
+  overflow-y: auto;
+  flex: 1;
+}
+#empresa-listado {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+#empresa-listado li {
+  margin-bottom: 15px;
+}
+.empresa-btn {
+  padding: 15px;
+  border: 2px solid #166379;
+  border-radius: 10px;
+  background: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+}
+.empresa-btn:hover {
+  background: #f8f9fa;
+  box-shadow: 0 5px 15px rgba(22, 99, 121, 0.1);
+}
+.empresa-name {
+  font-weight: bold;
+  color: #172A32;
+  margin-bottom: 5px;
+}
+.empresa-info {
+  font-size: 0.85rem;
+  color: #555;
+}
+input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #166379;
+}
+.modal-footer {
+  padding: 15px 30px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+.close-btn,
+.select-btn {
+  border: none;
+  padding: 10px 25px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.close-btn {
+  background-color: #166379;
+  color: white;
+}
+.close-btn:hover {
+  background-color: #0f4e5e;
+}
+.select-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+.select-btn:hover {
+  background-color: #45a049;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    margin: 10px;
+    height: auto;
+  }
+
+  .left-panel,
+  .right-panel {
+    width: 100%;
+    padding: 30px 20px;
+  }
+
+  form {
+    max-width: 100%;
+  }
+
+  .form-title {
+    font-size: 2rem;
+  }
+
+  .form-group,
+  .button-group {
+    width: 100%;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
