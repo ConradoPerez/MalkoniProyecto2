@@ -9,6 +9,7 @@ use App\Models\Empresa;
 use App\Models\Estado;
 use App\Models\Cambio;
 use App\Models\Item;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 
 class VendedorCotizacionController extends Controller
@@ -18,8 +19,8 @@ class VendedorCotizacionController extends Controller
      */
     public function index(Request $request)
     {
-        // Obtener el empleado/vendedor actual (por ahora desde query param)
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         
         $vendedor = Empleado::find($empleadoId);
         if (!$vendedor) {
@@ -177,8 +178,8 @@ class VendedorCotizacionController extends Controller
      */
     public function detalle(Request $request, $id)
     {
-        // Obtener el empleado/vendedor actual
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         
         $vendedor = Empleado::find($empleadoId);
         if (!$vendedor) {
@@ -190,6 +191,9 @@ class VendedorCotizacionController extends Controller
             ->where('id', $id)
             ->where('id_empleados', $empleadoId)
             ->firstOrFail();
+
+        // La vista de presupuestación necesita el plano y el identificador OPT para renderizar el CTA.
+        $cotizacion->setVisible(array_unique(array_merge($cotizacion->getVisible() ?: [], ['pedido_opt_id', 'pdf_url'])));
 
         // Obtener el estado actual
         $ultimoCambio = Cambio::where('id_cotizaciones', $cotizacion->id)
@@ -228,12 +232,42 @@ class VendedorCotizacionController extends Controller
     }
 
     /**
+     * Descarga el plano OPT de una cotización del vendedor como attachment.
+     */
+    public function descargarPlano(Request $request, $id)
+    {
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
+
+        $cotizacion = Cotizacion::query()
+            ->where('id', $id)
+            ->where('id_empleados', $empleadoId)
+            ->firstOrFail();
+
+        abort_unless(!empty($cotizacion->pedido_opt_id) && !empty($cotizacion->pdf_url), 404);
+
+        $response = Http::timeout(30)->retry(2, 200)->get($cotizacion->pdf_url);
+
+        abort_unless($response->successful(), 404);
+
+        $filename = 'plano-opt-' . $cotizacion->pedido_opt_id . '.pdf';
+        $contentType = $response->header('Content-Type', 'application/pdf');
+
+        return response()->streamDownload(function () use ($response) {
+            echo $response->body();
+        }, $filename, [
+            'Content-Type' => $contentType,
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    /**
      * Guardar los precios de la cotización
      */
     public function guardar(Request $request, $id)
     {
-        // Obtener el empleado/vendedor actual
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         
         $vendedor = Empleado::find($empleadoId);
         if (!$vendedor) {
@@ -306,9 +340,7 @@ class VendedorCotizacionController extends Controller
 
             DB::commit();
 
-            return redirect()->route('vendedor.app.cotizaciones.index', [
-                'empleado_id' => $empleadoId
-            ])->with('cotizacion_guardada', [
+            return redirect()->route('vendedor.app.cotizaciones.index')->with('cotizacion_guardada', [
                 'numero' => $cotizacion->numero,
                 'titulo' => $cotizacion->titulo,
                 'modificada' => $estadoActual && $estadoActual->estado->nombre === 'Cotizado'

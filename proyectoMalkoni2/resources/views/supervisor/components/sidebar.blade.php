@@ -1,5 +1,5 @@
 <!-- Desktop Sidebar -->
-<aside class="w-56 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto z-30 desktop-sidebar">
+<aside class="w-56 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto z-30 desktop-sidebar flex flex-col">
     <!-- Logo -->
     <div class="mb-8">
         <div class="flex items-center justify-center">
@@ -36,6 +36,16 @@
             <span>Productos</span>
         </a>
     </nav>
+
+    <div class="mt-auto pt-6 border-t border-gray-200">
+        <button type="button" onclick="document.getElementById('supervisor-logout-form').submit();" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold text-white transition-colors" style="background-color: #172A32;">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar Sesión</span>
+        </button>
+        <form id="supervisor-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+            @csrf
+        </form>
+    </div>
 </aside>
 
 <!-- Mobile Sidebar Overlay -->
@@ -43,7 +53,7 @@
 
 <!-- Mobile Sidebar -->
 <aside id="mobile-sidebar"
-       class="fixed left-0 top-0 h-full w-72 bg-white shadow-xl p-6 transform -translate-x-full transition-transform duration-300 ease-in-out z-50 lg:hidden">
+    class="fixed left-0 top-0 h-full w-72 bg-white shadow-xl p-6 transform -translate-x-full transition-transform duration-300 ease-in-out z-50 lg:hidden flex flex-col">
     <!-- Close Button -->
     <div class="flex items-center justify-between mb-8">
         <div class="flex items-center">
@@ -85,6 +95,16 @@
             <span>Productos</span>
         </a>
     </nav>
+
+    <div class="mt-auto pt-6 border-t border-gray-200">
+        <button type="button" onclick="document.getElementById('supervisor-logout-form-mobile').submit();" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold text-white transition-colors" style="background-color: #172A32;">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar Sesión</span>
+        </button>
+        <form id="supervisor-logout-form-mobile" action="{{ route('logout') }}" method="POST" class="hidden">
+            @csrf
+        </form>
+    </div>
 </aside>
 
 

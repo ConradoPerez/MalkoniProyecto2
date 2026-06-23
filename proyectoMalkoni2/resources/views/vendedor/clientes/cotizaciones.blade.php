@@ -23,7 +23,7 @@
 
                     <div class="flex items-center gap-4">
                         {{-- Botón volver --}}
-                        <a href="{{ route('vendedor.app.clientes.index', ['empleado_id' => request('empleado_id', 1)]) }}" 
+                        <a href="{{ route('vendedor.app.clientes.index') }}" 
                            class="inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold transition hover:opacity-90 shadow-md"
                            style="background-color:#D88429;">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +107,7 @@
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-center gap-2">
                                             @if($esCotizable || ($cotizacion->estado == 'Cotizado' && $tienePrecio))
-                                                <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id', 1), 'from_cliente' => $empresa->id_empresa]) }}"
+                                                <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'from_cliente' => $empresa->id_empresa]) }}"
                                                    class="inline-flex items-center px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition hover:opacity-90"
                                                    style="background-color:#D88429;">
                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,7 +121,7 @@
                                                 </a>
                                             @endif
                                             
-                                            <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id', 1), 'from_cliente' => $empresa->id_empresa]) }}"
+                                            <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'from_cliente' => $empresa->id_empresa]) }}"
                                                class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 text-sm font-medium bg-white hover:bg-gray-50 transition-colors">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>

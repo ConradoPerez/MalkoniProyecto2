@@ -37,8 +37,8 @@ class OPTWebhookController extends Controller
 
         // Calcular clave de idempotencia
         $idempotencyKey = sprintf(
-            '%d-%d-%d',
-            $payload['pedido_id'],
+            '%s-%d-%d',
+            $payload['pedido_id'] ?? 'sync-only',
             $payload['persona_external_id'],
             $payload['empresa_activa_external_id']
         );
@@ -98,23 +98,27 @@ class OPTWebhookController extends Controller
             // ========================================
             // 3. VERIFICACIÓN DE IDEMPOTENCIA PREVIA
             // ========================================
-            $cotizacionExistente = $this->findCotizacionByPedido($payload['pedido_id']);
+            $cotizacionExistente = null;
 
-            if ($cotizacionExistente && $this->hasMatchingSnapshots($cotizacionExistente, $payload)) {
-                $responseData = $this->buildSuccessResponse(
-                    cotizacion: $cotizacionExistente,
-                    payload: $payload,
-                    message: 'Cotización previamente importada. Redirigiendo a la cotización existente.'
-                );
+            if (!empty($payload['pedido_id'])) {
+                $cotizacionExistente = $this->findCotizacionByPedido((int) $payload['pedido_id']);
 
-                $log->update([
-                    'http_status' => 200,
-                    'status' => 'success',
-                    'response_payload' => $responseData,
-                    'processed_at' => now(),
-                ]);
+                if ($cotizacionExistente && $this->hasMatchingSnapshots($cotizacionExistente, $payload)) {
+                    $responseData = $this->buildSuccessResponse(
+                        cotizacion: $cotizacionExistente,
+                        payload: $payload,
+                        message: 'Cotización previamente importada. Redirigiendo a la cotización existente.'
+                    );
 
-                return response()->json($responseData, 200);
+                    $log->update([
+                        'http_status' => 200,
+                        'status' => 'success',
+                        'response_payload' => $responseData,
+                        'processed_at' => now(),
+                    ]);
+
+                    return response()->json($responseData, 200);
+                }
             }
 
             // ========================================
@@ -160,6 +164,16 @@ class OPTWebhookController extends Controller
                         'last_synced_at' => now(),
                     ],
                 ]);
+
+                if (empty($payload['pedido_id'])) {
+                    return [
+                        'cotizacion' => null,
+                        'persona_id' => $persona->id_persona,
+                        'empresa_id' => $empresa->id_empresa,
+                        'http_status' => 200,
+                        'message' => 'Identidad sincronizada exitosamente. Redirigiendo al panel de cotizaciones.',
+                    ];
+                }
 
                 $cotizacionPorPedido = Cotizacion::query()
                     ->where(function ($query) use ($payload) {
@@ -248,11 +262,17 @@ class OPTWebhookController extends Controller
 
             $cotizacion = $transactionResult['cotizacion'];
             $httpStatus = $transactionResult['http_status'];
-            $responseData = $this->buildSuccessResponse(
-                cotizacion: $cotizacion,
-                payload: $payload,
-                message: $transactionResult['message']
-            );
+            $responseData = $cotizacion
+                ? $this->buildSuccessResponse(
+                    cotizacion: $cotizacion,
+                    payload: $payload,
+                    message: $transactionResult['message']
+                )
+                : $this->buildIdentitySyncResponse(
+                    personaId: $transactionResult['persona_id'],
+                    empresaId: $transactionResult['empresa_id'],
+                    message: $transactionResult['message']
+                );
 
             // ========================================
             // 5. ACTUALIZAR LOG DE AUDITORÍA (ÉXITO)
@@ -332,9 +352,25 @@ class OPTWebhookController extends Controller
                 'created_at' => optional($cotizacion->created_at)?->toIso8601String(),
                 'updated_at' => optional($cotizacion->updated_at)?->toIso8601String(),
             ],
-            'redirect_url' => route('cliente.nueva_cotizacion', [
-                'cotizacion_id' => $cotizacion->id,
+            'redirect_url' => route('auth.sso_bridge', [
                 'persona_id' => $cotizacion->id_personas,
+                'cotizacion_id' => $cotizacion->id,
+            ]),
+        ];
+    }
+
+    private function buildIdentitySyncResponse(int $personaId, int $empresaId, string $message): array
+    {
+        return [
+            'success' => true,
+            'message' => $message,
+            'data' => [
+                'persona_id' => $personaId,
+                'empresa_id' => $empresaId,
+                'synced_only' => true,
+            ],
+            'redirect_url' => route('auth.sso_bridge', [
+                'persona_id' => $personaId,
             ]),
         ];
     }

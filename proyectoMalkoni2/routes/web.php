@@ -9,22 +9,37 @@ use App\Http\Controllers\VendedorCotizacionController;
 use App\Http\Controllers\VendedorGrupoController;
 use App\Http\Controllers\ClienteDashboardController;
 use App\Http\Controllers\ProductoClienteController;
+use App\Http\Controllers\Auth\LoginController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-// Dashboard
-Route::get('/supervisor/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
-// Dashboard Vendedor
-Route::get('/vendedor/dashboard', [VendedorDashboardController::class, 'index'])->name('vendedor.dashboard');
-// AJAX Routes for Vendedor Dashboard
-Route::prefix('vendedor/api')->name('vendedor.api.')->group(function () {
-    Route::get('/cotizaciones-chart', [VendedorDashboardController::class, 'getCotizacionesBarChart'])->name('cotizaciones.chart');
+Route::redirect('/', '/login');
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
 });
 
-// vendedor
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/auth/sso-bridge', [LoginController::class, 'ssoBridge'])->name('auth.sso_bridge');
 
-Route::prefix('supervisor/vendedor')->name('vendedor.')->group(function () {
+Route::get('/register', function () {
+    return redirect()->away('https://online.malkoni.com.ar/public/tipo_identidad.php');
+})->name('register');
+// Dashboard Supervisor
+Route::middleware('role:supervisor')->group(function () {
+    Route::get('/supervisor/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
+});
+
+// Dashboard y API Vendedor
+Route::middleware('role:vendedor')->group(function () {
+    Route::get('/vendedor/dashboard', [VendedorDashboardController::class, 'index'])->name('vendedor.dashboard');
+    Route::prefix('vendedor/api')->name('vendedor.api.')->group(function () {
+        Route::get('/cotizaciones-chart', [VendedorDashboardController::class, 'getCotizacionesBarChart'])->name('cotizaciones.chart');
+    });
+});
+
+// vendedor (supervisor)
+
+Route::middleware('role:supervisor')->prefix('supervisor/vendedor')->name('vendedor.')->group(function () {
     Route::get('/', [SupervisorVendedorController::class, 'index'])->name('index');
     Route::get('/search', [SupervisorVendedorController::class, 'search'])->name('search');
     Route::get('/{id}/clientes', [SupervisorVendedorController::class, 'clientes'])->name('clientes');
@@ -33,7 +48,7 @@ Route::prefix('supervisor/vendedor')->name('vendedor.')->group(function () {
 
 // Productos
 
-Route::prefix('supervisor/productos')->name('productos.')->group(function () {
+Route::middleware('role:supervisor')->prefix('supervisor/productos')->name('productos.')->group(function () {
 
     Route::get('/', [SupervisorProductoController::class, 'index'])->name('index');
 
@@ -49,7 +64,7 @@ Route::prefix('supervisor/productos')->name('productos.')->group(function () {
 
 // Rutas adicionales para el vendedor
 
-Route::prefix('vendedor')->name('vendedor.app.')->group(function () {
+Route::middleware('role:vendedor')->prefix('vendedor')->name('vendedor.app.')->group(function () {
 
     Route::get('/clientes', [VendedorClienteController::class, 'index'])->name('clientes.index');
     Route::get('/clientes/{empresa}/cotizaciones', [VendedorClienteController::class, 'cotizaciones'])->name('clientes.cotizaciones');
@@ -57,6 +72,7 @@ Route::prefix('vendedor')->name('vendedor.app.')->group(function () {
 
     Route::get('/cotizaciones', [VendedorCotizacionController::class, 'index'])->name('cotizaciones.index');
     Route::get('/cotizaciones/{id}', [VendedorCotizacionController::class, 'detalle'])->name('cotizaciones.detalle');
+    Route::get('/cotizaciones/{id}/plano/descargar', [VendedorCotizacionController::class, 'descargarPlano'])->name('cotizaciones.plano.descargar');
     Route::put('/cotizaciones/{id}', [VendedorCotizacionController::class, 'guardar'])->name('cotizaciones.guardar');
 
     // Rutas para grupos
@@ -76,7 +92,7 @@ Route::prefix('vendedor')->name('vendedor.app.')->group(function () {
 
 // ==========================================================
 
-Route::prefix('cliente')->name('cliente.')->group(function () {
+Route::middleware('role:cliente')->prefix('cliente')->name('cliente.')->group(function () {
     
     // Dashboard principal del Cliente
     Route::get('/dashboard', [ClienteDashboardController::class, 'dashboard'])->name('dashboard');
@@ -95,6 +111,7 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
     Route::post('/cotizacion/{id}/guardar-productos', [ClienteDashboardController::class, 'storeProductsToQuotation'])->name('cotizacion.guardar_productos');
     // 6. Elimina un item de la cotización
     Route::delete('/cotizacion/{cotizacionId}/item/{itemId}', [ClienteDashboardController::class, 'removeProductFromQuotation'])->name('cotizacion.eliminar_item');
+    Route::get('/cotizacion/{id}/plano/descargar', [ClienteDashboardController::class, 'downloadOptPlano'])->name('cotizacion.plano.descargar');
     // ────────────────────────────────────────────────────
 
     Route::get('/opt', [ClienteDashboardController::class, 'goToOPT'])->name('opt'); 

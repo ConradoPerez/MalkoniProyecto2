@@ -67,7 +67,6 @@
                         <form method="GET" action="{{ route('vendedor.app.clientes.index') }}"
                               class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-                            <input type="hidden" name="empleado_id" value="{{ request('empleado_id', 1) }}" />
 
                             <div class="flex flex-col gap-1">
                                 <label class="text-sm font-medium text-gray-700">Por N° de cotización</label>
@@ -166,7 +165,7 @@
                                         <td class="px-6 py-4">
                                             <div class="flex items-center justify-center gap-2">
                                                 {{-- Acción: Ver cotizaciones del cliente --}}
-                                                <a href="{{ route('vendedor.app.clientes.cotizaciones', $cliente->id_empresa) }}?empleado_id={{ request('empleado_id', 1) }}"
+                                                <a href="{{ route('vendedor.app.clientes.cotizaciones', $cliente->id_empresa) }}"
                                                    class="inline-flex items-center px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition hover:opacity-90"
                                                    style="background-color:#D88429;">
                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +176,7 @@
                                                 </a>
 
                                                 {{-- Acción: Ficha del cliente --}}
-                                                <a href="{{ route('vendedor.app.clientes.ficha', $cliente->id_empresa) }}?empleado_id={{ request('empleado_id', 1) }}"
+                                                <a href="{{ route('vendedor.app.clientes.ficha', $cliente->id_empresa) }}"
                                                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 text-sm font-medium bg-white hover:bg-gray-50 transition-colors">
                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -210,7 +209,7 @@
                                 @endif
                             </p>
                             @if(request()->hasAny(['pedido', 'nombre', 'doc']))
-                                <a href="{{ route('vendedor.app.clientes.index', ['empleado_id' => request('empleado_id', 1)]) }}"
+                                <a href="{{ route('vendedor.app.clientes.index') }}"
                                    class="inline-flex items-center px-4 py-2 rounded-lg text-white font-semibold transition hover:opacity-90"
                                    style="background-color:#D88429;">
                                     Ver todos los clientes

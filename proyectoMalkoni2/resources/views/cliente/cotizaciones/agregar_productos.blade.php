@@ -15,12 +15,12 @@
                     <ol class="inline-flex items-center space-x-1 md:space-x-3">
                         <li>
                             @if(isset($esNuevaCotizacion) && $esNuevaCotizacion)
-                                <a href="{{ route('cliente.nueva_cotizacion', ['persona_id' => $personaId]) }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
+                                <a href="{{ route('cliente.nueva_cotizacion') }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                                     Volver al formulario
                                 </a>
                             @else
-                                <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacion->id, 'persona_id' => $personaId]) }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
+                                <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacion->id]) }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                                     Volver al Detalle
                                 </a>
@@ -66,7 +66,7 @@
                     </div>
                 @endif
 
-                <form action="{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? route('cliente.cotizacion.crear_con_productos', ['persona_id' => $personaId]) : route('cliente.cotizacion.guardar_productos', ['id' => $cotizacion->id ?? 0, 'persona_id' => $personaId]) }}" method="POST" id="formProductos">
+                <form action="{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? route('cliente.cotizacion.crear_con_productos') : route('cliente.cotizacion.guardar_productos', ['id' => $cotizacion->id ?? 0]) }}" method="POST" id="formProductos">
                     @csrf
                     
                     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -293,7 +293,7 @@
                                             <span class="text-sm text-gray-600">Cantidad: <span class="font-semibold">{{ $item->cantidad }}</span></span>
                                         </div>
                                         @if(!isset($esNuevaCotizacion) || !$esNuevaCotizacion)
-                                        <form action="{{ route('cliente.cotizacion.eliminar_item', ['cotizacionId' => $cotizacion->id, 'itemId' => $item->id_item, 'persona_id' => $personaId]) }}" method="POST" class="inline ml-3" onsubmit="return confirm('¿Desea eliminar este producto?');">
+                                        <form action="{{ route('cliente.cotizacion.eliminar_item', ['cotizacionId' => $cotizacion->id, 'itemId' => $item->id_item]) }}" method="POST" class="inline ml-3" onsubmit="return confirm('¿Desea eliminar este producto?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="p-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors">

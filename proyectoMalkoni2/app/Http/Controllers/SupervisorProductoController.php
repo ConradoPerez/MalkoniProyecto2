@@ -144,7 +144,10 @@ class SupervisorProductoController extends Controller
      */
     private function getSupervisorActual($request)
     {
-        $supervisorId = $request->get('supervisor_id', 1);
+        $supervisorId = (int) session('user_id', 0);
+        if ($supervisorId <= 0) {
+            return null;
+        }
         
         $supervisor = Empleado::with('rol')
             ->whereHas('rol', function($q) {
@@ -153,12 +156,7 @@ class SupervisorProductoController extends Controller
             ->find($supervisorId);
         
         if (!$supervisor) {
-            // Si no encuentra el supervisor específico, toma el primero disponible
-            $supervisor = Empleado::with('rol')
-                ->whereHas('rol', function($q) {
-                    $q->where('nombre', 'supervisor');
-                })
-                ->first();
+            return null;
         }
         
         return $supervisor;

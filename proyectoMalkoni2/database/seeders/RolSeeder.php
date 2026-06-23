@@ -32,7 +32,11 @@ class RolSeeder extends Seeder
         ];
 
         foreach ($roles as $rol) {
-            Rol::create($rol);
+            // Busca por nombre; si existe actualiza la descripción, si no, lo crea.
+            Rol::updateOrCreate(
+                ['nombre' => $rol['nombre']],
+                ['descripcion' => $rol['descripcion']]
+            );
         }
     }
 }

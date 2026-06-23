@@ -14,13 +14,13 @@
 
                 <!-- Botones de acción principales -->
                 <div class="flex justify-center gap-6 mt-8 mb-8">
-                    <a href="{{ route('cliente.nueva_cotizacion', ['persona_id' => $personaId]) }}" class="inline-flex items-center px-12 py-6 bg-[#D88429] text-white text-xl font-bold rounded-xl shadow-lg hover:bg-[#c7731f] hover:shadow-xl transition-all transform hover:scale-105">
+                    <a href="{{ route('cliente.nueva_cotizacion') }}" class="inline-flex items-center px-12 py-6 bg-[#D88429] text-white text-xl font-bold rounded-xl shadow-lg hover:bg-[#c7731f] hover:shadow-xl transition-all transform hover:scale-105">
                         <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                         Nueva Cotización
                     </a>
-                    <a href="{{ route('cliente.opt') }}" class="inline-flex items-center px-12 py-6 bg-gray-600 text-white text-xl font-bold rounded-xl shadow-lg hover:bg-gray-700 hover:shadow-xl transition-all transform hover:scale-105">
+                    <a href="{{ $cliente?->token_opt ? 'https://online.malkoni.com.ar/public/Dashboard/opt.php?token=' . urlencode($cliente->token_opt) : 'https://online.malkoni.com.ar/public/login.php' }}" class="inline-flex items-center px-12 py-6 bg-gray-600 text-white text-xl font-bold rounded-xl shadow-lg hover:bg-gray-700 hover:shadow-xl transition-all transform hover:scale-105">
                         <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
@@ -48,7 +48,6 @@
                     <div id="filters-panel" class="hidden mt-3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="p-6">
                             <form method="GET" action="{{ route('cliente.dashboard') }}" class="space-y-4">
-                                <input type="hidden" name="persona_id" value="{{ $personaId }}">
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     <div>
@@ -107,7 +106,7 @@
                                     </button>
                                     
                                     @if(request()->hasAny(['search', 'estado', 'fecha_desde', 'fecha_hasta']))
-                                        <a href="{{ route('cliente.dashboard', ['persona_id' => $personaId]) }}" class="flex items-center gap-2 px-6 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                                        <a href="{{ route('cliente.dashboard') }}" class="flex items-center gap-2 px-6 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                             </svg>
@@ -212,14 +211,37 @@
                                                 @endif
                                             </td>
                                             <td class="py-4 px-6">
-                                                <div class="flex items-center justify-center">
-                                                    <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacion->id, 'persona_id' => $personaId]) }}" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                                <div class="flex flex-wrap items-center justify-center gap-2">
+                                                    <a href="{{ route('cliente.cotizacion.ver', ['id' => $cotizacion->id]) }}" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                         </svg>
                                                         Ver detalle
                                                     </a>
+
+                                                    @php
+                                                        $tienePlanoOpt = !empty($cotizacion->pedido_opt_id) && !empty($cotizacion->pdf_url);
+                                                    @endphp
+
+                                                    @if($tienePlanoOpt)
+                                                        <a href="{{ $cotizacion->pdf_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors" title="Abrir plano">
+                                                            <svg class="w-4 h-4 mr-1" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                                                <path d="M14 4.5V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6.5L14 4.5z"/>
+                                                                <path d="M9.5 1.5V5a1 1 0 0 0 1 1H14" fill="#fff" opacity=".35"/>
+                                                                <path d="M4.5 8.5h7v1h-7zm0 2h7v1h-7zm0-4h3v1h-3z" fill="#fff"/>
+                                                            </svg>
+                                                            Plano
+                                                        </a>
+
+                                                        <a href="{{ route('cliente.cotizacion.plano.descargar', ['id' => $cotizacion->id]) }}" class="inline-flex items-center justify-center w-10 h-10 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" title="Descargar plano" download>
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m0 0l-4-4m4 4l4-4m-7 7h10"/>
+                                                            </svg>
+                                                        </a>
+                                                    @else
+                                                        <span class="text-gray-400 italic">—</span>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -290,11 +312,11 @@
                                 @endif
                             </p>
                             @if(request()->hasAny(['search', 'estado', 'fecha_desde', 'fecha_hasta']))
-                                <a href="{{ route('cliente.dashboard', ['persona_id' => $personaId]) }}" class="inline-flex items-center px-4 py-2 bg-[#D88429] text-white font-semibold rounded-lg hover:bg-[#c7731f] transition-colors">
+                                <a href="{{ route('cliente.dashboard') }}" class="inline-flex items-center px-4 py-2 bg-[#D88429] text-white font-semibold rounded-lg hover:bg-[#c7731f] transition-colors">
                                     Ver todas las cotizaciones
                                 </a>
                             @else
-                                <a href="{{ route('cliente.nueva_cotizacion', ['persona_id' => $personaId]) }}" class="inline-flex items-center px-4 py-2 bg-[#D88429] text-white font-semibold rounded-lg hover:bg-[#c7731f] transition-colors">
+                                <a href="{{ route('cliente.nueva_cotizacion') }}" class="inline-flex items-center px-4 py-2 bg-[#D88429] text-white font-semibold rounded-lg hover:bg-[#c7731f] transition-colors">
                                     Crear primera cotización
                                 </a>
                             @endif

@@ -15,9 +15,8 @@ class SupervisorDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // Por ahora simulo un supervisor específico (ID 1)
-        // En un sistema real esto vendría de la autenticación
-        $supervisorId = $request->get('supervisor_id', 1);
+        $supervisorId = (int) session('user_id', 0);
+        abort_if($supervisorId <= 0, 403, 'Sesión de supervisor inválida.');
         
         $supervisor = Empleado::with('rol')
             ->whereHas('rol', function($q) {
@@ -26,12 +25,7 @@ class SupervisorDashboardController extends Controller
             ->find($supervisorId);
         
         if (!$supervisor) {
-            // Si no encuentra el supervisor específico, toma el primero disponible
-            $supervisor = Empleado::with('rol')
-                ->whereHas('rol', function($q) {
-                    $q->where('nombre', 'supervisor');
-                })
-                ->first();
+            abort(403, 'Supervisor no autorizado.');
         }
         
         // Métricas principales actualizadas según nueva estructura

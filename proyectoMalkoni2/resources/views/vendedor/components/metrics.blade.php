@@ -20,7 +20,7 @@
     </div>
 
     <!-- Cotizaciones Pendientes -->
-    <a href="{{ route('vendedor.app.cotizaciones.index', ['estado' => 'pendientes', 'empleado_id' => $empleadoId ?? 1]) }}" class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 block">
+    <a href="{{ route('vendedor.app.cotizaciones.index', ['estado' => 'pendientes']) }}" class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 block">
         <div class="flex items-start justify-between">
             <div class="flex items-start space-x-4">
                 <div class="p-2 bg-blue-100 rounded-lg">

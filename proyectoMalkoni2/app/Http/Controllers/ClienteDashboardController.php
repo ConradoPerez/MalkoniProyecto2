@@ -8,6 +8,7 @@ use App\Models\Cotizacion;
 use App\Models\Empleado; // Importado para cargar vendedores
 use App\Models\Producto;
 use App\Models\Item; // Importado para gestionar items de cotizaciones
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 
 class ClienteDashboardController extends Controller
@@ -17,8 +18,9 @@ class ClienteDashboardController extends Controller
      */
     public function dashboard(Request $request)
     {
-        // Obtener el ID de la persona desde la request
-        $personaId = $request->get('persona_id', 1);
+        // Obtener el ID de la persona desde la sesión autenticada
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
         // Obtener información del cliente (persona)
         $cliente = \App\Models\Persona::with('empresa')->find($personaId);
@@ -58,6 +60,11 @@ class ClienteDashboardController extends Controller
 
         // Obtener todas las cotizaciones que cumplen los filtros
         $todasCotizaciones = $query->orderByDesc('fyh')->get();
+
+        // Asegurar que la vista reciba también el plano OPT cuando exista
+        $todasCotizaciones->each(function (Cotizacion $cotizacion) {
+            $cotizacion->setVisible(array_unique(array_merge($cotizacion->getVisible() ?: [], ['pedido_opt_id', 'pdf_url'])));
+        });
         
         // Para cada cotización, obtener su estado actual
         foreach ($todasCotizaciones as $cotizacion) {
@@ -133,12 +140,13 @@ class ClienteDashboardController extends Controller
     public function createQuotation(Request $request)
     {
         $cotizacion = null;
-        $personaId = (int) $request->get('persona_id', 1);
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         $cotizacionId = $request->get('cotizacion_id');
 
         if ($cotizacionId) {
             $cotizacion = Cotizacion::with(['empresa', 'persona', 'empleado'])->findOrFail($cotizacionId);
-            $personaId = (int) $request->get('persona_id', $cotizacion->id_personas ?? $personaId);
+            $personaId = (int) ($cotizacion->id_personas ?? $personaId);
         }
 
         $vendedores = Empleado::vendedores()->get(['id_empleado', 'nombre', 'foto']);
@@ -157,7 +165,8 @@ class ClienteDashboardController extends Controller
     public function addProductsToQuotation(Request $request, $id)
     {
         // Obtener el ID del cliente desde la request
-        $personaId = $request->get('persona_id', 1);
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
         // Asegura que solo pueda editar sus propias cotizaciones
         $cotizacion = Cotizacion::with(['empresa', 'persona.empresa'])->where('id_personas', $personaId)->findOrFail($id);
@@ -184,7 +193,8 @@ class ClienteDashboardController extends Controller
      */
     public function prepareQuotation(Request $request)
     {
-        $personaId = (int) $request->get('persona_id', 1);
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
 
         $validated = $request->validate([
             'id_empleados' => 'required|exists:empleados,id_empleado',
@@ -204,7 +214,6 @@ class ClienteDashboardController extends Controller
 
             return redirect()->route('cliente.cotizacion.agregar_productos', [
                 'id' => $cotizacion->id,
-                'persona_id' => $personaId,
             ])->with('success', 'Vendedor asignado correctamente. Ya podés agregar productos a la cotización importada.');
         }
         
@@ -218,8 +227,9 @@ class ClienteDashboardController extends Controller
             ]
         ]);
         
-        return redirect()->route('cliente.cotizacion.productos', ['persona_id' => $personaId])
+        return redirect()->route('cliente.cotizacion.productos')
                          ->with('success', 'Datos guardados. ¡Selecciona productos para tu cotización!');
+                         
     }
 
     /**
@@ -228,13 +238,13 @@ class ClienteDashboardController extends Controller
      */
     public function selectProducts(Request $request)
     {
-        // Obtener el ID del cliente desde la request
-        $personaId = $request->get('persona_id', 1);
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
         // Verificar que existan datos de cotización en sesión
         $datosCotizacion = session('nueva_cotizacion');
         if (!$datosCotizacion || $datosCotizacion['persona_id'] != $personaId) {
-            return redirect()->route('cliente.nueva_cotizacion', ['persona_id' => $personaId])
+            return redirect()->route('cliente.nueva_cotizacion')
                            ->with('error', 'Sesión expirada. Completa nuevamente el formulario.');
         }
         
@@ -268,7 +278,8 @@ class ClienteDashboardController extends Controller
     {
         // Obtener datos de sesión
         $datosCotizacion = session('nueva_cotizacion');
-        $personaId = $request->get('persona_id', 1);
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
         \Log::info('=== CREAR COTIZACIÓN ===');
         \Log::info('Request completo:', $request->all());
@@ -337,7 +348,7 @@ class ClienteDashboardController extends Controller
             session()->forget('nueva_cotizacion');
             
             // Redirigir al detalle de la cotización
-            return redirect()->route('cliente.cotizacion.ver', ['id' => $cotizacion->id, 'persona_id' => $personaId])
+            return redirect()->route('cliente.cotizacion.ver', ['id' => $cotizacion->id])
                            ->with('success', 'Cotización creada exitosamente con ' . count($productosFiltrados) . ' productos.');
                            
         } catch (\Exception $e) {
@@ -374,8 +385,8 @@ class ClienteDashboardController extends Controller
 
     public function viewQuotation(Request $request, $id)
     {
-        // Obtener el ID del cliente desde la request
-        $personaId = $request->get('persona_id', 1);
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
         // Asegura que solo pueda ver sus propias cotizaciones
         $cotizacion = Cotizacion::where('id_personas', $personaId)
@@ -385,13 +396,43 @@ class ClienteDashboardController extends Controller
     }
 
     /**
+     * Descarga el plano OPT de una cotización del cliente como attachment.
+     */
+    public function downloadOptPlano(Request $request, $id)
+    {
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
+
+        $cotizacion = Cotizacion::query()
+            ->where('id', $id)
+            ->where('id_personas', $personaId)
+            ->firstOrFail();
+
+        abort_unless(!empty($cotizacion->pedido_opt_id) && !empty($cotizacion->pdf_url), 404);
+
+        $response = Http::timeout(30)->retry(2, 200)->get($cotizacion->pdf_url);
+
+        abort_unless($response->successful(), 404);
+
+        $filename = 'plano-opt-' . $cotizacion->pedido_opt_id . '.pdf';
+        $contentType = $response->header('Content-Type', 'application/pdf');
+
+        return response()->streamDownload(function () use ($response) {
+            echo $response->body();
+        }, $filename, [
+            'Content-Type' => $contentType,
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    /**
      * Guarda productos/servicios a una cotización existente.
      * (Método POST llamado desde el formulario 'Agregar Productos')
      */
     public function storeProductsToQuotation(Request $request, $id)
     {
-        // Obtener el ID del cliente desde la request
-        $personaId = $request->get('persona_id', 1);
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
         // Asegura que solo pueda editar sus propias cotizaciones
         $cotizacion = Cotizacion::where('id_personas', $personaId)->findOrFail($id);
@@ -448,7 +489,7 @@ class ClienteDashboardController extends Controller
                 ]);
             });
 
-            return redirect()->route('cliente.cotizacion.ver', ['id' => $cotizacion->id, 'persona_id' => $personaId])
+            return redirect()->route('cliente.cotizacion.ver', ['id' => $cotizacion->id])
                            ->with('success', 'Productos agregados a la cotización exitosamente.');
 
         } catch (\Exception $e) {
@@ -461,8 +502,8 @@ class ClienteDashboardController extends Controller
      */
     public function removeProductFromQuotation(Request $request, $cotizacionId, $itemId)
     {
-        // Obtener el ID del cliente desde la request
-        $personaId = $request->get('persona_id', 1);
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
         // Verificar seguridad: solo el cliente propietario puede eliminar
         $cotizacion = Cotizacion::where('id_personas', $personaId)->findOrFail($cotizacionId);

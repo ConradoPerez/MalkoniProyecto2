@@ -240,7 +240,6 @@
         <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all border border-gray-200/50 ring-1 ring-gray-300/30">
             <form id="createGroupForm" action="{{ route('vendedor.app.grupos.store') }}" method="POST">
                 @csrf
-                <input type="hidden" name="empleado_id" value="{{ request('empleado_id', 1) }}">
                 
                 <!-- Encabezado del modal -->
                 <div class="p-6 border-b border-gray-200/50 bg-gradient-to-r from-orange-50/80 to-orange-100/60 backdrop-blur-sm rounded-t-2xl">
@@ -388,7 +387,6 @@
 
 <script>
 let currentGroupId = null;
-const empleadoId = {{ request('empleado_id', 1) }};
 
 function showCreateGroupModal() {
     document.getElementById('createGroupModal').classList.remove('hidden');
@@ -423,7 +421,6 @@ function createGroupWithAjax() {
     const formData = new FormData();
     formData.append('nombre_grupo', document.getElementById('nombreGrupo').value);
     formData.append('descripcion', document.getElementById('descripcionGrupo').value);
-    formData.append('empleado_id', empleadoId);
     
     // Agregar empresas seleccionadas
     const empresasSeleccionadas = document.querySelectorAll('input[name="empresas[]"]:checked');
@@ -431,7 +428,7 @@ function createGroupWithAjax() {
         formData.append('empresas[]', checkbox.value);
     });
 
-    fetch(`/vendedor/grupos?empleado_id=${empleadoId}`, {
+    fetch(`/vendedor/grupos`, {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -501,7 +498,7 @@ function addEmpresaToGroup() {
     const empresas = Array.from(empresasSeleccionadas).map(checkbox => checkbox.value);
 
     console.log('Enviando petición:', {
-        url: `/vendedor/grupos/${currentGroupId}/empresas?empleado_id=${empleadoId}`,
+        url: `/vendedor/grupos/${currentGroupId}/empresas`,
         empresas: empresas,
         currentGroupId: currentGroupId
     });
@@ -515,7 +512,7 @@ function addEmpresaToGroup() {
         }
     });
 
-    fetch(`/vendedor/grupos/${currentGroupId}/empresas?empleado_id=${empleadoId}`, {
+    fetch(`/vendedor/grupos/${currentGroupId}/empresas`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -524,7 +521,6 @@ function addEmpresaToGroup() {
         },
         body: JSON.stringify({
             empresas: empresas,
-            empleado_id: empleadoId
         })
     })
     .then(response => {
@@ -583,7 +579,7 @@ function removeEmpresa(groupId, empresaId) {
                 }
             });
 
-            fetch(`/vendedor/grupos/${groupId}/empresas/${empresaId}?empleado_id=${empleadoId}`, {
+            fetch(`/vendedor/grupos/${groupId}/empresas/${empresaId}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -637,7 +633,7 @@ function deleteGroup(groupId) {
                 }
             });
 
-            fetch(`/vendedor/grupos/${groupId}?empleado_id=${empleadoId}`, {
+            fetch(`/vendedor/grupos/${groupId}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

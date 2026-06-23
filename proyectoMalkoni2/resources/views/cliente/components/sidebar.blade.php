@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<aside class="hidden lg:block w-56 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto">
+<aside class="hidden lg:block w-56 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto flex flex-col">
     <!-- Logo -->
     <div class="mb-8">
         <div class="flex items-center justify-center">
@@ -10,7 +10,7 @@
     <!-- Navigation -->
     <nav class="space-y-2 mb-8">
         <!-- Dashboard -->
-        <a href="{{ route('cliente.dashboard', ['persona_id' => request('persona_id', 1)]) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.dashboard') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('cliente.dashboard') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.dashboard') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('cliente.dashboard') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M3 13h2v8H3zm4-8h2v16H7zm4-2h2v18h-2zm4 4h2v14h-2zm4-4h2v18h-2z"/>
@@ -19,7 +19,7 @@
         </a>
 
         <!-- Nueva Cotización -->
-        <a href="{{ route('cliente.nueva_cotizacion', ['persona_id' => request('persona_id', 1)]) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.nueva_cotizacion') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('cliente.nueva_cotizacion') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('cliente.nueva_cotizacion') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('cliente.nueva_cotizacion') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
@@ -79,6 +79,16 @@
                 <div class="text-sm font-semibold truncate">{{ auth()->user()?->name ?? 'Cliente' }}</div>
             </div>
         </div>
+    </div>
+
+    <div class="mt-auto pt-6 border-t border-gray-200">
+        <button type="button" onclick="document.getElementById('cliente-logout-form').submit();" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold text-white transition-colors" style="background-color: #172A32;">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar Sesión</span>
+        </button>
+        <form id="cliente-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+            @csrf
+        </form>
     </div>
 
 </aside>

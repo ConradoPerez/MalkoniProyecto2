@@ -15,8 +15,8 @@ class VendedorClienteController extends Controller
      */
     public function index(Request $request)
     {
-        // Obtener el ID del empleado desde la request (vendedor actual)
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         
         // Obtener información del vendedor
         $vendedor = Empleado::with('rol')->find($empleadoId);
@@ -132,8 +132,8 @@ class VendedorClienteController extends Controller
      */
     public function cotizaciones(Request $request, $empresaId)
     {
-        // Obtener el ID del empleado desde la request (vendedor actual)
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         
         // Obtener información del vendedor
         $vendedor = Empleado::with('rol')->find($empleadoId);
@@ -155,8 +155,8 @@ class VendedorClienteController extends Controller
      */
     public function ficha(Request $request, $empresaId)
     {
-        // Obtener el ID del empleado desde la request (vendedor actual)
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         
         // Obtener información del vendedor
         $vendedor = Empleado::with('rol')->find($empleadoId);

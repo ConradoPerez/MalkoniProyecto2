@@ -29,7 +29,7 @@
                     <div class="flex items-center gap-4">
                         {{-- Botón volver --}}
                         @if(request('from_cliente'))
-                            <a href="{{ route('vendedor.app.clientes.cotizaciones', ['empresa' => request('from_cliente'), 'empleado_id' => request('empleado_id')]) }}" 
+                            <a href="{{ route('vendedor.app.clientes.cotizaciones', ['empresa' => request('from_cliente')]) }}" 
                                class="inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold transition hover:opacity-90 shadow-md"
                                style="background-color:#D88429;">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,7 +38,7 @@
                                 Volver a Clientes
                             </a>
                         @else
-                            <a href="{{ route('vendedor.app.cotizaciones.index', ['empleado_id' => request('empleado_id')]) }}" 
+                            <a href="{{ route('vendedor.app.cotizaciones.index') }}" 
                                class="inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold transition hover:opacity-90 shadow-md"
                                style="background-color:#D88429;">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,6 +158,26 @@
                     </div>
                 </div>
 
+                @if(!empty($cotizacion->pdf_url))
+                    <div class="mb-6 flex justify-center">
+                        <div class="w-full max-w-3xl bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-2xl shadow-lg border border-gray-700 p-5">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.2em] text-gray-300 mb-1">Plano OPT</p>
+                                    <h2 class="text-xl font-semibold">Visualizar Plano de Cortes Original</h2>
+                                    <p class="text-sm text-gray-300 mt-1">El archivo adjunto está disponible para revisar madera, herrajes y perfiles antes de presupuestar.</p>
+                                </div>
+                                <a href="{{ $cotizacion->pdf_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[#D88429] text-white font-semibold hover:bg-[#c7731f] transition-colors shadow-md whitespace-nowrap">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    📄 Visualizar Plano de Cortes Original
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Formulario de cotización --}}
                 @php
                     $estadoNombre = $cotizacion->estado_actual->nombre ?? 'Sin estado';
@@ -168,7 +188,6 @@
                 <form method="POST" action="{{ route('vendedor.app.cotizaciones.guardar', ['id' => $cotizacion->id]) }}" class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mb-6">
                     @csrf
                     @method('PUT')
-                    <input type="hidden" name="empleado_id" value="{{ request('empleado_id') }}">
                     
                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                         <h2 class="text-lg font-semibold text-gray-900">Items de la cotización</h2>

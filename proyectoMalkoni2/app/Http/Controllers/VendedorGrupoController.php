@@ -15,9 +15,8 @@ class VendedorGrupoController extends Controller
      */
     public function index(Request $request)
     {
-        // Por ahora simulo un empleado/vendedor específico usando parámetro URL
-        // En un sistema real esto vendría de la autenticación
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         
         $vendedor = Empleado::find($empleadoId);
         
@@ -72,10 +71,10 @@ class VendedorGrupoController extends Controller
                 'descripcion' => 'nullable|string|max:500',
                 'empresas' => 'array',
                 'empresas.*' => 'exists:empresas,id_empresa',
-                'empleado_id' => 'required|exists:empleados,id_empleado'
             ]);
 
-            $empleadoId = $request->get('empleado_id', 1);
+            $empleadoId = (int) session('user_id', 0);
+            abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
             $vendedor = Empleado::find($empleadoId);
 
             if (!$vendedor) {
@@ -105,7 +104,7 @@ class VendedorGrupoController extends Controller
                 ]);
             }
 
-            return redirect()->route('vendedor.app.grupos.index', ['empleado_id' => $empleadoId])
+            return redirect()->route('vendedor.app.grupos.index')
                 ->with('success', 'Grupo creado exitosamente');
 
         } catch (\Exception $e) {
@@ -126,7 +125,7 @@ class VendedorGrupoController extends Controller
             \Log::info('addEmpresa called', [
                 'grupoId' => $grupoId,
                 'request_data' => $request->all(),
-                'empleado_id' => $request->get('empleado_id')
+                'empleado_id' => session('user_id')
             ]);
 
             $request->validate([
@@ -134,7 +133,8 @@ class VendedorGrupoController extends Controller
                 'empresas.*' => 'required|integer'
             ]);
 
-            $empleadoId = $request->get('empleado_id', 1);
+            $empleadoId = (int) session('user_id', 0);
+            abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
             $vendedor = Empleado::find($empleadoId);
 
             if (!$vendedor) {
@@ -222,7 +222,8 @@ class VendedorGrupoController extends Controller
      */
     public function removeEmpresa(Request $request, $grupoId, $empresaId)
     {
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         $vendedor = Empleado::find($empleadoId);
 
         $grupo = Grupo::where('id_grupo', $grupoId)
@@ -243,7 +244,8 @@ class VendedorGrupoController extends Controller
      */
     public function destroy(Request $request, $grupoId)
     {
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         $vendedor = Empleado::find($empleadoId);
 
         if (!$vendedor) {
@@ -265,7 +267,7 @@ class VendedorGrupoController extends Controller
                 return response()->json(['success' => 'Grupo eliminado exitosamente']);
             }
             
-            return redirect()->route('vendedor.app.grupos.index', ['empleado_id' => $empleadoId])
+            return redirect()->route('vendedor.app.grupos.index')
                 ->with('success', 'Grupo eliminado exitosamente');
         } catch (\Exception $e) {
             if ($request->expectsJson()) {

@@ -1,9 +1,5 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario'])) {
-    header('Location: ./login.php');
-    exit;
-}
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 $entityManager = require __DIR__ . '/../../config/doctrine.php';
@@ -15,6 +11,64 @@ require_once __DIR__ . '/../../PHPMailer/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Entities\Personas;
+use Entities\Empresas;
+use Entities\EmpresasPersonas;
+
+$tokenAutologin = trim((string) ($_GET['token'] ?? ''));
+
+if (!isset($_SESSION['usuario']) && $tokenAutologin !== '') {
+  /** @var Personas|null $personaPorToken */
+  $personaPorToken = $entityManager
+    ->getRepository(Personas::class)
+    ->findOneBy(['tokenOpt' => $tokenAutologin]);
+
+  if ($personaPorToken && $personaPorToken->getEmpresa() && $personaPorToken->getEmpresa()->isValidado()) {
+    $estado = (int) $personaPorToken->getEstadoPersona();
+
+    if (!in_array($estado, [2, 3, 4], true)) {
+      $_SESSION['usuario']  = $personaPorToken->getEmail();
+      $_SESSION['id']       = $personaPorToken->getId();
+      $_SESSION['nombre']   = $personaPorToken->getNombre();
+      $_SESSION['apellido'] = $personaPorToken->getApellido();
+      $_SESSION['rol']      = $personaPorToken->getRol();
+
+      $empresaIdActiva = 0;
+
+      if ((int) $personaPorToken->getRol() === 2 && method_exists($personaPorToken, 'getEmpresaActiva')) {
+        $ea = $personaPorToken->getEmpresaActiva();
+        if ($ea instanceof Empresas && $ea->isValidado()) {
+          $principal = $personaPorToken->getEmpresa();
+          $principalId = $principal ? (int) $principal->getId() : 0;
+          $asociado = ($principalId === (int) $ea->getId());
+
+          if (!$asociado) {
+            $vinculo = $entityManager->getRepository(EmpresasPersonas::class)->findOneBy([
+              'persona' => $personaPorToken,
+              'empresa' => $ea,
+              'estado' => 1,
+            ]);
+            $asociado = (bool) $vinculo;
+          }
+
+          if ($asociado) {
+            $empresaIdActiva = (int) $ea->getId();
+          }
+        }
+      }
+
+      if ($empresaIdActiva <= 0) {
+        $empresaIdActiva = (int) $personaPorToken->getEmpresa()->getId();
+      }
+
+      $_SESSION['empresa_id'] = $empresaIdActiva;
+    }
+  }
+}
+
+if (!isset($_SESSION['usuario'])) {
+  header('Location: ../login.php');
+  exit;
+}
 
 // --- Datos del usuario ---
 $repo     = $entityManager->getRepository(Personas::class);

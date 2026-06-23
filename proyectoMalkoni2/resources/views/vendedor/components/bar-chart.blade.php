@@ -40,7 +40,6 @@
         let salesChart = null;
         let currentInterval = '7dias';
         let resizeTimeout = null;
-        const empleadoId = {{ isset($vendedor) ? $vendedor->id_empleado : 1 }};
 
         // Función para obtener configuración responsive
         function getResponsiveConfig() {
@@ -255,7 +254,7 @@
             salesCtx.style.opacity = '0.5';
 
             // Llamada AJAX real
-            fetch(`{{ route('vendedor.api.cotizaciones.chart') }}?intervalo=${interval}&empleado_id=${empleadoId}`, {
+            fetch(`{{ route('vendedor.api.cotizaciones.chart') }}?intervalo=${interval}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,5 +1,5 @@
 <!-- Desktop Sidebar -->
-<aside class="w-56 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto z-30 desktop-sidebar">
+<aside class="w-56 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto z-30 desktop-sidebar flex flex-col">
 
     <!-- Logo -->
     <div class="mb-8">
@@ -11,7 +11,7 @@
     <!-- Navigation -->
     <nav class="space-y-2 mb-8">
         <!-- Dashboard -->
-        <a href="{{ route('vendedor.dashboard') }}?empleado_id={{ request('empleado_id', 1) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.dashboard') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('vendedor.dashboard') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.dashboard') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedor.dashboard') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -20,7 +20,7 @@
         </a>
 
         <!-- Cotizaciones -->
-        <a href="{{ route('vendedor.app.cotizaciones.index') }}?empleado_id={{ request('empleado_id', 1) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.cotizaciones.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('vendedor.app.cotizaciones.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.cotizaciones.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedor.app.cotizaciones.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -29,7 +29,7 @@
         </a>
 
         <!-- Clientes -->
-        <a href="{{ route('vendedor.app.clientes.index') }}?empleado_id={{ request('empleado_id', 1) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.clientes.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('vendedor.app.clientes.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.clientes.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedor.app.clientes.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -38,7 +38,7 @@
         </a>
 
         <!-- Grupos de Clientes -->
-        <a href="{{ route('vendedor.app.grupos.index') }}?empleado_id={{ request('empleado_id', 1) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.grupos.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('vendedor.app.grupos.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.grupos.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedor.app.grupos.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -57,7 +57,7 @@
     <!-- Indicadores con datos reales -->
     <div class="mt-2 space-y-3">
         @php
-            $empleadoId = request('empleado_id', 1);
+            $empleadoId = (int) session('user_id', 0);
             $clientesCount = \App\Models\Empresa::whereHas('cotizaciones', function($q) use ($empleadoId) {
                 $q->where('id_empleados', $empleadoId);
             })->count();
@@ -121,6 +121,16 @@
         </div>
     </div>
 
+    <div class="mt-auto pt-6 border-t border-gray-200">
+        <button type="button" onclick="document.getElementById('vendedor-logout-form').submit();" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold text-white transition-colors" style="background-color: #172A32;">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar Sesión</span>
+        </button>
+        <form id="vendedor-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+            @csrf
+        </form>
+    </div>
+
 </aside>
 
 <!-- Mobile Sidebar Overlay -->
@@ -128,7 +138,7 @@
 
 <!-- Mobile Sidebar -->
 <aside id="mobile-sidebar"
-       class="fixed left-0 top-0 h-full w-72 bg-white shadow-xl p-6 transform -translate-x-full transition-transform duration-300 ease-in-out z-50 lg:hidden">
+    class="fixed left-0 top-0 h-full w-72 bg-white shadow-xl p-6 transform -translate-x-full transition-transform duration-300 ease-in-out z-50 lg:hidden flex flex-col">
     <!-- Close Button -->
     <div class="flex items-center justify-between mb-8">
         <div class="flex items-center">
@@ -144,7 +154,7 @@
     <!-- Mobile Navigation -->
     <nav class="space-y-2 mb-8">
         <!-- Dashboard -->
-        <a href="{{ route('vendedor.dashboard') }}?empleado_id={{ request('empleado_id', 1) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.dashboard') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('vendedor.dashboard') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.dashboard') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedor.dashboard') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -153,7 +163,7 @@
         </a>
 
         <!-- Cotizaciones -->
-        <a href="{{ route('vendedor.app.cotizaciones.index') }}?empleado_id={{ request('empleado_id', 1) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.cotizaciones.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('vendedor.app.cotizaciones.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.cotizaciones.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedor.app.cotizaciones.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -162,7 +172,7 @@
         </a>
 
         <!-- Clientes -->
-        <a href="{{ route('vendedor.app.clientes.index') }}?empleado_id={{ request('empleado_id', 1) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.clientes.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('vendedor.app.clientes.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.clientes.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedor.app.clientes.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -171,7 +181,7 @@
         </a>
 
         <!-- Grupos de Clientes -->
-        <a href="{{ route('vendedor.app.grupos.index') }}?empleado_id={{ request('empleado_id', 1) }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.grupos.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
+        <a href="{{ route('vendedor.app.grupos.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedor.app.grupos.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedor.app.grupos.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -190,7 +200,7 @@
     <!-- Indicadores en mobile -->
     <div class="mt-2 space-y-3">
         @php
-            $empleadoId = request('empleado_id', 1);
+            $empleadoId = (int) session('user_id', 0);
             $clientesCount = \App\Models\Empresa::whereHas('cotizaciones', function($q) use ($empleadoId) {
                 $q->where('id_empleados', $empleadoId);
             })->count();
@@ -252,6 +262,16 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="mt-auto pt-6 border-t border-gray-200">
+        <button type="button" onclick="document.getElementById('vendedor-logout-form-mobile').submit();" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold text-white transition-colors" style="background-color: #172A32;">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar Sesión</span>
+        </button>
+        <form id="vendedor-logout-form-mobile" action="{{ route('logout') }}" method="POST" class="hidden">
+            @csrf
+        </form>
     </div>
 
 </aside>

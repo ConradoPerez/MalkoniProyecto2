@@ -73,6 +73,9 @@ $avatar = ($g === 'F')
 $nombreCompleto = $persona
     ? trim(($persona->getNombre() ?? '') . ' ' . ($persona->getApellido() ?? ''))
     : '';
+
+$integrationApiUrl = getenv('INTEGRATION_API_URL') ?: 'https://pencil-shine-postage.ngrok-free.dev/api/v1/cotizaciones/importar';
+$integrationToken = getenv('INTEGRATION_TOKEN') ?: 'e40bee85d1d3c3de02b085f7a93210115778f7c14757b674dfa26c62ad1bb704';
 ?>
 
 <header class="header <?= $isConsumidorFinal ? 'cf' : '' ?> <?= ($navbarContext ?? '') === 'opt' ? 'navbar-opt' : '' ?>">
@@ -152,6 +155,15 @@ $nombreCompleto = $persona
       <button id="supportBtn">Soporte</button>
     <?php endif; ?>
 
+    <button
+      type="button"
+      id="goCotizacionesOnlineBtn"
+      class="nav-link btn btn-outline-primary btn-sm text-white px-3 d-inline-flex align-items-center justify-content-center gap-2 mt-2"
+    >
+      <i class="bi bi-grid-1x2-fill"></i>
+      <span>Ir a Cotizaciones Online</span>
+    </button>
+
     <button id="changePassBtn">Cambiar Contraseña</button>
     <button id="logoutBtn">Cerrar Sesión</button>
   </div>
@@ -159,6 +171,21 @@ $nombreCompleto = $persona
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  const INTEGRATION_API_URL = <?= json_encode($integrationApiUrl) ?>;
+  const INTEGRATION_TOKEN = <?= json_encode($integrationToken) ?>;
+  const SESSION_USER_ID = <?= json_encode((int) ($_SESSION['id'] ?? 0)) ?>;
+  const SESSION_EMPRESA_ID = <?= json_encode((int) ($_SESSION['empresa_id'] ?? 0)) ?>;
+  const TOKEN_OPT = <?= json_encode($persona ? (string) ($persona->getTokenOpt() ?? '') : '') ?>;
+  const PERSONA_NOMBRE = <?= json_encode($persona ? (string) ($persona->getNombre() ?? '') : '') ?>;
+  const PERSONA_APELLIDO = <?= json_encode($persona ? (string) ($persona->getApellido() ?? '') : '') ?>;
+  const PERSONA_EMAIL = <?= json_encode($persona ? (string) ($persona->getEmail() ?? '') : '') ?>;
+  const PERSONA_DNI = <?= json_encode($persona ? (string) ($persona->getDni() ?? '') : '') ?>;
+  const PERSONA_GENERO = <?= json_encode($persona ? (string) ($persona->getGenero() ?? '') : '') ?>;
+  const PERSONA_TEL = <?= json_encode($persona ? (string) ($persona->getNumTel() ?? '') : '') ?>;
+  const EMPRESA_RAZON_SOCIAL = <?= json_encode($empresaEntity ? (string) ($empresaEntity->getRazonSocial() ?? '') : '') ?>;
+  const EMPRESA_CUIT = <?= json_encode($empresaEntity ? (string) ($empresaEntity->getCuit() ?? '') : '') ?>;
+  const EMPRESA_IVA = <?= json_encode($empresaEntity ? (string) ($empresaEntity->getCodCondIVA() ?? '') : '') ?>;
+
   const sideMenu = document.getElementById('sideMenu');
   const burger = document.getElementById('burger');
   const closeBtn = document.getElementById('closeBtn');
@@ -186,6 +213,66 @@ document.addEventListener('DOMContentLoaded', function() {
     logoutBtn.addEventListener('click', function(e) {
       e.preventDefault();
       window.location.href = '../logout.php';
+    });
+  }
+
+  const goCotizacionesOnlineBtn = document.getElementById('goCotizacionesOnlineBtn');
+  if (goCotizacionesOnlineBtn) {
+    goCotizacionesOnlineBtn.addEventListener('click', async function() {
+      const payload = {
+        persona_external_id: Number.parseInt(SESSION_USER_ID, 10),
+        empresa_activa_external_id: Number.parseInt(SESSION_EMPRESA_ID, 10),
+        token_opt: TOKEN_OPT,
+        pedido_id: null,
+        pdf_url: null,
+        persona_nombre: PERSONA_NOMBRE,
+        persona_apellido: PERSONA_APELLIDO,
+        persona_email: PERSONA_EMAIL,
+        persona_dni: PERSONA_DNI,
+        persona_genero: PERSONA_GENERO,
+        persona_tel: PERSONA_TEL,
+        empresa_razon_social: EMPRESA_RAZON_SOCIAL,
+        empresa_cuit: EMPRESA_CUIT,
+        empresa_iva: EMPRESA_IVA
+      };
+
+      try {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            title: 'Sincronizando acceso...',
+            text: 'Preparando tu sesión en Cotizaciones Online.',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => Swal.showLoading()
+          });
+        }
+
+        const response = await fetch(INTEGRATION_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Integration-Token': INTEGRATION_TOKEN
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data?.redirect_url) {
+          throw new Error(data?.message || `HTTP ${response.status}`);
+        }
+
+        window.location.href = data.redirect_url;
+      } catch (error) {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: 'error',
+            title: 'No se pudo abrir Cotizaciones Online',
+            text: error.message || 'Error inesperado al sincronizar el acceso.'
+          });
+        }
+      }
     });
   }
 

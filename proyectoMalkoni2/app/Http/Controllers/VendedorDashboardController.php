@@ -23,9 +23,8 @@ class VendedorDashboardController extends Controller
      */
     public function index(Request $request)
     {
-        // Por ahora simulo un empleado/vendedor específico (ID 1)
-        // En un sistema real esto vendría de la autenticación
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         
         $vendedor = Empleado::with('rol')->find($empleadoId);
         
@@ -212,7 +211,8 @@ class VendedorDashboardController extends Controller
      */
     public function getCotizacionesBarChart(Request $request)
     {
-        $empleadoId = $request->get('empleado_id', 1);
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
         $intervalo = $request->get('intervalo', '7dias');
         
         $data = $this->getCotizacionesPorTiempo($empleadoId, $intervalo);

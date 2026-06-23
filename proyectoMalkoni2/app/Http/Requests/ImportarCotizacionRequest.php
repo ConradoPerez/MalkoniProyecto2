@@ -29,8 +29,8 @@ class ImportarCotizacionRequest extends FormRequest
             'persona_external_id' => ['required', 'integer', 'min:1'],
             'empresa_activa_external_id' => ['required', 'integer', 'min:1'],
             'token_opt' => ['required', 'string', 'size:20', 'regex:/^[a-zA-Z0-9_]{20}$/'],
-            'pedido_id' => ['required', 'integer', 'min:1'],
-            'pdf_url' => ['required', 'string', 'url', 'starts_with:https://'],
+            'pedido_id' => ['nullable', 'integer', 'min:1'],
+            'pdf_url' => ['nullable', 'string', 'url', 'starts_with:https://'],
 
             // Datos de identidad de Persona
             'persona_nombre' => ['required', 'string', 'max:100'],
@@ -68,11 +68,9 @@ class ImportarCotizacionRequest extends FormRequest
             'token_opt.size' => 'El campo token_opt debe tener exactamente 20 caracteres.',
             'token_opt.regex' => 'El campo token_opt solo puede contener letras, números y guiones bajos.',
 
-            'pedido_id.required' => 'El campo pedido_id es obligatorio.',
             'pedido_id.integer' => 'El campo pedido_id debe ser un número entero.',
             'pedido_id.min' => 'El campo pedido_id debe ser mayor a 0.',
 
-            'pdf_url.required' => 'El campo pdf_url es obligatorio.',
             'pdf_url.string' => 'El campo pdf_url debe ser una cadena de texto.',
             'pdf_url.url' => 'El campo pdf_url debe ser una URL válida.',
             'pdf_url.starts_with' => 'El campo pdf_url debe comenzar con https://.',

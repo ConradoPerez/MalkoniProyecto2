@@ -92,7 +92,7 @@
 
                     <div class="flex gap-3">
                         @if(request()->hasAny(['nropedido', 'cliente', 'doc', 'estado', 'orderby']))
-                            <a href="{{ route('vendedor.app.cotizaciones.index', ['empleado_id' => request('empleado_id')]) }}"
+                            <a href="{{ route('vendedor.app.cotizaciones.index') }}"
                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -119,9 +119,6 @@
                 <div id="filtros-panel" class="mb-6 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                     <div class="p-6">
                         <form method="GET" action="{{ route('vendedor.app.cotizaciones.index') }}" class="space-y-4">
-                            @if(request('empleado_id'))
-                                <input type="hidden" name="empleado_id" value="{{ request('empleado_id') }}">
-                            @endif
                             
                             {{-- Filtros de búsqueda --}}
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -359,7 +356,7 @@
                                                     
                                                     @if(!$tienePrecio && $esCotizable)
                                                         {{-- Botón Cotizar (solo cuando no tiene precio y es cotizable - estados Nuevo/Abierto) --}}
-                                                        <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id')]) }}" 
+                                                        <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id]) }}" 
                                                            class="inline-flex items-center px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition hover:opacity-90"
                                                            style="background-color:#D88429;">
                                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -379,7 +376,7 @@
                                                                 Editar
                                                             </button>
                                                         @else
-                                                            <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id')]) }}" 
+                                                            <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id]) }}" 
                                                                class="inline-flex items-center px-3 py-1.5 rounded-lg text-white text-sm font-semibold transition hover:opacity-90"
                                                                style="background-color:#172A32;">
                                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -391,7 +388,7 @@
                                                     @endif
                                                     
                                                     {{-- Botón Ver detalle (siempre visible) --}}
-                                                    <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id, 'empleado_id' => request('empleado_id')]) }}" 
+                                                    <a href="{{ route('vendedor.app.cotizaciones.detalle', ['id' => $cotizacion->id]) }}" 
                                                        class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-gray-700 text-sm font-medium bg-white hover:bg-gray-50 transition-colors">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -437,7 +434,7 @@
                                 @endif
                             </p>
                             @if(request()->hasAny(['nropedido', 'cliente', 'doc', 'estado']))
-                                <a href="{{ route('vendedor.app.cotizaciones.index', ['empleado_id' => request('empleado_id')]) }}"
+                                <a href="{{ route('vendedor.app.cotizaciones.index') }}"
                                    class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all">
                                     Ver todas las cotizaciones
                                 </a>

@@ -15,7 +15,7 @@
                 <nav class="flex mb-6 mt-4" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 md:space-x-3">
                         <li>
-                            <a href="{{ route('cliente.dashboard', ['persona_id' => $personaId]) }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
+                            <a href="{{ route('cliente.dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D88429]">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                                 Volver
                             </a>
@@ -60,7 +60,6 @@
                     <form action="{{ route('cliente.cotizacion.preparar') }}" method="POST" id="formCotizacion">
                         @csrf
                         <input type="hidden" name="numero_pedido" value="{{ $numero_pedido }}">
-                        <input type="hidden" name="persona_id" value="{{ $personaId }}">
                         <input type="hidden" name="cotizacion_id" value="{{ $cotizacion->id ?? '' }}">
 
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
@@ -155,7 +154,7 @@
                         </div>
 
                         <div class="flex flex-col-reverse md:flex-row items-center justify-end gap-4 pt-4">
-                            <a href="{{ route('cliente.dashboard', ['persona_id' => $personaId]) }}" class="w-full md:w-auto px-6 py-3 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors text-center shadow-sm">
+                            <a href="{{ route('cliente.dashboard') }}" class="w-full md:w-auto px-6 py-3 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors text-center shadow-sm">
                                 Cancelar
                             </a>
                             
