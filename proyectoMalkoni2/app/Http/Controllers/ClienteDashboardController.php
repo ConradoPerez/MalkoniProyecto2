@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Empresa;
 use App\Models\Cotizacion;
-use App\Models\Empleado; // Importado para cargar vendedores
+use App\Models\Empleado; 
 use App\Models\Producto;
-use App\Models\Item; // Importado para gestionar items de cotizaciones
+use App\Models\Item; 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 
@@ -84,7 +84,6 @@ class ClienteDashboardController extends Controller
         }
         
         // Ordenar por prioridad de estado: Nuevo > Abierto > Cotizado > En entrega
-        // Dentro de cada estado, ordenar por fecha descendente (más reciente primero)
         $ordenEstados = ['Nuevo' => 1, 'Abierto' => 2, 'Cotizado' => 3, 'En entrega' => 4];
         $cotizacionesOrdenadas = $todasCotizaciones->sortBy([
             fn($a, $b) => ($ordenEstados[$a->estado_actual->nombre ?? 'Nuevo'] ?? 5) <=> ($ordenEstados[$b->estado_actual->nombre ?? 'Nuevo'] ?? 5),
@@ -114,7 +113,6 @@ class ClienteDashboardController extends Controller
             'en_entrega' => $todasCotizaciones->filter(fn($c) => ($c->estado_actual->nombre ?? 'Nuevo') === 'En entrega')->count(),
         ];
 
-        // Estadísticas para el sidebar (cotizaciones activas = Nuevo + Abierto)
         $cotizacionesActivas = $estadisticas['nuevo'] + $estadisticas['abierto'];
         
         return view('cliente.dashboard', compact(
@@ -130,12 +128,9 @@ class ClienteDashboardController extends Controller
     // =========================================================================
     // MÉTODOS DE NAVEGACIÓN Y COTIZACIONES
     // =========================================================================
-    // MÉTODOS DE NAVEGACIÓN Y COTIZACIONES
-    // =========================================================================
     
     /**
      * Muestra el formulario para iniciar una nueva cotización.
-     * Carga la lista de vendedores disponibles.
      */
     public function createQuotation(Request $request)
     {
@@ -159,24 +154,19 @@ class ClienteDashboardController extends Controller
     }
 
     /**
-     * Muestra la vista para agregar productos a una cotización.
-     * Carga la lista de productos disponibles organizados por jerarquía.
+     * Muestra la vista para agregar productos a una cotización existente.
      */
     public function addProductsToQuotation(Request $request, $id)
     {
-        // Obtener el ID del cliente desde la request
         $personaId = (int) session('user_id', 0);
         abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
-        // Asegura que solo pueda editar sus propias cotizaciones
         $cotizacion = Cotizacion::with(['empresa', 'persona.empresa'])->where('id_personas', $personaId)->findOrFail($id);
         
-        // Obtener productos organizados por categoría > subcategoría
         $categorias = \App\Models\Categoria::with([
             'subcategorias.productos.subtipo.tipo'
         ])->get();
         
-        // Obtener items ya agregados a esta cotización
         $itemsAgregados = $cotizacion->items()->with('producto')->get();
         
         return view('cliente.cotizaciones.agregar_productos', compact(
@@ -188,8 +178,7 @@ class ClienteDashboardController extends Controller
     }
 
     /**
-     * Procesa la selección de vendedor y datos iniciales, redirige a selección de productos.
-     * (Método POST llamado desde el formulario 'Nueva Cotización')
+     * Procesa la selección de vendedor y datos iniciales.
      */
     public function prepareQuotation(Request $request)
     {
@@ -228,34 +217,29 @@ class ClienteDashboardController extends Controller
         ]);
         
         return redirect()->route('cliente.cotizacion.productos')
-                         ->with('success', 'Datos guardados. ¡Selecciona productos para tu cotización!');
-                         
+                         ->with('success', 'Datos guardados. ¡Podés seleccionar productos opcionales o guardarla directamente!');
     }
 
     /**
      * Muestra la vista para seleccionar productos para una nueva cotización.
-     * (No hay cotización creada aún)
      */
     public function selectProducts(Request $request)
     {
         $personaId = (int) session('user_id', 0);
         abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
-        // Verificar que existan datos de cotización en sesión
         $datosCotizacion = session('nueva_cotizacion');
         if (!$datosCotizacion || $datosCotizacion['persona_id'] != $personaId) {
             return redirect()->route('cliente.nueva_cotizacion')
                            ->with('error', 'Sesión expirada. Completa nuevamente el formulario.');
         }
         
-        // Obtener productos organizados por categoría > subcategoría
         $categorias = \App\Models\Categoria::with([
             'subcategorias.productos.subtipo.tipo'
         ])->get();
         
-        // Datos de cotización temporal
         $cotizacion = (object) [
-            'id' => null, // Temporal, no existe en BD aún
+            'id' => null, 
             'numero_cotizacion' => $datosCotizacion['numero_pedido'],
             'estado_actual' => 'Preparando',
             'cliente_nombre' => 'Cotización en preparación'
@@ -272,42 +256,29 @@ class ClienteDashboardController extends Controller
     }
 
     /**
-     * Crea la cotización junto con los productos seleccionados.
+     * Crea la cotización (los productos adicionales ahora son OPCIONALES).
      */
     public function createQuotationWithProducts(Request $request)
     {
-        // Obtener datos de sesión
         $datosCotizacion = session('nueva_cotizacion');
         $personaId = (int) session('user_id', 0);
         abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
-        \Log::info('=== CREAR COTIZACIÓN ===');
-        \Log::info('Request completo:', $request->all());
-        \Log::info('Sesión:', $datosCotizacion);
-        
         if (!$datosCotizacion || $datosCotizacion['persona_id'] != $personaId) {
-            \Log::error('Sesión inválida');
             return back()->with('error', 'Sesión expirada. Inicia una nueva cotización.');
         }
         
-        // PRIMERO: Filtrar productos con cantidad > 0 ANTES de validar
+        // Filtrar productos con cantidad > 0 (si es que mandó alguno)
         $productosArray = $request->input('productos', []);
         $productosFiltrados = array_filter($productosArray, function($producto) {
             return isset($producto['cantidad']) && intval($producto['cantidad']) > 0;
         });
         
-        \Log::info('Productos después del filtro:', ['total' => count($productosFiltrados), 'productos' => $productosFiltrados]);
-        
-        if (empty($productosFiltrados)) {
-            return back()->withErrors(['productos' => 'Debe seleccionar al menos un producto con cantidad mayor a 0.'])->withInput();
-        }
-        
-        // Reindexar el array para que tenga índices consecutivos
         $productosFiltrados = array_values($productosFiltrados);
         
         try {
             $cotizacion = DB::transaction(function () use ($datosCotizacion, $productosFiltrados, $personaId) {
-                // 1. Crear la cotización
+                // 1. Crear la cotización básica
                 $cotizacion = Cotizacion::create([
                     'titulo' => 'Cotización #' . $datosCotizacion['numero_pedido'],
                     'numero' => $datosCotizacion['numero_pedido'],
@@ -317,9 +288,7 @@ class ClienteDashboardController extends Controller
                     'id_personas' => $personaId,
                 ]);
                 
-                \Log::info('Cotización creada:', ['id' => $cotizacion->id]);
-                
-                // 2. Agregar productos seleccionados
+                // 2. Agregar productos adicionales solo si el array no está vacío
                 $precioTotal = 0;
                 foreach ($productosFiltrados as $productoData) {
                     $producto = \App\Models\Producto::find($productoData['id_producto']);
@@ -332,30 +301,25 @@ class ClienteDashboardController extends Controller
                         ]);
                         
                         $precioTotal += ($producto->precio_final ?? 0) * $productoData['cantidad'];
-                        \Log::info('Item agregado:', ['producto' => $productoData['id_producto'], 'cantidad' => $productoData['cantidad']]);
                     }
                 }
                 
-                // Actualizar precio total
                 $cotizacion->update(['precio_total' => $precioTotal]);
-                
                 return $cotizacion;
             });
             
-            \Log::info('✓ Cotización creada exitosamente:', ['id' => $cotizacion->id, 'items' => count($productosFiltrados)]);
-            
-            // Limpiar sesión
             session()->forget('nueva_cotizacion');
             
-            // Redirigir al detalle de la cotización
+            $mensajeSuccess = count($productosFiltrados) > 0 
+                ? 'Cotización creada exitosamente con ' . count($productosFiltrados) . ' productos adicionales.'
+                : 'Cotización creada exitosamente basada exclusivamente en el plano del OPT.';
+
             return redirect()->route('cliente.cotizacion.ver', ['id' => $cotizacion->id])
-                           ->with('success', 'Cotización creada exitosamente con ' . count($productosFiltrados) . ' productos.');
+                           ->with('success', $mensajeSuccess);
                            
         } catch (\Exception $e) {
             \Log::error('Error al crear cotización: ' . $e->getMessage());
-            \Log::error($e->getTraceAsString());
-            return back()->with('error', 'Error al crear la cotización: ' . $e->getMessage())
-                        ->withInput();
+            return back()->with('error', 'Error al crear la cotización: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -388,7 +352,6 @@ class ClienteDashboardController extends Controller
         $personaId = (int) session('user_id', 0);
         abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
-        // Asegura que solo pueda ver sus propias cotizaciones
         $cotizacion = Cotizacion::where('id_personas', $personaId)
             ->with(['empleado', 'empresa', 'persona', 'items.producto'])
             ->findOrFail($id);
@@ -427,32 +390,28 @@ class ClienteDashboardController extends Controller
 
     /**
      * Guarda productos/servicios a una cotización existente.
-     * (Método POST llamado desde el formulario 'Agregar Productos')
      */
     public function storeProductsToQuotation(Request $request, $id)
     {
         $personaId = (int) session('user_id', 0);
         abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
-        // Asegura que solo pueda editar sus propias cotizaciones
         $cotizacion = Cotizacion::where('id_personas', $personaId)->findOrFail($id);
 
-        // Obtener solo los productos con cantidad > 0
-        $productosConCantidad = [];
         $productosData = $request->input('productos', []);
+        $hasProducts = false;
         
-        foreach ($productosData as $index => $producto) {
+        foreach ($productosData as $producto) {
             if (isset($producto['cantidad']) && (int)$producto['cantidad'] > 0) {
-                $productosConCantidad["productos.$index"] = $producto;
+                $hasProducts = true;
+                break;
             }
         }
 
-        // Validar que hay al menos 1 producto con cantidad > 0
-        if (empty($productosConCantidad)) {
+        if (!$hasProducts) {
             return back()->with('error', 'Debes seleccionar al menos un producto con cantidad mayor a 0.');
         }
 
-        // Validar cada producto seleccionado
         $request->validate([
             'productos.*.id_producto' => 'required|exists:productos,id_producto',
         ]);
@@ -464,26 +423,21 @@ class ClienteDashboardController extends Controller
                 foreach ($productosData as $productoData) {
                     $cantidad = (int)($productoData['cantidad'] ?? 0);
                     
-                    // Solo procesar si cantidad > 0
                     if ($cantidad <= 0) {
                         continue;
                     }
                     
-                    // Obtener el producto
                     $producto = Producto::findOrFail($productoData['id_producto']);
 
-                    // Crear el item
-                    $item = Item::create([
+                    Item::create([
                         'cantidad' => $cantidad,
                         'id_cotizaciones' => $cotizacion->id,
                         'id_producto' => $producto->id_producto,
                     ]);
 
-                    // Sumar al precio total
                     $precioTotal += ($producto->precio_final * $cantidad);
                 }
 
-                // Actualizar el precio total de la cotización
                 $cotizacion->update([
                     'precio_total' => $precioTotal,
                 ]);
@@ -505,21 +459,13 @@ class ClienteDashboardController extends Controller
         $personaId = (int) session('user_id', 0);
         abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
         
-        // Verificar seguridad: solo el cliente propietario puede eliminar
         $cotizacion = Cotizacion::where('id_personas', $personaId)->findOrFail($cotizacionId);
-        
-        // Obtener el item y verificar que pertenece a esta cotización
         $item = Item::where('id_cotizaciones', $cotizacion->id)->findOrFail($itemId);
 
         try {
             DB::transaction(function () use ($item, $cotizacion) {
-                // Guardar el precio del item antes de eliminarlo
-                $precioItem = $item->producto ? ($item->producto->precio_final * $item->cantidad) : 0;
-
-                // Eliminar el item
                 $item->delete();
 
-                // Recalcular el precio total de la cotización
                 $precioTotal = $cotizacion->items()->get()->sum(function ($item) {
                     return ($item->producto ? $item->producto->precio_final : 0) * $item->cantidad;
                 });
@@ -534,9 +480,22 @@ class ClienteDashboardController extends Controller
         }
     }
     
+    /**
+     * Redirige dinámicamente al cliente de vuelta al optimizador de producción en Localhost o Web Real.
+     */
     public function goToOPT()
     {
-        // Redirección a un sistema externo
-        return redirect()->away('https://tu.sistema.opt/inicio'); 
+        // Obtener el ID del cliente logueado desde la sesión
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
+
+        // Buscar el cliente real para extraer su token_opt sincronizado
+        $persona = \App\Models\Persona::findOrFail($personaId);
+        
+        // Leer la URL base del entorno (lee http://localhost:8080 en local o el dominio real en cPanel)
+        $baseUrl = env('MALKONI_ONLINE_URL', 'https://online.malkoni.com.ar');
+
+        // Redirección directa aplicando el sistema de Auto-Login por Token en producción
+        return redirect()->away($baseUrl . '/public/Dashboard/opt.php?token=' . $persona->token_opt); 
     }
 }

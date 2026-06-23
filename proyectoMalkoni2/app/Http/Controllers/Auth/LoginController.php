@@ -74,7 +74,7 @@ class LoginController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect('https://online.malkoni.com.ar/public/login.php');
+            return redirect(env('MALKONI_ONLINE_URL', 'https://online.malkoni.com.ar') . '/public/login.php');
         }
 
         Auth::logout();
