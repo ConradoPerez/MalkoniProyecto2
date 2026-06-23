@@ -15,6 +15,16 @@ class Cotizacion extends Model
     protected $fillable = [
         'titulo',
         'numero',
+        'pedido_opt_id',
+        'referencia_externa',
+        'pdf_url',
+        'persona_external_id_snapshot',
+        'empresa_external_id_snapshot',
+        'origen_sistema',
+        'integration_status',
+        'integration_error',
+        'payload_origen',
+        'imported_at',
         'fyh',
         'fecha_cotizado',
         'precio_total',
@@ -25,6 +35,11 @@ class Cotizacion extends Model
     ];
 
     protected $casts = [
+        'pedido_opt_id' => 'integer',
+        'persona_external_id_snapshot' => 'integer',
+        'empresa_external_id_snapshot' => 'integer',
+        'payload_origen' => 'array',
+        'imported_at' => 'datetime',
         'fyh' => 'datetime',
         'fecha_cotizado' => 'datetime',
         'precio_total' => 'integer',

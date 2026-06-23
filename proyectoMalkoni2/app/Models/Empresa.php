@@ -16,6 +16,25 @@ class Empresa extends Model
         'nombre',
         'cuit',
         'foto',
+        'id_empresa_externo',
+        'razon_social',
+        'cod_cond_iva',
+        'email',
+        'num_tel',
+        'estado_origen',
+        'validado_origen',
+        'baja_origen',
+        'last_synced_at',
+        'sync_status',
+        'sync_error',
+    ];
+
+    protected $casts = [
+        'id_empresa_externo' => 'integer',
+        'estado_origen' => 'integer',
+        'validado_origen' => 'boolean',
+        'baja_origen' => 'boolean',
+        'last_synced_at' => 'datetime',
     ];
 
     /**
@@ -32,6 +51,23 @@ class Empresa extends Model
     public function personas()
     {
         return $this->hasMany(Persona::class, 'id_empresa', 'id_empresa');
+    }
+
+    /**
+     * Relacion N:N para compatibilidad con multiempresa de malkoni-online.
+     */
+    public function personasVinculadas()
+    {
+        return $this->belongsToMany(
+            Persona::class,
+            'persona_empresa',
+            'id_empresa',
+            'id_persona',
+            'id_empresa',
+            'id_persona'
+        )
+        ->withPivot(['persona_external_id', 'empresa_external_id', 'estado', 'last_synced_at'])
+        ->withTimestamps();
     }
 
     /**
