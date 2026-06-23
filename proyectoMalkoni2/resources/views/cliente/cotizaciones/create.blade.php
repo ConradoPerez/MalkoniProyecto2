@@ -46,6 +46,14 @@
                                 <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Nº Pedido</span>
                                 <span class="font-mono font-medium text-[#D88429]">{{ $numero_pedido ?? '---' }}</span>
                             </div>
+                            @if(isset($cotizacion) && $cotizacion && $cotizacion->pdf_url)
+                            <div class="border-l border-gray-200 pl-6">
+                                <a href="{{ $cotizacion->pdf_url }}" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-gray-700 hover:text-[#D88429] transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                    Ver Plano de Cortes (PDF)
+                                </a>
+                            </div>
+                            @endif
                         </div>
                     </div>
 
@@ -53,6 +61,7 @@
                         @csrf
                         <input type="hidden" name="numero_pedido" value="{{ $numero_pedido }}">
                         <input type="hidden" name="persona_id" value="{{ $personaId }}">
+                        <input type="hidden" name="cotizacion_id" value="{{ $cotizacion->id ?? '' }}">
 
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
                             <div class="p-6 border-b border-gray-100 bg-gray-50/50">
@@ -64,7 +73,7 @@
                                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                                     @forelse($vendedores as $vendedor)
                                         <label class="relative cursor-pointer group">
-                                            <input type="radio" name="id_empleados" value="{{ $vendedor->id_empleado }}" class="peer sr-only" required>
+                                            <input type="radio" name="id_empleados" value="{{ $vendedor->id_empleado }}" class="peer sr-only" required {{ (int) old('id_empleados', $cotizacion->id_empleados ?? 0) === (int) $vendedor->id_empleado ? 'checked' : '' }}>
                                             
                                             <div class="flex flex-col items-center p-4 rounded-xl border-2 border-transparent bg-gray-50 transition-all duration-200 hover:bg-white hover:shadow-md hover:border-gray-200 peer-checked:border-[#D88429] peer-checked:bg-white peer-checked:shadow-lg peer-checked:scale-105">
                                                 
@@ -103,9 +112,37 @@
                             </div>
                         </div>
 
+                        @if(isset($cotizacion) && $cotizacion && $cotizacion->pedido_opt_id)
+                        <div class="bg-blue-50 rounded-xl border border-blue-200 overflow-hidden mb-8">
+                            <div class="p-6 border-b border-blue-100 bg-blue-100/50">
+                                <h3 class="text-lg font-semibold text-blue-900 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    Datos del Cliente
+                                </h3>
+                                <p class="text-sm text-blue-700">Información registrada en el pedido OPT importado.</p>
+                            </div>
+                            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <span class="block text-xs text-blue-600 uppercase font-bold tracking-wider mb-1">Persona</span>
+                                    <span class="font-medium text-gray-900">{{ trim(($cotizacion->persona->nombre ?? '') . ' ' . ($cotizacion->persona->apellido ?? '')) ?: 'Sin datos' }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-blue-600 uppercase font-bold tracking-wider mb-1">Empresa Activa</span>
+                                    <span class="font-medium text-gray-900">{{ $cotizacion->empresa->razon_social ?? $cotizacion->empresa->nombre ?? 'Sin empresa' }}</span>
+                                </div>
+                                @if($cotizacion->empresa && $cotizacion->empresa->cuit)
+                                <div>
+                                    <span class="block text-xs text-blue-600 uppercase font-bold tracking-wider mb-1">CUIT</span>
+                                    <span class="font-mono font-medium text-gray-900">{{ $cotizacion->empresa->cuit }}</span>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
+
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
                             <div class="p-6 border-b border-gray-100 bg-gray-50/50">
-                                <h3 class="text-lg font-semibold text-gray-800">2. Mensaje Inicial <span class="text-gray-400 font-normal text-sm">(Opcional)</span></h3>
+                                <h3 class="text-lg font-semibold text-gray-800">{{ isset($cotizacion) && $cotizacion && $cotizacion->pedido_opt_id ? '2' : '2' }}. Mensaje Inicial <span class="text-gray-400 font-normal text-sm">(Opcional)</span></h3>
                                 <p class="text-sm text-gray-500">Añade notas o instrucciones especiales para el vendedor.</p>
                             </div>
                             
@@ -113,7 +150,7 @@
                                 <textarea name="mensaje_inicial" 
                                           rows="4"
                                           placeholder="Escribe aquí cualquier detalle importante sobre tu pedido..." 
-                                          class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-[#D88429] focus:ring-2 focus:ring-[#D88429]/20 outline-none transition-all resize-none placeholder-gray-400"></textarea>
+                                          class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-[#D88429] focus:ring-2 focus:ring-[#D88429]/20 outline-none transition-all resize-none placeholder-gray-400">{{ old('mensaje_inicial') }}</textarea>
                             </div>
                         </div>
 

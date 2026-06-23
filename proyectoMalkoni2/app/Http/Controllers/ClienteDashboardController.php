@@ -132,16 +132,22 @@ class ClienteDashboardController extends Controller
      */
     public function createQuotation(Request $request)
     {
-        // Obtener el ID de la persona desde la request
-        $personaId = $request->get('persona_id', 1);
-        
-        // 1. Obtener los empleados que tienen rol de VENDEDOR
-        $vendedores = Empleado::vendedores()->get(['id_empleado', 'nombre', 'foto']);
-        
-        // Asignamos un número de pedido temporal (esto debería ser secuencial en producción)
-        $numero_pedido = rand(10000, 99999); 
+        $cotizacion = null;
+        $personaId = (int) $request->get('persona_id', 1);
+        $cotizacionId = $request->get('cotizacion_id');
 
-        return view('cliente.cotizaciones.create', compact('vendedores', 'numero_pedido', 'personaId'));
+        if ($cotizacionId) {
+            $cotizacion = Cotizacion::with(['empresa', 'persona', 'empleado'])->findOrFail($cotizacionId);
+            $personaId = (int) $request->get('persona_id', $cotizacion->id_personas ?? $personaId);
+        }
+
+        $vendedores = Empleado::vendedores()->get(['id_empleado', 'nombre', 'foto']);
+
+        $numero_pedido = $cotizacion
+            ? ($cotizacion->pedido_opt_id ?? $cotizacion->numero)
+            : rand(10000, 99999);
+
+        return view('cliente.cotizaciones.create', compact('vendedores', 'numero_pedido', 'personaId', 'cotizacion'));
     }
 
     /**
@@ -178,17 +184,30 @@ class ClienteDashboardController extends Controller
      */
     public function prepareQuotation(Request $request)
     {
-        // Obtener el ID del cliente desde la request
-        $personaId = $request->get('persona_id', 1);
-        
-        // 1. Validación de datos
+        $personaId = (int) $request->get('persona_id', 1);
+
         $validated = $request->validate([
             'id_empleados' => 'required|exists:empleados,id_empleado',
             'mensaje_inicial' => 'nullable|string|max:1000',
-            'numero_pedido' => 'required|integer' 
+            'numero_pedido' => 'required|integer',
+            'cotizacion_id' => 'nullable|integer|exists:cotizaciones,id',
         ]);
+
+        if (!empty($validated['cotizacion_id'])) {
+            $cotizacion = Cotizacion::where('id', $validated['cotizacion_id'])
+                ->where('id_personas', $personaId)
+                ->findOrFail($validated['cotizacion_id']);
+
+            $cotizacion->update([
+                'id_empleados' => $validated['id_empleados'],
+            ]);
+
+            return redirect()->route('cliente.cotizacion.agregar_productos', [
+                'id' => $cotizacion->id,
+                'persona_id' => $personaId,
+            ])->with('success', 'Vendedor asignado correctamente. Ya podés agregar productos a la cotización importada.');
+        }
         
-        // 2. Guardar datos en sesión para crear la cotización después
         session([
             'nueva_cotizacion' => [
                 'id_empleados' => $validated['id_empleados'],
@@ -199,7 +218,6 @@ class ClienteDashboardController extends Controller
             ]
         ]);
         
-        // 3. Redirigir a la vista de selección de productos
         return redirect()->route('cliente.cotizacion.productos', ['persona_id' => $personaId])
                          ->with('success', 'Datos guardados. ¡Selecciona productos para tu cotización!');
     }

@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Integration Token
+    |--------------------------------------------------------------------------
+    |
+    | This token is used to authenticate incoming requests from the legacy
+    | malkoni-online system to the new cotizaciones API. The token must match
+    | exactly between both systems for successful integration.
+    |
+    */
+
+    'integration_token' => env('INTEGRATION_TOKEN'),
+
 ];

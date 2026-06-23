@@ -219,8 +219,16 @@
                                         <div class="space-y-3 mb-6 pb-4 border-b border-gray-100">
                                             <div class="flex items-start justify-between text-sm">
                                                 <span class="text-gray-600">Cliente:</span>
-                                                <span class="font-medium text-gray-900 text-right max-w-[140px]">{{ $cotizacion->cliente_nombre }}</span>
+                                                <span class="font-medium text-gray-900 text-right max-w-[140px]">{{ $cotizacion->empresa->razon_social ?? $cotizacion->empresa->nombre ?? $cotizacion->cliente_nombre ?? 'Sin empresa' }}</span>
                                             </div>
+                                            @if(isset($cotizacion->pedido_opt_id) && $cotizacion->pedido_opt_id && $cotizacion->pdf_url)
+                                            <div class="pt-2 border-t border-gray-100">
+                                                <a href="{{ $cotizacion->pdf_url }}" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-gray-700 hover:text-[#D88429] transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                                    Ver Plano Adjunto
+                                                </a>
+                                            </div>
+                                            @endif
                                             <div class="flex items-center justify-between text-sm">
                                                 <span class="text-gray-600">Código:</span>
                                                 <span class="font-mono text-gray-900">{{ $cotizacion->numero_cotizacion }}</span>

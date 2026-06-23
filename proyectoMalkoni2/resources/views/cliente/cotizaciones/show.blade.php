@@ -66,8 +66,6 @@
                                         <tr class="text-left text-xs font-semibold tracking-wide text-gray-500 uppercase border-b border-gray-100">
                                             <th class="px-6 py-3">Producto</th>
                                             <th class="px-6 py-3 text-center">Cant.</th>
-                                            <th class="px-6 py-3 text-right">Precio Unit.</th>
-                                            <th class="px-6 py-3 text-right">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-50">
@@ -83,8 +81,16 @@
                                                             @endif
                                                         </div>
                                                         <div>
-                                                            <p class="font-medium text-gray-900">{{ $item->producto->nombre ?? 'Producto no disponible' }}</p>
-                                                            <p class="text-xs text-gray-500">COD: {{ $item->producto->codigo ?? '---' }}</p>
+                                                            @if($item->producto)
+                                                                <p class="font-medium text-gray-900">{{ $item->producto->nombre }}</p>
+                                                                <p class="text-xs text-gray-500">COD: {{ $item->producto->codigo ?? '---' }}</p>
+                                                            @else
+                                                                @php
+                                                                    $payloadOrigen = is_string($cotizacion->payload_origen) ? json_decode($cotizacion->payload_origen, true) : $cotizacion->payload_origen;
+                                                                @endphp
+                                                                <p class="font-medium text-gray-900">{{ $payloadOrigen['mat_descri'] ?? 'Material de corte OPT' }}</p>
+                                                                <p class="text-xs text-gray-500">Placa de madera importada</p>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </td>
@@ -92,12 +98,6 @@
                                                     <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-700 bg-gray-100 rounded">
                                                         {{ $item->cantidad }}
                                                     </span>
-                                                </td>
-                                                <td class="px-6 py-4 text-right text-sm text-gray-600">
-                                                    ${{ number_format(($item->producto->precio_final ?? 0) / 100, 2, ',', '.') }}
-                                                </td>
-                                                <td class="px-6 py-4 text-right text-sm font-medium text-gray-900">
-                                                    ${{ number_format((($item->producto->precio_final ?? 0) * $item->cantidad) / 100, 2, ',', '.') }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -136,23 +136,19 @@
 
                     <div class="space-y-6">
                         
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div class="p-6 bg-gray-900 text-white">
-                                <h3 class="text-lg font-syncopate font-bold">Total Estimado</h3>
+                        <div class="bg-yellow-50 rounded-xl shadow-sm border border-yellow-200 overflow-hidden">
+                            <div class="p-6 bg-yellow-100 border-b border-yellow-200">
+                                <h3 class="text-lg font-bold text-yellow-900 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Estado de Cotización
+                                </h3>
                             </div>
-                            <div class="p-6 space-y-3">
-                                <div class="flex justify-between text-sm text-gray-600">
-                                    <span>Subtotal</span>
-                                    <span>${{ number_format($cotizacion->precio_total / 100, 2, ',', '.') }}</span>
+                            <div class="p-6 text-center">
+                                <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-200 rounded-full mb-4">
+                                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 </div>
-                                <div class="flex justify-between text-sm text-gray-600">
-                                    <span>Impuestos (Est.)</span>
-                                    <span>$0,00</span>
-                                </div>
-                                <div class="border-t border-gray-100 pt-3 flex justify-between items-center">
-                                    <span class="font-bold text-gray-900">Total</span>
-                                    <span class="text-2xl font-bold text-[#D88429]">${{ number_format($cotizacion->precio_total / 100, 2, ',', '.') }}</span>
-                                </div>
+                                <p class="text-sm font-semibold text-yellow-900 mb-2">Cotización enviada</p>
+                                <p class="text-xs text-yellow-700">Esperando presupuesto del asesor. Los precios se mostrarán una vez procesada la cotización.</p>
                             </div>
                         </div>
 
@@ -175,13 +171,36 @@
 
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Datos de Facturación</h3>
-                            <div class="text-sm text-gray-600 space-y-1">
+                            <div class="text-sm text-gray-600 space-y-2">
                                 @if($cotizacion->empresa)
-                                    <p class="font-medium text-gray-900">{{ $cotizacion->empresa->nombre }}</p>
-                                    <p>CUIT: {{ $cotizacion->empresa->cuit }}</p>
+                                    <div>
+                                        <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Razón Social</span>
+                                        <p class="font-medium text-gray-900">{{ $cotizacion->empresa->razon_social ?? $cotizacion->empresa->nombre }}</p>
+                                    </div>
+                                    @if($cotizacion->empresa->cod_cond_iva)
+                                    <div>
+                                        <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Condición IVA</span>
+                                        <p class="font-medium text-gray-900">
+                                            @if($cotizacion->empresa->cod_cond_iva === 'CF') Consumidor Final
+                                            @elseif($cotizacion->empresa->cod_cond_iva === 'RI') Responsable Inscripto
+                                            @elseif($cotizacion->empresa->cod_cond_iva === 'MT') Monotributo
+                                            @elseif($cotizacion->empresa->cod_cond_iva === 'EX') Exento
+                                            @else {{ $cotizacion->empresa->cod_cond_iva }}
+                                            @endif
+                                        </p>
+                                    </div>
+                                    @endif
+                                    @if($cotizacion->empresa->cuit)
+                                    <div>
+                                        <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">CUIT</span>
+                                        <p class="font-mono font-medium text-gray-900">{{ $cotizacion->empresa->cuit }}</p>
+                                    </div>
+                                    @endif
                                 @elseif($cotizacion->persona)
-                                    <p class="font-medium text-gray-900">{{ $cotizacion->persona->nombre }}</p>
-                                    <p>DNI: {{ $cotizacion->persona->dni }}</p>
+                                    <p class="font-medium text-gray-900">{{ trim(($cotizacion->persona->nombre ?? '') . ' ' . ($cotizacion->persona->apellido ?? '')) }}</p>
+                                    @if($cotizacion->persona->dni)
+                                        <p>DNI: {{ $cotizacion->persona->dni }}</p>
+                                    @endif
                                 @else
                                     <p class="italic text-gray-400">Sin datos asociados</p>
                                 @endif

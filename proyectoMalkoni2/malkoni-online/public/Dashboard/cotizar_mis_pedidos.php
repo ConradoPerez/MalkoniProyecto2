@@ -281,6 +281,25 @@ if (!$errorMsg && !empty($pedidos)) {
   </div>
 
   <script>
+    // Variables de sesión inyectadas de forma segura para uso en JS
+    const SESSION_USER_ID = <?php echo json_encode($userId); ?>;
+    const SESSION_EMPRESA_ID = <?php echo json_encode($empresaIdActiva); ?>;
+    const TOKEN_OPT = <?php echo json_encode($tokenOpt); ?>;
+    const INTEGRATION_API_URL = 'https://pencil-shine-postage.ngrok-free.dev/api/v1/cotizaciones/importar';
+    const INTEGRATION_TOKEN = <?php echo json_encode(getenv('INTEGRATION_TOKEN') ?: 'e40bee85d1d3c3de02b085f7a93210115778f7c14757b674dfa26c62ad1bb704'); ?>;
+
+    // Datos de identidad reales extraídos de Doctrine (Persona y Empresa Activa)
+    const PERSONA_NOMBRE = <?php echo json_encode($persona ? $persona->getNombre() : ''); ?>;
+    const PERSONA_APELLIDO = <?php echo json_encode($persona ? $persona->getApellido() : ''); ?>;
+    const PERSONA_EMAIL = <?php echo json_encode($persona ? $persona->getEmail() : ''); ?>;
+    const PERSONA_DNI = <?php echo json_encode($persona ? $persona->getDni() : ''); ?>;
+    const PERSONA_GENERO = <?php echo json_encode($persona ? $persona->getGenero() : ''); ?>;
+    const PERSONA_TEL = <?php echo json_encode($persona ? $persona->getNumTel() : ''); ?>;
+    
+    const EMPRESA_RAZON_SOCIAL = <?php echo json_encode($empresaActiva ? $empresaActiva->getRazonSocial() : ''); ?>;
+    const EMPRESA_CUIT = <?php echo json_encode($empresaActiva ? $empresaActiva->getCuit() : ''); ?>;
+    const EMPRESA_IVA = <?php echo json_encode($empresaActiva ? $empresaActiva->getCodCondIVA() : ''); ?>;
+
     // Buscador + contador
     (function(){
       const input = document.getElementById('searchInput');
@@ -309,36 +328,109 @@ if (!$errorMsg && !empty($pedidos)) {
       update();
     })();
 
-    // Botón "Cotizar" -> SweetAlert pro
+    // Botón "Cotizar" -> integración real con API Laravel
     (function(){
-      document.querySelectorAll('.btn-cotizar').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.getAttribute('data-pedido-id') || '';
+      function extractPedidoContext(button) {
+        const pedidoId = button?.dataset?.pedidoId || '';
 
-          Swal.fire({
-            icon: 'info',
-            title: 'Cotización online en desarrollo',
-            html: `
-              <div class="swal-body">
-                <p class="swal-p">
-                  Estamos finalizando la implementación para que puedas <b>cotizar tus pedidos de manera online</b>
-                  de forma simple y segura.
-                </p>
-                <p class="swal-p">
-                  Muy pronto vas a poder generar la cotización directamente desde este panel.
-                </p>
-                ${id ? `<div class="swal-chip">Pedido seleccionado: <b>#${id}</b></div>` : ``}
-              </div>
-            `,
-            confirmButtonText: 'Entendido',
-            buttonsStyling: false,
-            customClass: {
-              popup: 'malkoni-swal',
-              title: 'malkoni-swal-title',
-              htmlContainer: 'malkoni-swal-html',
-              confirmButton: 'malkoni-swal-confirm'
+        if (!pedidoId) {
+          return null;
+        }
+
+        return {
+          pedidoId,
+          pdfUrl: `https://optionline-prod-files.s3.amazonaws.com/planos/${pedidoId}_.pdf`,
+        };
+      }
+
+      function buildPayload(context) {
+        return {
+          persona_external_id: Number.parseInt(SESSION_USER_ID, 10),
+          empresa_activa_external_id: Number.parseInt(SESSION_EMPRESA_ID, 10),
+          token_opt: TOKEN_OPT,
+          pedido_id: Number.parseInt(context.pedidoId, 10),
+          pdf_url: context.pdfUrl,
+          persona_nombre: PERSONA_NOMBRE,
+          persona_apellido: PERSONA_APELLIDO,
+          persona_email: PERSONA_EMAIL,
+          persona_dni: PERSONA_DNI,
+          persona_genero: PERSONA_GENERO,
+          persona_tel: PERSONA_TEL,
+          empresa_razon_social: EMPRESA_RAZON_SOCIAL,
+          empresa_cuit: EMPRESA_CUIT,
+          empresa_iva: EMPRESA_IVA
+        };
+      }
+
+      async function importarCotizacion(payload) {
+        const response = await fetch(INTEGRATION_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Integration-Token': INTEGRATION_TOKEN
+          },
+          body: JSON.stringify(payload)
+        });
+
+        let data;
+        try {
+          data = await response.json();
+        } catch (_e) {
+          data = null;
+        }
+
+        if (!response.ok) {
+          const details = data?.message || `HTTP ${response.status}`;
+          throw new Error(details);
+        }
+
+        return data;
+      }
+
+      document.querySelectorAll('.btn-cotizar').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const context = extractPedidoContext(btn);
+
+          if (!context || !context.pedidoId) {
+            Swal.fire({
+              icon: 'error',
+              title: 'No se pudo procesar el pedido',
+              text: 'No se encontró el ID del pedido seleccionado.'
+            });
+            return;
+          }
+
+          const payload = buildPayload(context);
+
+          try {
+            Swal.fire({
+              title: 'Sincronizando pedido...',
+              text: `Generando cotización para el pedido #${context.pedidoId}`,
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+
+            const data = await importarCotizacion(payload);
+            Swal.close();
+
+            if (data?.redirect_url) {
+              window.location.href = data.redirect_url;
+              return;
             }
-          });
+
+            throw new Error('La API no devolvió una redirect_url válida.');
+          } catch (error) {
+            Swal.close();
+            Swal.fire({
+              icon: 'error',
+              title: 'No se pudo sincronizar el pedido',
+              text: error instanceof Error ? error.message : 'Ocurrió un error inesperado durante la integración.'
+            });
+          }
         });
       });
     })();
