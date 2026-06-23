@@ -285,7 +285,7 @@ if (!$errorMsg && !empty($pedidos)) {
     const SESSION_USER_ID = <?php echo json_encode($userId); ?>;
     const SESSION_EMPRESA_ID = <?php echo json_encode($empresaIdActiva); ?>;
     const TOKEN_OPT = <?php echo json_encode($tokenOpt); ?>;
-    const INTEGRATION_API_URL = 'https://pencil-shine-postage.ngrok-free.dev/api/v1/cotizaciones/importar';
+    const INTEGRATION_API_URL = 'http://127.0.0.1:8000/api/v1/cotizaciones/importar';
     const INTEGRATION_TOKEN = <?php echo json_encode(getenv('INTEGRATION_TOKEN') ?: 'e40bee85d1d3c3de02b085f7a93210115778f7c14757b674dfa26c62ad1bb704'); ?>;
 
     // Datos de identidad reales extraídos de Doctrine (Persona y Empresa Activa)
