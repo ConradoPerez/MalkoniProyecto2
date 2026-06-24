@@ -9,6 +9,7 @@ use App\Http\Controllers\VendedorCotizacionController;
 use App\Http\Controllers\VendedorGrupoController;
 use App\Http\Controllers\ClienteDashboardController;
 use App\Http\Controllers\ProductoClienteController;
+use App\Http\Controllers\MensajeCotizacionController;
 use App\Http\Controllers\Auth\LoginController;
 
 Route::redirect('/', '/login');
@@ -75,6 +76,11 @@ Route::middleware('role:vendedor')->prefix('vendedor')->name('vendedor.app.')->g
     Route::get('/cotizaciones/{id}/plano/descargar', [VendedorCotizacionController::class, 'descargarPlano'])->name('cotizaciones.plano.descargar');
     Route::put('/cotizaciones/{id}', [VendedorCotizacionController::class, 'guardar'])->name('cotizaciones.guardar');
 
+    // Chat por cotización (vendedor)
+    Route::get('/cotizaciones/{id}/mensajes', [MensajeCotizacionController::class, 'index'])->name('cotizaciones.mensajes.index');
+    Route::post('/cotizaciones/{id}/mensajes', [MensajeCotizacionController::class, 'store'])->name('cotizaciones.mensajes.store');
+    Route::post('/cotizaciones/{id}/mensajes/leidos', [MensajeCotizacionController::class, 'marcarLeidos'])->name('cotizaciones.mensajes.leidos');
+
     // Rutas para grupos
     Route::get('/grupos', [VendedorGrupoController::class, 'index'])->name('grupos.index');
     Route::post('/grupos', [VendedorGrupoController::class, 'store'])->name('grupos.store');
@@ -124,6 +130,11 @@ Route::middleware('role:cliente')->prefix('cliente')->name('cliente.')->group(fu
 
     // Rutas de Acción de la Tabla (Ver Cotización)
     Route::get('/cotizacion/{id}/ver', [ClienteDashboardController::class, 'viewQuotation'])->name('cotizacion.ver');
+
+    // Chat por cotización (cliente)
+    Route::get('/cotizacion/{id}/mensajes', [MensajeCotizacionController::class, 'index'])->name('cotizacion.mensajes.index');
+    Route::post('/cotizacion/{id}/mensajes', [MensajeCotizacionController::class, 'store'])->name('cotizacion.mensajes.store');
+    Route::post('/cotizacion/{id}/mensajes/leidos', [MensajeCotizacionController::class, 'marcarLeidos'])->name('cotizacion.mensajes.leidos');
     
     // Rutas de Productos
     Route::get('/cotizacion/{cotizacionId}/agregar-productos-catalogo', [ProductoClienteController::class, 'agregarProducto'])->name('agregar_productos_catalogo');

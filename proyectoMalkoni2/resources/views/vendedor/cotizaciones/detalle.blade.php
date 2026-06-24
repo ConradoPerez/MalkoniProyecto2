@@ -282,6 +282,41 @@
                     @endif
                 </form>
 
+                {{-- Chat con el cliente --}}
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mb-6" id="chat-box">
+                    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                        <h2 class="text-lg font-semibold text-gray-900">Chat con el cliente</h2>
+                        <span class="ml-auto text-xs text-gray-400 font-normal">{{ $cotizacion->cliente_nombre }}</span>
+                    </div>
+
+                    {{-- Área de mensajes --}}
+                    <div id="chat-mensajes" class="flex flex-col gap-3 p-4 h-72 overflow-y-auto bg-gray-50/30">
+                        <p class="text-center text-xs text-gray-400 mt-auto" id="chat-empty">Cargando mensajes...</p>
+                    </div>
+
+                    {{-- Input de envío --}}
+                    <div class="border-t border-gray-200 p-4 bg-white">
+                        <form id="chat-form" class="flex gap-2">
+                            <input
+                                type="text"
+                                id="chat-input"
+                                placeholder="Escribí un mensaje al cliente..."
+                                maxlength="2000"
+                                autocomplete="off"
+                                class="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D88429]/30 focus:border-[#D88429]"
+                            >
+                            <button
+                                type="submit"
+                                class="px-4 py-2 rounded-lg text-white text-sm font-medium transition hover:opacity-90 disabled:opacity-50"
+                                style="background-color:#D88429;"
+                            >
+                                Enviar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
                 {{-- Historial de cambios de estado --}}
                 <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
@@ -374,5 +409,121 @@ document.addEventListener('DOMContentLoaded', function() {
     calcularTotal();
 });
 </script>
+
+@push('scripts')
+<script>
+(function () {
+    const URL_INDEX  = '{{ route("vendedor.app.cotizaciones.mensajes.index",  ["id" => $cotizacion->id]) }}';
+    const URL_STORE  = '{{ route("vendedor.app.cotizaciones.mensajes.store",  ["id" => $cotizacion->id]) }}';
+    const URL_LEIDOS = '{{ route("vendedor.app.cotizaciones.mensajes.leidos", ["id" => $cotizacion->id]) }}';
+    const CSRF       = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    const container = document.getElementById('chat-mensajes');
+    const form      = document.getElementById('chat-form');
+    const input     = document.getElementById('chat-input');
+    const empty     = document.getElementById('chat-empty');
+
+    let lastId = 0;
+    let polling = null;
+
+    function buildBubble(msg) {
+        const wrap = document.createElement('div');
+        wrap.className = 'flex flex-col ' + (msg.mine ? 'items-end' : 'items-start');
+        wrap.dataset.id = msg.id;
+
+        const bubble = document.createElement('div');
+        bubble.className = [
+            'max-w-xs lg:max-w-sm px-4 py-2 rounded-2xl text-sm break-words',
+            msg.mine
+                ? 'bg-[#D88429] text-white rounded-br-sm'
+                : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm shadow-sm',
+        ].join(' ');
+        bubble.textContent = msg.mensaje;
+
+        const meta = document.createElement('span');
+        meta.className = 'text-[10px] text-gray-400 mt-0.5 px-1';
+        meta.textContent = (msg.mine ? '' : msg.sender_nombre + ' · ') + msg.created_at;
+
+        wrap.appendChild(bubble);
+        wrap.appendChild(meta);
+        return wrap;
+    }
+
+    function scrollBottom() {
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function cargarMensajes() {
+        try {
+            const res  = await fetch(URL_INDEX, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            const data = await res.json();
+
+            const nuevos = data.mensajes.filter(m => m.id > lastId);
+            if (nuevos.length === 0) return;
+
+            if (data.mensajes.length > 0 && empty && empty.parentNode) empty.remove();
+
+            nuevos.forEach(msg => {
+                container.appendChild(buildBubble(msg));
+                lastId = Math.max(lastId, msg.id);
+            });
+
+            scrollBottom();
+
+            fetch(URL_LEIDOS, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'X-Requested-With': 'XMLHttpRequest' },
+            });
+        } catch (e) {}
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const texto = input.value.trim();
+        if (!texto) return;
+
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        input.value = '';
+
+        try {
+            const res  = await fetch(URL_STORE, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': CSRF,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({ mensaje: texto }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (empty && empty.parentNode) empty.remove();
+                container.appendChild(buildBubble(data.mensaje));
+                lastId = Math.max(lastId, data.mensaje.id);
+                scrollBottom();
+            }
+        } catch (e) {
+            input.value = texto;
+        } finally {
+            btn.disabled = false;
+            input.focus();
+        }
+    });
+
+    cargarMensajes();
+    polling = setInterval(cargarMensajes, 5000);
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            clearInterval(polling);
+        } else {
+            cargarMensajes();
+            polling = setInterval(cargarMensajes, 5000);
+        }
+    });
+})();
+</script>
+@endpush
 
 @endsection

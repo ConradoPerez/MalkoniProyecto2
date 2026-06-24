@@ -58,150 +58,10 @@
                     </div>
                 </div>
 
-                {{-- Header con botón de filtros --}}
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="flex items-center gap-2">
-                            <span class="text-2xl font-bold text-gray-900">{{ number_format($total) }}</span>
-                            <span class="text-gray-600">cotizaciones en total</span>
-                        </div>
-                        
-                        @if(request()->hasAny(['nropedido', 'cliente', 'doc', 'estado']))
-                            <div class="flex flex-wrap gap-2">
-                                <div class="text-sm text-gray-600">
-                                    {{ $cotizaciones->count() }} de {{ number_format($cotizaciones->total()) }} resultados
-                                </div>
-                                @if(request('estado'))
-                                    @php
-                                        $estadoFiltrado = $estados->where('id_estado', request('estado'))->first();
-                                    @endphp
-                                    @if($estadoFiltrado)
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            Estado: {{ $estadoFiltrado->nombre }}
-                                        </span>
-                                    @endif
-                                @endif
-                                @if(request('orderby') && request('orderby') != 'fecha')
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        Ordenado por: {{ ucfirst(request('orderby')) }} ({{ request('direction', 'desc') == 'desc' ? 'Descendente' : 'Ascendente' }})
-                                    </span>
-                                @endif
-                            </div>
-                        @endif
-                    </div>
-
-                    <div class="flex gap-3">
-                        @if(request()->hasAny(['nropedido', 'cliente', 'doc', 'estado', 'orderby']))
-                            <a href="{{ route('vendedor.app.cotizaciones.index') }}"
-                               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                                Limpiar filtros
-                            </a>
-                        @endif
-                        
-                        <button onclick="toggleFiltros()" 
-                                class="inline-flex items-center px-4 py-2 rounded-lg text-white font-semibold transition hover:opacity-90"
-                                style="background-color:#D88429;">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"/>
-                            </svg>
-                            Filtros
-                            <svg id="filtros-icon" class="w-4 h-4 ml-2 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                {{-- Panel de filtros desplegable --}}
-                <div id="filtros-panel" class="mb-6 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-                    <div class="p-6">
-                        <form method="GET" action="{{ route('vendedor.app.cotizaciones.index') }}" class="space-y-4">
-                            
-                            {{-- Filtros de búsqueda --}}
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-sm font-medium text-gray-700">Número de pedido</label>
-                                    <input type="text" 
-                                           name="nropedido" 
-                                           value="{{ request('nropedido') }}"
-                                           placeholder="Ej: 1001"
-                                           class="h-10 rounded-lg border border-gray-300 px-3 outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429]" />
-                                </div>
-
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-sm font-medium text-gray-700">Nombre del Cliente</label>
-                                    <input type="text" 
-                                           name="cliente" 
-                                           value="{{ request('cliente') }}"
-                                           placeholder="Nombre de la empresa"
-                                           class="h-10 rounded-lg border border-gray-300 px-3 outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429]" />
-                                </div>
-
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-sm font-medium text-gray-700">CUIT</label>
-                                    <input type="text" 
-                                           name="doc" 
-                                           value="{{ request('doc') }}"
-                                           placeholder="CUIT de la empresa"
-                                           class="h-10 rounded-lg border border-gray-300 px-3 outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429]" />
-                                </div>
-
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-sm font-medium text-gray-700">Estado</label>
-                                    <select name="estado" 
-                                            class="h-10 rounded-lg border border-gray-300 px-3 outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429]">
-                                        <option value="">Todos los estados</option>
-                                        @foreach($estados as $estado)
-                                            <option value="{{ $estado->id_estado }}" {{ request('estado') == $estado->id_estado ? 'selected' : '' }}>
-                                                {{ $estado->nombre }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                            {{-- Ordenamiento --}}
-                            <div class="border-t border-gray-200 pt-4">
-                                <h3 class="text-sm font-medium text-gray-700 mb-3">Ordenamiento</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div class="flex flex-col gap-1">
-                                        <label class="text-sm text-gray-600">Ordenar por</label>
-                                        <select name="orderby" 
-                                                class="h-10 rounded-lg border border-gray-300 px-3 outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429]">
-                                            <option value="fecha" {{ request('orderby', 'fecha') == 'fecha' ? 'selected' : '' }}>Fecha Creación</option>
-                                            <option value="modificacion" {{ request('orderby') == 'modificacion' ? 'selected' : '' }}>Última Modificación</option>
-                                            <option value="estado" {{ request('orderby') == 'estado' ? 'selected' : '' }}>Estado</option>
-                                            <option value="numero" {{ request('orderby') == 'numero' ? 'selected' : '' }}>N° Cotización</option>
-                                            <option value="monto" {{ request('orderby') == 'monto' ? 'selected' : '' }}>Monto</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="flex flex-col gap-1">
-                                        <label class="text-sm text-gray-600">Dirección</label>
-                                        <select name="direction" 
-                                                class="h-10 rounded-lg border border-gray-300 px-3 outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429]">
-                                            <option value="desc" {{ request('direction', 'desc') == 'desc' ? 'selected' : '' }}>Descendente</option>
-                                            <option value="asc" {{ request('direction') == 'asc' ? 'selected' : '' }}>Ascendente</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="flex flex-col justify-end">
-                                        <button type="submit"
-                                                class="h-10 w-full inline-flex items-center justify-center rounded-lg text-white font-semibold transition hover:opacity-90"
-                                                style="background-color:#D88429;">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                            </svg>
-                                            Aplicar filtros
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                {{-- Total --}}
+                <div class="flex items-center gap-2 mb-6">
+                    <span class="text-2xl font-bold text-gray-900">{{ number_format($total) }}</span>
+                    <span class="text-gray-600">cotizaciones en total</span>
                 </div>
 
                 {{-- Tabla mejorada --}}
@@ -212,7 +72,34 @@
                                 <thead class="bg-gray-50 border-b border-gray-200">
                                     <tr class="text-left">
                                         <th class="px-6 py-4 text-sm font-semibold text-gray-700">
-                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'estado', 'direction' => request('orderby') == 'estado' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}" 
+                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'numero', 'direction' => request('orderby') == 'numero' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}"
+                                               class="flex items-center hover:text-[#D88429] transition-colors">
+                                                N° Cotización
+                                                <svg class="w-4 h-4 ml-1 {{ request('orderby') == 'numero' ? 'text-[#D88429]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    @if(request('orderby') == 'numero' && request('direction', 'desc') == 'desc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                                    @endif
+                                                </svg>
+                                            </a>
+                                        </th>
+                                        <th class="px-6 py-4 text-sm font-semibold text-gray-700">
+                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'fecha', 'direction' => request('orderby') == 'fecha' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}"
+                                               class="flex items-center hover:text-[#D88429] transition-colors">
+                                                Fecha Creación
+                                                <svg class="w-4 h-4 ml-1 {{ request('orderby', 'fecha') == 'fecha' ? 'text-[#D88429]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    @if((request('orderby', 'fecha') == 'fecha') && request('direction', 'desc') == 'desc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                                    @endif
+                                                </svg>
+                                            </a>
+                                        </th>
+                                        <th class="px-6 py-4 text-sm font-semibold text-gray-700">Cliente</th>
+                                        <th class="px-6 py-4 text-sm font-semibold text-gray-700">
+                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'estado', 'direction' => request('orderby') == 'estado' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}"
                                                class="flex items-center hover:text-[#D88429] transition-colors">
                                                 Estado
                                                 <svg class="w-4 h-4 ml-1 {{ request('orderby') == 'estado' ? 'text-[#D88429]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,37 +112,9 @@
                                             </a>
                                         </th>
                                         <th class="px-6 py-4 text-sm font-semibold text-gray-700">
-                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'numero', 'direction' => request('orderby') == 'numero' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}" 
+                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'modificacion', 'direction' => request('orderby') == 'modificacion' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}"
                                                class="flex items-center hover:text-[#D88429] transition-colors">
-                                                N° Cotización
-                                                <svg class="w-4 h-4 ml-1 {{ request('orderby') == 'numero' ? 'text-[#D88429]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    @if(request('orderby') == 'numero' && request('direction', 'desc') == 'desc')
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                                    @else
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                                                    @endif
-                                                </svg>
-                                            </a>
-                                        </th>
-                                        <th class="px-6 py-4 text-sm font-semibold text-gray-700">Cliente</th>
-                                        <th class="px-6 py-4 text-sm font-semibold text-gray-700">CUIT</th>
-                                        <th class="px-6 py-4 text-sm font-semibold text-gray-700">
-                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'fecha', 'direction' => request('orderby') == 'fecha' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}" 
-                                               class="flex items-center hover:text-[#D88429] transition-colors">
-                                                Fecha Creación
-                                                <svg class="w-4 h-4 ml-1 {{ request('orderby', 'fecha') == 'fecha' ? 'text-[#D88429]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    @if((request('orderby', 'fecha') == 'fecha') && request('direction', 'desc') == 'desc')
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                                    @else
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                                                    @endif
-                                                </svg>
-                                            </a>
-                                        </th>
-                                        <th class="px-6 py-4 text-sm font-semibold text-gray-700">
-                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'modificacion', 'direction' => request('orderby') == 'modificacion' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}" 
-                                               class="flex items-center hover:text-[#D88429] transition-colors">
-                                                Última Modificación
+                                                Últ. Modificación
                                                 <svg class="w-4 h-4 ml-1 {{ request('orderby') == 'modificacion' ? 'text-[#D88429]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     @if(request('orderby') == 'modificacion' && request('direction', 'desc') == 'desc')
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -266,7 +125,7 @@
                                             </a>
                                         </th>
                                         <th class="px-6 py-4 text-sm font-semibold text-gray-700 text-right">
-                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'monto', 'direction' => request('orderby') == 'monto' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}" 
+                                            <a href="{{ request()->fullUrlWithQuery(['orderby' => 'monto', 'direction' => request('orderby') == 'monto' && request('direction', 'desc') == 'desc' ? 'asc' : 'desc']) }}"
                                                class="flex items-center justify-end hover:text-[#D88429] transition-colors">
                                                 Monto
                                                 <svg class="w-4 h-4 ml-1 {{ request('orderby') == 'monto' ? 'text-[#D88429]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -294,45 +153,24 @@
                                     @foreach($cotizaciones as $cotizacion)
                                         <tr class="hover:bg-gray-50 transition-colors">
                                             <td class="px-6 py-4">
+                                                <span class="text-sm font-bold text-gray-900">#{{ $cotizacion->numero }}</span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <span class="text-sm text-gray-700">{{ $cotizacion->fyh ? $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') : '-' }}</span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <span class="text-sm font-medium text-gray-900">{{ $cotizacion->cliente_nombre }}</span>
+                                            </td>
+                                            <td class="px-6 py-4">
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $estadoColores[$cotizacion->estado_actual->nombre ?? 'Nuevo'] ?? 'bg-gray-100 text-gray-800' }}">
                                                     {{ $cotizacion->estado_actual->nombre ?? 'Sin estado' }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <span class="text-sm font-bold text-gray-900">#{{ $cotizacion->numero }}</span>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <div class="flex flex-col">
-                                                    <span class="text-sm font-medium text-gray-900">{{ $cotizacion->cliente_nombre }}</span>
-                                                    <span class="text-xs text-gray-500">{{ $cotizacion->titulo ?? 'Sin título' }}</span>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                @php
-                                                    $cuit = null;
-                                                    if ($cotizacion->empresa) {
-                                                        // Cotización directa a empresa
-                                                        $cuit = $cotizacion->empresa->cuit_formateado;
-                                                    } elseif ($cotizacion->persona && $cotizacion->persona->empresa) {
-                                                        // Cotización a persona de empresa
-                                                        $cuit = $cotizacion->persona->empresa->cuit_formateado;
-                                                    }
-                                                @endphp
-                                                
-                                                @if($cuit)
-                                                    <span class="text-sm text-gray-700">{{ $cuit }}</span>
-                                                @else
-                                                    <span class="text-sm text-gray-400 italic">Sin CUIT</span>
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <span class="text-sm text-gray-700">{{ $cotizacion->fyh ? $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') : 'Sin fecha' }}</span>
-                                            </td>
-                                            <td class="px-6 py-4">
                                                 @if($cotizacion->updated_at && $cotizacion->updated_at != $cotizacion->created_at)
-                                                    <span class="text-sm text-gray-700">{{ $cotizacion->updated_at->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') }}</span>
+                                                    <span class="text-sm text-gray-700">{{ $cotizacion->updated_at->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') }}</span>
                                                 @else
-                                                    <span class="text-sm text-gray-400 italic">Sin modificar</span>
+                                                    <span class="text-sm text-gray-400">—</span>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 text-right">
@@ -443,40 +281,6 @@
                     @endif
                 </section>
 
-                {{-- Leyenda de estados actualizada --}}
-                <div class="mt-8 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Estados de Cotización</h3>
-                    <div class="flex flex-wrap justify-between items-center gap-6">
-                        <div class="flex items-center gap-3">
-                            <span class="inline-block w-4 h-4 rounded-full" style="background-color: #446dddde;"></span>
-                            <div>
-                                <span class="text-sm font-medium text-gray-900">Nuevo</span>
-                                <p class="text-xs text-gray-500">Cotización recién creada</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="inline-block w-4 h-4 rounded-full" style="background-color: #ecee80ff;"></span>
-                            <div>
-                                <span class="text-sm font-medium text-gray-900">Abierto</span>
-                                <p class="text-xs text-gray-500">En proceso de análisis</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="inline-block w-4 h-4 rounded-full" style="background-color: #72d89bff;"></span>
-                            <div>
-                                <span class="text-sm font-medium text-gray-900">Cotizado</span>
-                                <p class="text-xs text-gray-500">Precio definido</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="inline-block w-4 h-4 rounded-full" style="background-color: #ae74dadc;"></span>
-                            <div>
-                                <span class="text-sm font-medium text-gray-900">En entrega</span>
-                                <p class="text-xs text-gray-500">Preparando pedido</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
             </div>
         </main>
@@ -499,38 +303,6 @@
     });
 @endif
 
-function toggleFiltros() {
-    const panel = document.getElementById('filtros-panel');
-    const icon = document.getElementById('filtros-icon');
-    
-    panel.classList.toggle('hidden');
-    icon.classList.toggle('rotate-180');
-    
-    // Animación suave
-    if (!panel.classList.contains('hidden')) {
-        panel.style.maxHeight = '0px';
-        panel.style.overflow = 'hidden';
-        panel.style.transition = 'max-height 0.3s ease-out';
-        
-        setTimeout(() => {
-            panel.style.maxHeight = panel.scrollHeight + 'px';
-        }, 10);
-        
-        setTimeout(() => {
-            panel.style.maxHeight = '';
-            panel.style.overflow = '';
-        }, 300);
-    }
-}
-
-// El panel está abierto por defecto, solo necesitamos rotar el icono
-document.addEventListener('DOMContentLoaded', function() {
-    const icon = document.getElementById('filtros-icon');
-    
-    if (icon) {
-        icon.classList.add('rotate-180');
-    }
-});
 </script>
 
 @endsection

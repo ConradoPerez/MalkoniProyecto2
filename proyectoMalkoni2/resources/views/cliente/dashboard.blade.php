@@ -121,52 +121,25 @@
 
                 <!-- Tabla de cotizaciones -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                                <h2 class="text-xl font-syncopate font-bold text-gray-800">
-                                    MIS COTIZACIONES
-                                </h2>
-                                
-                                <!-- Estadísticas compactas al lado del título -->
-                                <div class="flex flex-wrap gap-2">
-                                    <div class="flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full text-sm">
-                                        <span class="text-gray-600">Total:</span>
-                                        <span class="font-semibold text-gray-900">{{ $estadisticas['total'] }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full text-sm">
-                                        <span class="inline-block w-2 h-2 rounded-full" style="background-color: #95c4ecff;"></span>
-                                        <span class="font-semibold text-blue-600">{{ $estadisticas['nuevo'] }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 bg-yellow-50 px-3 py-1 rounded-full text-sm">
-                                        <span class="inline-block w-2 h-2 rounded-full" style="background-color: #ecee80ff;"></span>
-                                        <span class="font-semibold text-yellow-600">{{ $estadisticas['abierto'] }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full text-sm">
-                                        <span class="inline-block w-2 h-2 rounded-full" style="background-color: #72d89bff;"></span>
-                                        <span class="font-semibold text-green-600">{{ $estadisticas['cotizado'] }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 bg-purple-50 px-3 py-1 rounded-full text-sm">
-                                        <span class="inline-block w-2 h-2 rounded-full" style="background-color: #ae74dadc;"></span>
-                                        <span class="font-semibold text-purple-600">{{ $estadisticas['en_entrega'] }}</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="text-sm text-gray-600">
-                                    Mostrando {{ $cotizaciones->firstItem() ?? 0 }} - {{ $cotizaciones->lastItem() ?? 0 }} de {{ $cotizaciones->total() }} cotizaciones
-                                </div>
-                            </div>
-                        </div>
+
+                    {{-- Encabezado: título + contador --}}
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h2 class="text-xl font-syncopate font-bold text-gray-800">MIS COTIZACIONES</h2>
+                        <span class="text-sm text-gray-500">
+                            {{ $cotizaciones->firstItem() ?? 0 }}–{{ $cotizaciones->lastItem() ?? 0 }} de {{ $cotizaciones->total() }}
+                        </span>
+                    </div>
+
                     
                     @if($cotizaciones->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
                                 <thead class="bg-gray-50">
                                     <tr class="border-b border-gray-200">
-                                        <th class="text-left py-4 px-6 font-semibold text-gray-700">Estado</th>
                                         <th class="text-left py-4 px-6 font-semibold text-gray-700">N° Cotización</th>
-                                        <th class="text-left py-4 px-6 font-semibold text-gray-700">Título</th>
                                         <th class="text-left py-4 px-6 font-semibold text-gray-700">Fecha Creación</th>
                                         <th class="text-left py-4 px-6 font-semibold text-gray-700">Vendedor</th>
+                                        <th class="text-left py-4 px-6 font-semibold text-gray-700">Estado</th>
                                         <th class="text-right py-4 px-6 font-semibold text-gray-700">Total</th>
                                         <th class="text-center py-4 px-6 font-semibold text-gray-700">Acciones</th>
                                     </tr>
@@ -183,21 +156,18 @@
                                     @foreach($cotizaciones as $cotizacion)
                                         <tr class="hover:bg-gray-50 transition-colors">
                                             <td class="py-4 px-6">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $estadoColores[$cotizacion->estado_actual->nombre ?? 'Nuevo'] ?? 'bg-gray-100 text-gray-800' }}">
-                                                    {{ $cotizacion->estado_actual->nombre ?? 'Nuevo' }}
-                                                </span>
-                                            </td>
-                                            <td class="py-4 px-6">
                                                 <span class="text-gray-900 font-semibold">#{{ $cotizacion->numero }}</span>
                                             </td>
-                                            <td class="py-4 px-6">
-                                                <div class="text-gray-900 font-medium">{{ $cotizacion->titulo ?? 'Sin título' }}</div>
-                                            </td>
                                             <td class="py-4 px-6 text-gray-700">
-                                                {{ $cotizacion->fyh ? $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') : '-' }}
+                                                {{ $cotizacion->fyh ? $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') : '-' }}
                                             </td>
                                             <td class="py-4 px-6 text-gray-700">
                                                 {{ $cotizacion->empleado->nombre ?? 'Sin vendedor' }}
+                                            </td>
+                                            <td class="py-4 px-6">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $estadoColores[$cotizacion->estado_actual->nombre ?? 'Nuevo'] ?? 'bg-gray-100 text-gray-800' }}">
+                                                    {{ $cotizacion->estado_actual->nombre ?? 'Nuevo' }}
+                                                </span>
                                             </td>
                                             <td class="py-4 px-6 text-right">
                                                 @php
@@ -324,40 +294,6 @@
                     @endif
                 </div>
 
-                <!-- Estados de Cotización -->
-                <div class="mt-6 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Estados de Cotización</h3>
-                    <div class="flex flex-wrap justify-between items-center gap-6">
-                        <div class="flex items-center gap-3">
-                            <span class="inline-block w-4 h-4 rounded-full" style="background-color: #95c4ecff;"></span>
-                            <div>
-                                <span class="text-sm font-medium text-gray-900">Nuevo</span>
-                                <p class="text-xs text-gray-500">Cotización recién creada</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="inline-block w-4 h-4 rounded-full" style="background-color: #ecee80ff;"></span>
-                            <div>
-                                <span class="text-sm font-medium text-gray-900">Abierto</span>
-                                <p class="text-xs text-gray-500">En proceso de análisis</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="inline-block w-4 h-4 rounded-full" style="background-color: #72d89bff;"></span>
-                            <div>
-                                <span class="text-sm font-medium text-gray-900">Cotizado</span>
-                                <p class="text-xs text-gray-500">Precio definido</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="inline-block w-4 h-4 rounded-full" style="background-color: #ae74dadc;"></span>
-                            <div>
-                                <span class="text-sm font-medium text-gray-900">En entrega</span>
-                                <p class="text-xs text-gray-500">Preparando pedido</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
         </main>
     </div>
 </div>

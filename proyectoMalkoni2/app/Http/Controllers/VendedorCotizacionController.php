@@ -92,8 +92,8 @@ class VendedorCotizacionController extends Controller
         }
 
         // Ordenamiento
-        $orderBy = $request->get('orderby', 'estado'); // CAMBIO: orden por defecto es por estado
-        $orderDirection = $request->get('direction', 'asc'); // CAMBIO: ascendente para mostrar Nuevo primero
+        $orderBy = $request->get('orderby', 'fecha');
+        $orderDirection = $request->get('direction', 'desc');
 
         switch ($orderBy) {
             case 'estado':

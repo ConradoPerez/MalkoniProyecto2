@@ -41,7 +41,7 @@
                     </div>
 
                     <div class="flex gap-3">
-                        <button class="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-all shadow-md">
+                        <button onclick="window.print()" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-all shadow-md">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                             Imprimir
                         </button>
@@ -60,12 +60,21 @@
                                 </span>
                             </div>
 
+                            @php
+                                $estadoNombre = $cotizacion->estado;
+                                $esCotizado   = $estadoNombre === 'Cotizado';
+                            @endphp
+
                             <div class="overflow-x-auto">
                                 <table class="w-full whitespace-nowrap">
                                     <thead class="bg-gray-50">
                                         <tr class="text-left text-xs font-semibold tracking-wide text-gray-500 uppercase border-b border-gray-100">
                                             <th class="px-6 py-3">Producto</th>
                                             <th class="px-6 py-3 text-center">Cant.</th>
+                                            @if($esCotizado)
+                                                <th class="px-6 py-3 text-right">P. Unitario</th>
+                                                <th class="px-6 py-3 text-right">Subtotal</th>
+                                            @endif
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-50">
@@ -99,56 +108,143 @@
                                                         {{ $item->cantidad }}
                                                     </span>
                                                 </td>
+                                                @if($esCotizado)
+                                                    <td class="px-6 py-4 text-right text-sm text-gray-700">
+                                                        ${{ number_format($item->precio_unitario ?? 0, 2, ',', '.') }}
+                                                    </td>
+                                                    <td class="px-6 py-4 text-right text-sm font-semibold text-gray-900">
+                                                        ${{ number_format(($item->precio_unitario ?? 0) * ($item->cantidad ?? 1), 2, ',', '.') }}
+                                                    </td>
+                                                @endif
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="4" class="px-6 py-10 text-center text-gray-500">
-                                                    No hay items en esta cotización. 
+                                                <td colspan="{{ $esCotizado ? 4 : 2 }}" class="px-6 py-10 text-center text-gray-500">
+                                                    No hay items en esta cotización.
                                                     <a href="{{ route('cliente.cotizacion.agregar_productos', ['id' => $cotizacion->id]) }}" class="text-[#D88429] hover:underline ml-1">Agregar productos</a>
                                                 </td>
                                             </tr>
                                         @endforelse
                                     </tbody>
+                                    @if($esCotizado && $cotizacion->items->count() > 0)
+                                        <tfoot>
+                                            <tr class="bg-gray-50 border-t-2 border-gray-200">
+                                                <td colspan="3" class="px-6 py-3 text-right text-sm font-bold text-gray-700 uppercase tracking-wide">Total</td>
+                                                <td class="px-6 py-3 text-right text-base font-bold text-green-700">
+                                                    ${{ number_format($cotizacion->precio_total ?? 0, 2, ',', '.') }}
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    @endif
                                 </table>
                             </div>
                             
+                            @if(!$esCotizado)
                             <div class="bg-gray-50 px-6 py-3 border-t border-gray-100">
                                 <a href="{{ route('cliente.cotizacion.agregar_productos', ['id' => $cotizacion->id]) }}" class="text-sm font-medium text-[#166379] hover:text-[#0e4555] hover:underline flex items-center justify-center sm:justify-start">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                     Agregar más productos
                                 </a>
                             </div>
+                            @endif
                         </div>
 
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                            <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" id="chat-box">
+                            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                                Comunicación con el Vendedor
-                            </h3>
-                            <div class="bg-gray-50 rounded-lg border border-gray-200 p-8 text-center">
-                                <p class="text-gray-500 text-sm mb-3">¿Tienes dudas sobre este pedido?</p>
-                                <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm">
-                                    Enviar Mensaje
-                                </button>
+                                <h3 class="font-bold text-gray-800">Comunicación con el Vendedor</h3>
+                            </div>
+
+                            {{-- Área de mensajes --}}
+                            <div id="chat-mensajes" class="flex flex-col gap-3 p-4 h-72 overflow-y-auto bg-gray-50/30">
+                                <p class="text-center text-xs text-gray-400 mt-auto" id="chat-empty">Cargando mensajes...</p>
+                            </div>
+
+                            {{-- Input de envío --}}
+                            <div class="border-t border-gray-100 p-4 bg-white">
+                                <form id="chat-form" class="flex gap-2">
+                                    <input
+                                        type="text"
+                                        id="chat-input"
+                                        placeholder="Escribí tu mensaje..."
+                                        maxlength="2000"
+                                        autocomplete="off"
+                                        class="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D88429]/30 focus:border-[#D88429]"
+                                    >
+                                    <button
+                                        type="submit"
+                                        class="px-4 py-2 rounded-lg text-white text-sm font-medium transition hover:opacity-90 disabled:opacity-50"
+                                        style="background-color:#D88429;"
+                                    >
+                                        Enviar
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
 
                     <div class="space-y-6">
                         
-                        <div class="bg-yellow-50 rounded-xl shadow-sm border border-yellow-200 overflow-hidden">
-                            <div class="p-6 bg-yellow-100 border-b border-yellow-200">
-                                <h3 class="text-lg font-bold text-yellow-900 flex items-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        @php
+                            $estadoConfig = match($estadoNombre) {
+                                'Cotizado'    => [
+                                    'card'   => 'bg-green-50 border-green-200',
+                                    'header' => 'bg-green-100 border-green-200',
+                                    'title'  => 'text-green-900',
+                                    'icon'   => 'bg-green-200',
+                                    'iconColor' => 'text-green-600',
+                                    'badge'  => 'text-green-900',
+                                    'desc'   => 'text-green-700',
+                                    'label'  => 'Presupuesto listo',
+                                    'msg'    => 'Tu cotización fue presupuestada por el vendedor. Podés ver los precios en la tabla de productos.',
+                                    'svgPath'=> 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+                                ],
+                                'En entrega'  => [
+                                    'card'   => 'bg-blue-50 border-blue-200',
+                                    'header' => 'bg-blue-100 border-blue-200',
+                                    'title'  => 'text-blue-900',
+                                    'icon'   => 'bg-blue-200',
+                                    'iconColor' => 'text-blue-600',
+                                    'badge'  => 'text-blue-900',
+                                    'desc'   => 'text-blue-700',
+                                    'label'  => 'En entrega',
+                                    'msg'    => 'Tu pedido está en proceso de entrega.',
+                                    'svgPath'=> 'M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8l1 12a2 2 0 002 2h8a2 2 0 002-2L19 8M10 12v4m4-4v4',
+                                ],
+                                default       => [
+                                    'card'   => 'bg-yellow-50 border-yellow-200',
+                                    'header' => 'bg-yellow-100 border-yellow-200',
+                                    'title'  => 'text-yellow-900',
+                                    'icon'   => 'bg-yellow-200',
+                                    'iconColor' => 'text-yellow-600',
+                                    'badge'  => 'text-yellow-900',
+                                    'desc'   => 'text-yellow-700',
+                                    'label'  => 'Cotización enviada',
+                                    'msg'    => 'Esperando presupuesto del asesor. Los precios se mostrarán una vez procesada la cotización.',
+                                    'svgPath'=> 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+                                ],
+                            };
+                        @endphp
+
+                        <div class="rounded-xl shadow-sm border overflow-hidden {{ $estadoConfig['card'] }}">
+                            <div class="p-6 border-b {{ $estadoConfig['header'] }}">
+                                <h3 class="text-lg font-bold {{ $estadoConfig['title'] }} flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $estadoConfig['svgPath'] }}"></path></svg>
                                     Estado de Cotización
                                 </h3>
                             </div>
                             <div class="p-6 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-200 rounded-full mb-4">
-                                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 {{ $estadoConfig['icon'] }}">
+                                    <svg class="w-8 h-8 {{ $estadoConfig['iconColor'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $estadoConfig['svgPath'] }}"></path></svg>
                                 </div>
-                                <p class="text-sm font-semibold text-yellow-900 mb-2">Cotización enviada</p>
-                                <p class="text-xs text-yellow-700">Esperando presupuesto del asesor. Los precios se mostrarán una vez procesada la cotización.</p>
+                                <p class="text-sm font-semibold mb-2 {{ $estadoConfig['badge'] }}">{{ $estadoConfig['label'] }}</p>
+                                <p class="text-xs {{ $estadoConfig['desc'] }}">{{ $estadoConfig['msg'] }}</p>
+                                @if($esCotizado && $cotizacion->precio_total)
+                                    <div class="mt-4 pt-4 border-t border-green-200">
+                                        <p class="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">Total presupuestado</p>
+                                        <p class="text-2xl font-bold text-green-800">${{ number_format($cotizacion->precio_total, 2, ',', '.') }}</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 
@@ -214,4 +310,397 @@
         </main>
     </div>
 </div>
+{{-- ============================================================ --}}
+{{-- ÁREA DE IMPRESIÓN (solo visible al imprimir)               --}}
+{{-- ============================================================ --}}
+<div id="print-area">
+
+    {{-- Encabezado: Malkoni + datos cotización --}}
+    <div class="print-header">
+        <div class="print-company">
+            <div class="print-logo-text">MALKONI HNOS.</div>
+            <div class="print-company-data">
+                <span>CUIT: 30-71234567-0</span>
+                <span>Av. Corrientes 1234, Buenos Aires</span>
+                <span>Tel: (011) 4123-4567</span>
+                <span>ventas@malkonihnos.com</span>
+            </div>
+        </div>
+        <div class="print-doc-info">
+            <div class="print-doc-title">COTIZACIÓN</div>
+            <div class="print-doc-number">#{{ str_pad($cotizacion->numero, 7, '0', STR_PAD_LEFT) }}</div>
+            <table class="print-meta-table">
+                <tr><td>Fecha emisión:</td><td>{{ $cotizacion->fyh->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') }}</td></tr>
+                @if($cotizacion->fecha_cotizado)
+                <tr><td>Fecha presupuesto:</td><td>{{ $cotizacion->fecha_cotizado->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') }}</td></tr>
+                @endif
+                <tr><td>Estado:</td><td><strong>{{ $estadoNombre }}</strong></td></tr>
+            </table>
+        </div>
+    </div>
+
+    <hr class="print-divider">
+
+    {{-- Cliente + Vendedor --}}
+    <div class="print-parties">
+        <div class="print-party">
+            <div class="print-party-title">CLIENTE</div>
+            @if($cotizacion->empresa)
+                <p class="print-party-name">{{ $cotizacion->empresa->razon_social ?? $cotizacion->empresa->nombre }}</p>
+                @if($cotizacion->empresa->cuit)<p>CUIT: {{ $cotizacion->empresa->cuit }}</p>@endif
+                @if($cotizacion->empresa->email)<p>{{ $cotizacion->empresa->email }}</p>@endif
+            @elseif($cotizacion->persona)
+                <p class="print-party-name">{{ trim(($cotizacion->persona->nombre ?? '') . ' ' . ($cotizacion->persona->apellido ?? '')) }}</p>
+                @if($cotizacion->persona->dni)<p>DNI: {{ $cotizacion->persona->dni }}</p>@endif
+                @if($cotizacion->persona->email)<p>{{ $cotizacion->persona->email }}</p>@endif
+            @endif
+        </div>
+        <div class="print-party">
+            <div class="print-party-title">VENDEDOR ASIGNADO</div>
+            <p class="print-party-name">{{ $cotizacion->empleado->nombre ?? 'Sin asignar' }}</p>
+            @if($cotizacion->empleado?->email)<p>{{ $cotizacion->empleado->email }}</p>@endif
+        </div>
+    </div>
+
+    <hr class="print-divider">
+
+    {{-- Tabla de productos --}}
+    <table class="print-table">
+        <thead>
+            <tr>
+                <th class="text-left" style="width:50%">Producto</th>
+                <th class="text-center" style="width:10%">Cant.</th>
+                @if($esCotizado)
+                    <th class="text-right" style="width:20%">P. Unitario</th>
+                    <th class="text-right" style="width:20%">Subtotal</th>
+                @endif
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($cotizacion->items as $item)
+                <tr>
+                    <td>
+                        @if($item->producto)
+                            <strong>{{ $item->producto->nombre }}</strong>
+                            @if($item->producto->codigo)
+                                <br><small>COD: {{ $item->producto->codigo }}</small>
+                            @endif
+                        @else
+                            @php $po = is_string($cotizacion->payload_origen) ? json_decode($cotizacion->payload_origen, true) : $cotizacion->payload_origen; @endphp
+                            <strong>{{ $po['mat_descri'] ?? 'Material de corte OPT' }}</strong>
+                        @endif
+                    </td>
+                    <td class="text-center">{{ $item->cantidad }}</td>
+                    @if($esCotizado)
+                        <td class="text-right">${{ number_format($item->precio_unitario ?? 0, 2, ',', '.') }}</td>
+                        <td class="text-right">${{ number_format(($item->precio_unitario ?? 0) * ($item->cantidad ?? 1), 2, ',', '.') }}</td>
+                    @endif
+                </tr>
+            @empty
+                <tr><td colspan="{{ $esCotizado ? 4 : 2 }}" class="text-center">Sin productos</td></tr>
+            @endforelse
+        </tbody>
+        @if($esCotizado && $cotizacion->precio_total)
+            <tfoot>
+                <tr>
+                    <td colspan="{{ $esCotizado ? 3 : 1 }}" class="text-right"><strong>TOTAL</strong></td>
+                    <td class="text-right print-total">${{ number_format($cotizacion->precio_total, 2, ',', '.') }}</td>
+                </tr>
+            </tfoot>
+        @endif
+    </table>
+
+    {{-- Pie de página --}}
+    <div class="print-footer">
+        Documento generado el {{ now()->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') }} hs.
+    </div>
+
+</div>
+{{-- ============================================================ --}}
+
+@push('scripts')
+<style>
+/* Ocultar el área de impresión en pantalla */
+#print-area { display: none; }
+
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 15mm 18mm;
+    }
+
+    /* Ocultar toda la UI de la app */
+    body > * { display: none !important; }
+
+    /* Mostrar solo el área de impresión */
+    #print-area {
+        display: block !important;
+        width: 100%;
+        font-family: Arial, sans-serif;
+        font-size: 11pt;
+        color: #111;
+    }
+
+    /* Encabezado */
+    .print-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12pt;
+    }
+    .print-logo-text {
+        font-size: 22pt;
+        font-weight: 900;
+        letter-spacing: 2px;
+        color: #D88429;
+    }
+    .print-company-data {
+        display: flex;
+        flex-direction: column;
+        gap: 2pt;
+        font-size: 9pt;
+        color: #555;
+        margin-top: 4pt;
+    }
+    .print-doc-info {
+        text-align: right;
+    }
+    .print-doc-title {
+        font-size: 14pt;
+        font-weight: bold;
+        letter-spacing: 3px;
+        color: #333;
+    }
+    .print-doc-number {
+        font-size: 20pt;
+        font-weight: 900;
+        color: #D88429;
+        margin-bottom: 6pt;
+    }
+    .print-meta-table td {
+        padding: 1pt 6pt 1pt 0;
+        font-size: 9pt;
+        color: #555;
+    }
+    .print-meta-table td:first-child {
+        color: #999;
+        white-space: nowrap;
+    }
+
+    /* Divisor */
+    .print-divider {
+        border: none;
+        border-top: 1.5px solid #ddd;
+        margin: 10pt 0;
+    }
+
+    /* Partes: cliente + vendedor */
+    .print-parties {
+        display: flex;
+        gap: 20pt;
+        margin-bottom: 12pt;
+    }
+    .print-party {
+        flex: 1;
+        padding: 8pt 10pt;
+        border: 1px solid #e5e7eb;
+        border-radius: 4pt;
+        background: #fafafa;
+    }
+    .print-party-title {
+        font-size: 7pt;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: #999;
+        text-transform: uppercase;
+        margin-bottom: 4pt;
+    }
+    .print-party-name {
+        font-size: 11pt;
+        font-weight: bold;
+        color: #111;
+        margin-bottom: 2pt;
+    }
+    .print-party p {
+        margin: 0;
+        font-size: 9pt;
+        color: #555;
+    }
+
+    /* Tabla de productos */
+    .print-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10pt;
+        font-size: 10pt;
+    }
+    .print-table thead tr {
+        background: #f3f4f6;
+        border-bottom: 2px solid #d1d5db;
+    }
+    .print-table th {
+        padding: 6pt 8pt;
+        font-size: 8pt;
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #6b7280;
+    }
+    .print-table td {
+        padding: 6pt 8pt;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: top;
+    }
+    .print-table td small {
+        font-size: 8pt;
+        color: #999;
+    }
+    .print-table tbody tr:last-child td {
+        border-bottom: 1.5px solid #d1d5db;
+    }
+    .print-table tfoot td {
+        padding: 8pt;
+        border-top: 2px solid #333;
+    }
+    .print-total {
+        font-size: 14pt;
+        font-weight: 900;
+        color: #111;
+    }
+    .text-left   { text-align: left; }
+    .text-center { text-align: center; }
+    .text-right  { text-align: right; }
+
+    /* Pie de página */
+    .print-footer {
+        margin-top: 16pt;
+        font-size: 8pt;
+        color: #bbb;
+        text-align: center;
+        border-top: 1px solid #eee;
+        padding-top: 6pt;
+    }
+}
+</style>
+<script>
+(function () {
+    const COTIZACION_ID = {{ $cotizacion->id }};
+    const URL_INDEX    = '{{ route("cliente.cotizacion.mensajes.index",  ["id" => $cotizacion->id]) }}';
+    const URL_STORE    = '{{ route("cliente.cotizacion.mensajes.store",  ["id" => $cotizacion->id]) }}';
+    const URL_LEIDOS   = '{{ route("cliente.cotizacion.mensajes.leidos", ["id" => $cotizacion->id]) }}';
+    const CSRF         = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    const container = document.getElementById('chat-mensajes');
+    const form      = document.getElementById('chat-form');
+    const input     = document.getElementById('chat-input');
+    const empty     = document.getElementById('chat-empty');
+
+    let lastId = 0;
+    let polling = null;
+
+    function buildBubble(msg) {
+        const wrap = document.createElement('div');
+        wrap.className = 'flex flex-col ' + (msg.mine ? 'items-end' : 'items-start');
+        wrap.dataset.id = msg.id;
+
+        const bubble = document.createElement('div');
+        bubble.className = [
+            'max-w-xs lg:max-w-sm px-4 py-2 rounded-2xl text-sm break-words',
+            msg.mine
+                ? 'bg-[#D88429] text-white rounded-br-sm'
+                : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm shadow-sm',
+        ].join(' ');
+        bubble.textContent = msg.mensaje;
+
+        const meta = document.createElement('span');
+        meta.className = 'text-[10px] text-gray-400 mt-0.5 px-1';
+        meta.textContent = (msg.mine ? '' : msg.sender_nombre + ' · ') + msg.created_at;
+
+        wrap.appendChild(bubble);
+        wrap.appendChild(meta);
+        return wrap;
+    }
+
+    function scrollBottom() {
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function cargarMensajes() {
+        try {
+            const res  = await fetch(URL_INDEX, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            const data = await res.json();
+
+            const nuevos = data.mensajes.filter(m => m.id > lastId);
+            if (nuevos.length === 0) return;
+
+            if (data.mensajes.length > 0 && empty) empty.remove();
+
+            nuevos.forEach(msg => {
+                container.appendChild(buildBubble(msg));
+                lastId = Math.max(lastId, msg.id);
+            });
+
+            scrollBottom();
+
+            // Marcar como leídos los del vendedor
+            fetch(URL_LEIDOS, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'X-Requested-With': 'XMLHttpRequest' },
+            });
+        } catch (e) {
+            // fallo silencioso — el polling reintentará
+        }
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const texto = input.value.trim();
+        if (!texto) return;
+
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        input.value = '';
+
+        try {
+            const res  = await fetch(URL_STORE, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': CSRF,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({ mensaje: texto }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (empty && empty.parentNode) empty.remove();
+                container.appendChild(buildBubble(data.mensaje));
+                lastId = Math.max(lastId, data.mensaje.id);
+                scrollBottom();
+            }
+        } catch (e) {
+            input.value = texto; // restaurar si falla
+        } finally {
+            btn.disabled = false;
+            input.focus();
+        }
+    });
+
+    // Carga inicial + polling cada 5s
+    cargarMensajes();
+    polling = setInterval(cargarMensajes, 5000);
+
+    // Detener polling si la página pierde foco (ahorro de requests)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            clearInterval(polling);
+        } else {
+            cargarMensajes();
+            polling = setInterval(cargarMensajes, 5000);
+        }
+    });
+})();
+</script>
+@endpush
+
 @endsection
