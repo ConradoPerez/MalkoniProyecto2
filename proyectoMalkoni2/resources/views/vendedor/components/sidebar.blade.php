@@ -121,15 +121,7 @@
         </div>
     </div>
 
-    <div class="mt-auto pt-6 border-t border-gray-200">
-        <button type="button" onclick="document.getElementById('vendedor-logout-form').submit();" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold text-white transition-colors" style="background-color: #172A32;">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Cerrar Sesión</span>
-        </button>
-        <form id="vendedor-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-            @csrf
-        </form>
-    </div>
+
 
 </aside>
 

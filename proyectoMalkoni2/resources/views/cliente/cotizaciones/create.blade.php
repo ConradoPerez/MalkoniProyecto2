@@ -37,22 +37,32 @@
                             <p class="text-gray-500 mt-1 font-medium">Completa los datos para iniciar el proceso de cotización.</p>
                         </div>
                         
-                        <div class="bg-white px-5 py-3 rounded-lg border border-gray-200 shadow-sm flex gap-6 text-sm">
+                        <div class="bg-white px-5 py-3 rounded-lg border border-gray-200 shadow-sm flex flex-wrap gap-4 md:gap-6 text-sm items-center">
                             <div>
                                 <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Fecha</span>
                                 <span class="font-mono font-medium text-gray-700">{{ now()->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') }}</span>
                             </div>
-                            <div class="border-l border-gray-200 pl-6">
+                            <div class="border-l border-gray-200 pl-4 md:pl-6">
                                 <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Nº Pedido</span>
                                 <span class="font-mono font-medium text-[#D88429]">{{ $numero_pedido ?? '---' }}</span>
                             </div>
-                            @if(isset($cotizacion) && $cotizacion && $cotizacion->pdf_url)
-                            <div class="border-l border-gray-200 pl-6">
-                                <a href="{{ $cotizacion->pdf_url }}" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-gray-700 hover:text-[#D88429] transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                                    Ver Plano de Cortes (PDF)
-                                </a>
-                            </div>
+                            @if(isset($cotizacion) && $cotizacion && $cotizacion->pedido_opt_id)
+                                <div class="border-l border-gray-200 pl-4 md:pl-6">
+                                    <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Cliente</span>
+                                    <span class="font-medium text-gray-700">{{ trim(($cotizacion->persona->nombre ?? '') . ' ' . ($cotizacion->persona->apellido ?? '')) ?: 'Sin datos' }}</span>
+                                </div>
+                                @if($cotizacion->empresa && $cotizacion->empresa->cod_cond_iva !== 'CF')
+                                    <div class="border-l border-gray-200 pl-4 md:pl-6">
+                                        <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Empresa Activa</span>
+                                        <span class="font-medium text-gray-700">{{ $cotizacion->empresa->razon_social ?? $cotizacion->empresa->nombre ?? 'Sin empresa' }}</span>
+                                    </div>
+                                @endif
+                                @if($cotizacion->empresa && $cotizacion->empresa->cuit)
+                                    <div class="border-l border-gray-200 pl-4 md:pl-6">
+                                        <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">{{ $cotizacion->empresa->cod_cond_iva === 'CF' ? 'CUIL' : 'CUIT' }}</span>
+                                        <span class="font-mono font-medium text-gray-700">{{ $cotizacion->empresa->cuit }}</span>
+                                    </div>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -111,30 +121,25 @@
                             </div>
                         </div>
 
-                        @if(isset($cotizacion) && $cotizacion && $cotizacion->pedido_opt_id)
-                        <div class="bg-blue-50 rounded-xl border border-blue-200 overflow-hidden mb-8">
-                            <div class="p-6 border-b border-blue-100 bg-blue-100/50">
-                                <h3 class="text-lg font-semibold text-blue-900 flex items-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                    Datos del Cliente
-                                </h3>
-                                <p class="text-sm text-blue-700">Información registrada en el pedido OPT importado.</p>
+                        @if(isset($cotizacion) && $cotizacion && $cotizacion->pdf_url)
+                        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8 shadow-sm">
+                            <div class="p-5 border-b border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+                                        <svg class="w-5 h-5 text-[#D88429]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        Plano de Cortes
+                                    </h3>
+                                    <p class="text-xs text-gray-500 mt-0.5">Visualización interactiva del archivo de cortes importado.</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <a href="{{ $cotizacion->pdf_url }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all shadow-sm">
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                        Abrir en ventana completa
+                                    </a>
+                                </div>
                             </div>
-                            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                <div>
-                                    <span class="block text-xs text-blue-600 uppercase font-bold tracking-wider mb-1">Persona</span>
-                                    <span class="font-medium text-gray-900">{{ trim(($cotizacion->persona->nombre ?? '') . ' ' . ($cotizacion->persona->apellido ?? '')) ?: 'Sin datos' }}</span>
-                                </div>
-                                <div>
-                                    <span class="block text-xs text-blue-600 uppercase font-bold tracking-wider mb-1">Empresa Activa</span>
-                                    <span class="font-medium text-gray-900">{{ $cotizacion->empresa->razon_social ?? $cotizacion->empresa->nombre ?? 'Sin empresa' }}</span>
-                                </div>
-                                @if($cotizacion->empresa && $cotizacion->empresa->cuit)
-                                <div>
-                                    <span class="block text-xs text-blue-600 uppercase font-bold tracking-wider mb-1">CUIT</span>
-                                    <span class="font-mono font-medium text-gray-900">{{ $cotizacion->empresa->cuit }}</span>
-                                </div>
-                                @endif
+                            <div class="relative w-full bg-gray-100" style="height: 950px;">
+                                <iframe src="{{ $cotizacion->pdf_url }}" class="w-full h-full border-0" style="height: 950px;" title="Plano de cortes"></iframe>
                             </div>
                         </div>
                         @endif

@@ -117,6 +117,8 @@ Route::middleware('role:cliente')->prefix('cliente')->name('cliente.')->group(fu
     Route::post('/cotizacion/{id}/guardar-productos', [ClienteDashboardController::class, 'storeProductsToQuotation'])->name('cotizacion.guardar_productos');
     // 6. Elimina un item de la cotización
     Route::delete('/cotizacion/{cotizacionId}/item/{itemId}', [ClienteDashboardController::class, 'removeProductFromQuotation'])->name('cotizacion.eliminar_item');
+    // 6b. Actualiza la cantidad de un item de la cotización
+    Route::post('/cotizacion/{cotizacionId}/item/{itemId}/update-quantity', [ClienteDashboardController::class, 'updateItemQuantity'])->name('cotizacion.actualizar_cantidad');
     Route::get('/cotizacion/{id}/plano/descargar', [ClienteDashboardController::class, 'downloadOptPlano'])->name('cotizacion.plano.descargar');
     // ────────────────────────────────────────────────────
 

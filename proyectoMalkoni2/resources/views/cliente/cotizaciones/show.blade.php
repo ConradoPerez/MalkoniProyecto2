@@ -41,6 +41,12 @@
                     </div>
 
                     <div class="flex gap-3">
+                        @if(!empty($cotizacion->pdf_url))
+                            <a href="{{ $cotizacion->pdf_url }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-[#D88429] text-white rounded-lg text-sm font-medium hover:bg-[#c7731f] transition-all shadow-md">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                Ver Plano (PDF)
+                            </a>
+                        @endif
                         <button onclick="window.print()" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-all shadow-md">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                             Imprimir
@@ -104,9 +110,47 @@
                                                     </div>
                                                 </td>
                                                 <td class="px-6 py-4 text-center">
-                                                    <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-700 bg-gray-100 rounded">
-                                                        {{ $item->cantidad }}
-                                                    </span>
+                                                    @if(!$esCotizado && $item->producto)
+                                                        <div class="flex items-center justify-center gap-1.5">
+                                                            <!-- Decrementar (-) -->
+                                                            <form action="{{ route('cliente.cotizacion.actualizar_cantidad', ['cotizacionId' => $cotizacion->id, 'itemId' => $item->id_item]) }}" method="POST" class="inline m-0">
+                                                                @csrf
+                                                                <input type="hidden" name="change" value="-1">
+                                                                <button type="submit" class="w-6 h-6 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 rounded font-bold text-xs flex items-center justify-center transition-all border border-gray-200 active:scale-95" title="Disminuir cantidad">
+                                                                    -
+                                                                </button>
+                                                            </form>
+
+                                                            <!-- Cantidad -->
+                                                            <span class="inline-flex items-center justify-center font-mono font-bold text-gray-800 bg-gray-50 border border-gray-200 rounded px-2.5 py-0.5 text-xs min-w-[28px] text-center shadow-sm">
+                                                                {{ $item->cantidad }}
+                                                            </span>
+
+                                                            <!-- Incrementar (+) -->
+                                                            <form action="{{ route('cliente.cotizacion.actualizar_cantidad', ['cotizacionId' => $cotizacion->id, 'itemId' => $item->id_item]) }}" method="POST" class="inline m-0">
+                                                                @csrf
+                                                                <input type="hidden" name="change" value="1">
+                                                                <button type="submit" class="w-6 h-6 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 rounded font-bold text-xs flex items-center justify-center transition-all border border-gray-200 active:scale-95" title="Aumentar cantidad">
+                                                                    +
+                                                                </button>
+                                                            </form>
+
+                                                            <!-- Basura (Eliminar) -->
+                                                            <form action="{{ route('cliente.cotizacion.eliminar_item', ['cotizacionId' => $cotizacion->id, 'itemId' => $item->id_item]) }}" method="POST" class="inline m-0 ml-1.5" onsubmit="return confirm('¿Desea eliminar este producto de la cotización?');">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="p-1 text-red-500 hover:bg-red-50 hover:text-red-700 rounded transition-all active:scale-95" title="Eliminar producto">
+                                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                                    </svg>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    @else
+                                                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-700 bg-gray-100 rounded">
+                                                            {{ $item->cantidad }}
+                                                        </span>
+                                                    @endif
                                                 </td>
                                                 @if($esCotizado)
                                                     <td class="px-6 py-4 text-right text-sm text-gray-700">

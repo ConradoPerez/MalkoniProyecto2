@@ -409,7 +409,8 @@ class ClienteDashboardController extends Controller
         }
 
         if (!$hasProducts) {
-            return back()->with('error', 'Debes seleccionar al menos un producto con cantidad mayor a 0.');
+            return redirect()->route('cliente.cotizacion.ver', ['id' => $cotizacion->id])
+                             ->with('success', 'No se agregaron productos adicionales.');
         }
 
         $request->validate([
@@ -417,9 +418,7 @@ class ClienteDashboardController extends Controller
         ]);
 
         try {
-            $precioTotal = 0;
-
-            DB::transaction(function () use ($productosData, $cotizacion, &$precioTotal) {
+            DB::transaction(function () use ($productosData, $cotizacion) {
                 foreach ($productosData as $productoData) {
                     $cantidad = (int)($productoData['cantidad'] ?? 0);
                     
@@ -429,13 +428,31 @@ class ClienteDashboardController extends Controller
                     
                     $producto = Producto::findOrFail($productoData['id_producto']);
 
-                    Item::create([
-                        'cantidad' => $cantidad,
-                        'id_cotizaciones' => $cotizacion->id,
-                        'id_producto' => $producto->id_producto,
-                    ]);
+                    // Buscar si ya existe el producto en esta cotización
+                    $itemExistente = Item::where('id_cotizaciones', $cotizacion->id)
+                        ->where('id_Producto', $producto->id_producto)
+                        ->first();
 
-                    $precioTotal += ($producto->precio_final * $cantidad);
+                    if ($itemExistente) {
+                        $itemExistente->update([
+                            'cantidad' => $itemExistente->cantidad + $cantidad,
+                        ]);
+                    } else {
+                        Item::create([
+                            'cantidad' => $cantidad,
+                            'id_cotizaciones' => $cotizacion->id,
+                            'id_Producto' => $producto->id_producto,
+                        ]);
+                    }
+                }
+
+                // Recalcular el precio total de toda la cotización sumando todos sus ítems
+                $precioTotal = 0;
+                $items = Item::where('id_cotizaciones', $cotizacion->id)->with('producto')->get();
+                foreach ($items as $item) {
+                    if ($item->producto) {
+                        $precioTotal += ($item->producto->precio_final ?? 0) * $item->cantidad;
+                    }
                 }
 
                 $cotizacion->update([
@@ -479,6 +496,44 @@ class ClienteDashboardController extends Controller
             return back()->with('error', 'Error al eliminar producto: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Incrementa o decrementa la cantidad de un item de la cotización.
+     */
+    public function updateItemQuantity(Request $request, $cotizacionId, $itemId)
+    {
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
+        
+        $cotizacion = Cotizacion::where('id_personas', $personaId)->findOrFail($cotizacionId);
+        $item = Item::where('id_cotizaciones', $cotizacion->id)->findOrFail($itemId);
+
+        $cambio = (int) $request->input('change', 0);
+        $nuevaCantidad = $item->cantidad + $cambio;
+
+        if ($nuevaCantidad <= 0) {
+            return $this->removeProductFromQuotation($request, $cotizacionId, $itemId);
+        }
+
+        try {
+            DB::transaction(function () use ($item, $cotizacion, $nuevaCantidad) {
+                $item->update(['cantidad' => $nuevaCantidad]);
+
+                // Recalcular precio total
+                $precioTotal = $cotizacion->items()->get()->sum(function ($item) {
+                    return ($item->producto ? $item->producto->precio_final : 0) * $item->cantidad;
+                });
+
+                $cotizacion->update(['precio_total' => $precioTotal]);
+            });
+
+            return back()->with('success', 'Cantidad actualizada correctamente.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al actualizar cantidad: ' . $e->getMessage());
+        }
+    }
+
     
     /**
      * Redirige dinámicamente al cliente de vuelta al optimizador de producción en Localhost o Web Real.

@@ -262,7 +262,7 @@
                                     </div>
 
                                     <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-xl">
-                                        <button type="submit" id="btnGuardar" class="w-full bg-[#D88429] hover:bg-[#c17623] text-white py-3 px-4 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md hover:shadow-lg" disabled>
+                                        <button type="submit" id="btnGuardar" class="w-full bg-[#D88429] hover:bg-[#c17623] text-white py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center shadow-md hover:shadow-lg">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
@@ -361,7 +361,8 @@
 
             totalProductos.textContent = totalCount;
             actualizarListaResumen();
-            btnGuardar.disabled = totalCount === 0;
+            // El botón no se deshabilita para permitir continuar sin agregar productos adicionales
+            btnGuardar.disabled = false;
         }
 
         // Función para actualizar la lista del resumen
@@ -481,11 +482,7 @@
             console.log('Total productos con cantidad:', productosConCantidad);
             console.log('Total inputs en el formulario:', cantidadInputs.length);
 
-            if (!tieneProductos) {
-                e.preventDefault();
-                alert('Por favor, seleccione al menos un producto antes de continuar.');
-                return false;
-            }
+            // No es obligatorio agregar productos, se permite enviar sin ítems nuevos
             
             console.log('✓ Formulario válido, enviando...');
             // Permitir que el formulario se envíe normalmente

@@ -23,18 +23,7 @@
                         <h1 class="text-2xl lg:text-3xl font-bold tracking-tight">Ficha de Cliente</h1>
                     </div>
 
-                    <div class="hidden md:flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-sm">
-                        <div class="w-8 h-8 rounded-full bg-gray-200 grid place-items-center">
-                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                        </div>
-                        <div class="text-sm">
-                            <div class="font-semibold">{{ $vendedor->nombre ?? 'Vendedor' }}</div>
-                            <div class="text-gray-500">Vendedor activo</div>
-                        </div>
-                    </div>
+                    @include('vendedor.components.user_profile')
                 </div>
 
                 {{-- Información del cliente --}}
