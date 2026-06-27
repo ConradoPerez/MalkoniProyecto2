@@ -74,7 +74,7 @@ class LoginController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect(env('MALKONI_ONLINE_URL', 'https://online.malkoni.com.ar') . '/public/login.php');
+            return redirect('https://online.malkoni.com.ar/public/login.php');
         }
 
         Auth::logout();
@@ -100,10 +100,19 @@ class LoginController extends Controller
         ]);
 
         if (!empty($data['cotizacion_id'])) {
-            Cotizacion::query()
+            $cotizacion = Cotizacion::query()
                 ->where('id', $data['cotizacion_id'])
                 ->where('id_personas', $persona->id_persona)
                 ->firstOrFail();
+
+            // Si la cotización ya tiene vendedor asignado o ya no está en estado "Nuevo",
+            // redirigir al dashboard del cliente con una advertencia en la sesión.
+            if ($cotizacion->id_empleados !== null || $cotizacion->estado !== 'Nuevo') {
+                return redirect()->route('cliente.dashboard')->with('warning_cotizacion_existente', [
+                    'id' => $cotizacion->id,
+                    'numero' => $cotizacion->numero,
+                ]);
+            }
 
             return redirect()->route('cliente.nueva_cotizacion', [
                 'cotizacion_id' => $data['cotizacion_id'],

@@ -100,11 +100,8 @@
                                                                 <p class="font-medium text-gray-900">{{ $item->producto->nombre }}</p>
                                                                 <p class="text-xs text-gray-500">COD: {{ $item->producto->codigo ?? '---' }}</p>
                                                             @else
-                                                                @php
-                                                                    $payloadOrigen = is_string($cotizacion->payload_origen) ? json_decode($cotizacion->payload_origen, true) : $cotizacion->payload_origen;
-                                                                @endphp
-                                                                <p class="font-medium text-gray-900">{{ $payloadOrigen['mat_descri'] ?? 'Material de corte OPT' }}</p>
-                                                                <p class="text-xs text-gray-500">Placa de madera importada</p>
+                                                                <p class="font-medium text-gray-900">{{ $item->descripcion ?? 'Plano de Optimización de Cortes (OPT)' }}</p>
+                                                                <p class="text-xs text-gray-500 font-normal">Placa de madera importada (Plano OPT)</p>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -430,8 +427,8 @@
                                 <br><small>COD: {{ $item->producto->codigo }}</small>
                             @endif
                         @else
-                            @php $po = is_string($cotizacion->payload_origen) ? json_decode($cotizacion->payload_origen, true) : $cotizacion->payload_origen; @endphp
-                            <strong>{{ $po['mat_descri'] ?? 'Material de corte OPT' }}</strong>
+                            <strong>{{ $item->descripcion ?? 'Plano de Optimización de Cortes (OPT)' }}</strong>
+                            <br><small>Placa de madera importada (Plano OPT)</small>
                         @endif
                     </td>
                     <td class="text-center">{{ $item->cantidad }}</td>

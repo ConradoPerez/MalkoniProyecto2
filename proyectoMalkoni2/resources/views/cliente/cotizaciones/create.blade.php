@@ -138,8 +138,8 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="relative w-full bg-gray-100" style="height: 950px;">
-                                <iframe src="{{ $cotizacion->pdf_url }}" class="w-full h-full border-0" style="height: 950px;" title="Plano de cortes"></iframe>
+                            <div class="relative w-full bg-gray-100" style="height: 500px;">
+                                <iframe src="{{ $cotizacion->pdf_url }}" class="w-full h-full border-0" style="height: 500px;" title="Plano de cortes"></iframe>
                             </div>
                         </div>
                         @endif
@@ -164,7 +164,7 @@
                             </a>
                             
                             <button type="submit" id="btnContinuar" class="w-full md:w-auto px-8 py-3 text-sm font-bold text-white bg-[#D88429] rounded-lg hover:bg-[#c7731f] focus:ring-4 focus:ring-[#D88429]/30 transition-all shadow-md hover:shadow-lg flex items-center justify-center group">
-                                Continuar y Agregar Productos
+                                Continuar
                                 <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                                 </svg>

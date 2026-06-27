@@ -12,6 +12,42 @@
             <div class="p-4 lg:p-8">
                 @include('cliente.components.header')
 
+                @if(session('warning_cotizacion_existente'))
+                    @php
+                        $existente = session('warning_cotizacion_existente');
+                    @endphp
+                    <div id="modal-cotizacion-existente" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs transition-opacity duration-300">
+                        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl border border-gray-100 flex flex-col items-center text-center transform scale-100 transition-all duration-300">
+                            <!-- Icono de Advertencia -->
+                            <div class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-6">
+                                <svg class="w-8 h-8 text-[#D88429]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                            </div>
+                            
+                            <!-- Título -->
+                            <h3 class="text-xl font-syncopate font-bold text-gray-900 mb-3 tracking-wide">
+                                COTIZACIÓN EN CURSO
+                            </h3>
+                            
+                            <!-- Mensaje -->
+                            <p class="text-gray-600 text-sm mb-8 leading-relaxed">
+                                Ya tenés una cotización activa (<strong>#{{ $existente['numero'] }}</strong>) asociada a este plano de optimización de cortes (OPT).
+                            </p>
+                            
+                            <!-- Botones -->
+                            <div class="flex flex-col sm:flex-row gap-3 w-full">
+                                <button type="button" onclick="document.getElementById('modal-cotizacion-existente').remove()" class="w-full sm:w-1/2 px-5 py-3 border border-gray-300 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-50 transition-colors shadow-xs">
+                                    Cerrar
+                                </button>
+                                <a href="{{ route('cliente.cotizacion.ver', ['id' => $existente['id']]) }}" class="w-full sm:w-1/2 inline-flex items-center justify-center px-5 py-3 bg-[#D88429] text-white text-sm font-bold rounded-xl hover:bg-[#c7731f] transition-all shadow-md hover:shadow-lg">
+                                    Ver Detalle
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Botones de acción principales -->
                 <div class="flex justify-center gap-6 mt-8 mb-8">
                     <a href="{{ route('cliente.nueva_cotizacion') }}" class="inline-flex items-center px-12 py-6 bg-[#D88429] text-white text-xl font-bold rounded-xl shadow-lg hover:bg-[#c7731f] hover:shadow-xl transition-all transform hover:scale-105">

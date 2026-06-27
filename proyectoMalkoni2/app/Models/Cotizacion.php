@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class Cotizacion extends Model
 {
@@ -67,6 +68,34 @@ class Cotizacion extends Model
                     'id_cotizaciones' => $cotizacion->id,
                     'id_estado' => $idEstadoNuevo, // Estado inicial: Nuevo
                 ]);
+            }
+        });
+
+        // Asegurar que exista el item del plano OPT cuando se guarda la cotización
+        static::saved(function ($cotizacion) {
+            if ($cotizacion->pedido_opt_id) {
+                // Buscar si ya existe el item del OPT (id_Producto e id_servicio nulos)
+                $itemOpt = Item::where('id_cotizaciones', $cotizacion->id)
+                    ->whereNull('id_Producto')
+                    ->whereNull('id_servicio')
+                    ->first();
+
+                $descripcion = 'Plano de Optimización de Cortes (OPT #' . $cotizacion->pedido_opt_id . ')';
+
+                if (!$itemOpt) {
+                    Item::create([
+                        'id_cotizaciones' => $cotizacion->id,
+                        'cantidad' => 1,
+                        'precio_unitario' => 0,
+                        'descripcion' => $descripcion,
+                    ]);
+                } else {
+                    // Mantener la descripción y cantidad consistentes si es necesario
+                    $itemOpt->update([
+                        'cantidad' => 1,
+                        'descripcion' => $descripcion,
+                    ]);
+                }
             }
         });
     }
@@ -213,7 +242,7 @@ class Cotizacion extends Model
      */
     public function getEstadoActualDirecto()
     {
-        return \DB::table('cambios')
+        return DB::table('cambios')
             ->join('estados', 'cambios.id_estado', '=', 'estados.id_estado')
             ->where('cambios.id_cotizaciones', $this->id)
             ->orderByDesc('cambios.fyH')

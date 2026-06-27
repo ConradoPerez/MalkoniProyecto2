@@ -50,7 +50,7 @@
 
                         {{-- Tarjeta del cliente --}}
                         <div class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 grid place-items-center">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-r from-amber-500 to-orange-600 grid place-items-center">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                           d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
@@ -79,7 +79,7 @@
                 @if(session('error'))
                     <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
                         <div class="flex items-start">
-                            <svg class="w-6 h-6 text-red-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-red-500 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
                             <div class="flex-1">
@@ -160,7 +160,7 @@
 
                 @if(!empty($cotizacion->pdf_url))
                     <div class="mb-6 flex justify-center">
-                        <div class="w-full max-w-3xl bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-2xl shadow-lg border border-gray-700 p-5">
+                        <div class="w-full max-w-3xl bg-linear-to-r from-gray-900 to-gray-800 text-white rounded-2xl shadow-lg border border-gray-700 p-5">
                             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                 <div>
                                     <p class="text-xs uppercase tracking-[0.2em] text-gray-300 mb-1">Plano OPT</p>
@@ -209,11 +209,19 @@
                                         <td class="px-6 py-4">
                                             <div class="flex flex-col">
                                                 <span class="text-sm font-medium text-gray-900">
-                                                    {{ $item->producto->nombre ?? 'Producto personalizado' }}
+                                                    @if($item->producto)
+                                                        {{ $item->producto->nombre }}
+                                                    @else
+                                                        {{ $item->descripcion ?? 'Plano de Optimización de Cortes (OPT)' }}
+                                                    @endif
                                                 </span>
-                                                @if($item->descripcion)
-                                                    <span class="text-xs text-gray-500">{{ $item->descripcion }}</span>
-                                                @endif
+                                                <span class="text-xs text-gray-500">
+                                                    @if($item->producto)
+                                                        {{ $item->descripcion }}
+                                                    @else
+                                                        Placa de madera importada (Plano OPT)
+                                                    @endif
+                                                </span>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 text-center">
@@ -326,7 +334,7 @@
                         <div class="space-y-4">
                             @forelse($cotizacion->cambios()->with('estado')->orderByDesc('fyH')->get() as $cambio)
                                 <div class="flex items-start gap-4">
-                                    <div class="w-10 h-10 rounded-full {{ $estadoColores[$cambio->estado->nombre ?? ''] ?? 'bg-gray-100' }} grid place-items-center flex-shrink-0">
+                                    <div class="w-10 h-10 rounded-full {{ $estadoColores[$cambio->estado->nombre ?? ''] ?? 'bg-gray-100' }} grid place-items-center shrink-0">
                                         <svg class="w-5 h-5 {{ in_array($cambio->estado->nombre ?? '', ['Nuevo', 'Abierto']) ? 'text-blue-800' : 'text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                         </svg>
