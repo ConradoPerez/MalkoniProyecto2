@@ -70,20 +70,36 @@
                     $q->whereNotIn('nombre', ['Nuevo', 'Abierto']);
                 })
                 ->sum('precio_total');
+
+            $mensajesSinLeer = $empleadoId
+                ? \App\Models\MensajeCotizacion::whereHas('cotizacion', fn($q) => $q->where('id_empleados', $empleadoId))
+                    ->where('sender_type', 'cliente')
+                    ->where('leido', false)
+                    ->count()
+                : 0;
         @endphp
 
         <!-- Mensajes -->
-        <div class="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-shadow">
+        <div class="border rounded-xl p-3.5 shadow-sm hover:shadow-md transition-all duration-300 {{ $mensajesSinLeer > 0 ? 'border-orange-300 bg-orange-50' : 'border-gray-200 bg-white' }}">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg grid place-items-center shadow-sm" style="background-color: #B1B7BB;">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                <div class="w-10 h-10 rounded-lg grid place-items-center shadow-sm relative shrink-0 {{ $mensajesSinLeer > 0 ? 'bg-orange-100' : 'bg-gray-50' }}" style="{{ $mensajesSinLeer > 0 ? '' : 'background-color: #B1B7BB;' }}">
+                    <svg class="w-5 h-5 {{ $mensajesSinLeer > 0 ? 'text-orange-500' : 'text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                     </svg>
+                    @if($mensajesSinLeer > 0)
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full text-white text-[9px] font-bold grid place-items-center">
+                            {{ $mensajesSinLeer > 9 ? '9+' : $mensajesSinLeer }}
+                        </span>
+                    @endif
                 </div>
                 <div>
-                    <div class="text-xs font-medium" style="color: #6b7280;">Mensajes</div>
-                    <div class="text-lg font-bold text-gray-900">7</div>
+                    <p class="text-lg font-bold {{ $mensajesSinLeer > 0 ? 'text-orange-700' : 'text-gray-900' }} leading-none">
+                        {{ $mensajesSinLeer }}
+                    </p>
+                    <p class="text-xs {{ $mensajesSinLeer > 0 ? 'text-orange-600' : 'text-gray-500' }} mt-0.5">
+                        {{ $mensajesSinLeer === 1 ? 'Mensaje nuevo' : 'Mensajes nuevos' }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -205,20 +221,36 @@
                     $q->whereNotIn('nombre', ['Nuevo', 'Abierto']);
                 })
                 ->sum('precio_total');
+
+            $mensajesSinLeer = $empleadoId
+                ? \App\Models\MensajeCotizacion::whereHas('cotizacion', fn($q) => $q->where('id_empleados', $empleadoId))
+                    ->where('sender_type', 'cliente')
+                    ->where('leido', false)
+                    ->count()
+                : 0;
         @endphp
 
         <!-- Mensajes -->
-        <div class="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-3.5 shadow-sm">
+        <div class="border rounded-xl p-3.5 shadow-sm transition-all duration-300 {{ $mensajesSinLeer > 0 ? 'border-orange-300 bg-orange-50' : 'border-gray-200 bg-white' }}">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg grid place-items-center shadow-sm" style="background-color: #B1B7BB;">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                <div class="w-10 h-10 rounded-lg grid place-items-center shadow-sm relative shrink-0 {{ $mensajesSinLeer > 0 ? 'bg-orange-100' : 'bg-gray-50' }}" style="{{ $mensajesSinLeer > 0 ? '' : 'background-color: #B1B7BB;' }}">
+                    <svg class="w-5 h-5 {{ $mensajesSinLeer > 0 ? 'text-orange-500' : 'text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                     </svg>
+                    @if($mensajesSinLeer > 0)
+                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full text-white text-[9px] font-bold grid place-items-center">
+                            {{ $mensajesSinLeer > 9 ? '9+' : $mensajesSinLeer }}
+                        </span>
+                    @endif
                 </div>
                 <div>
-                    <div class="text-xs font-medium" style="color: #6b7280;">Mensajes</div>
-                    <div class="text-lg font-bold text-gray-900">7</div>
+                    <p class="text-lg font-bold {{ $mensajesSinLeer > 0 ? 'text-orange-700' : 'text-gray-900' }} leading-none">
+                        {{ $mensajesSinLeer }}
+                    </p>
+                    <p class="text-xs {{ $mensajesSinLeer > 0 ? 'text-orange-600' : 'text-gray-500' }} mt-0.5">
+                        {{ $mensajesSinLeer === 1 ? 'Mensaje nuevo' : 'Mensajes nuevos' }}
+                    </p>
                 </div>
             </div>
         </div>

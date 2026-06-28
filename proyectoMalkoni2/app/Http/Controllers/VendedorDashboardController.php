@@ -234,4 +234,66 @@ class VendedorDashboardController extends Controller
         
         return response()->json($formattedData);
     }
+
+    /**
+     * Mostrar formulario para editar perfil
+     */
+    public function editProfile(Request $request)
+    {
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
+
+        $vendedor = Empleado::with('rol')->find($empleadoId);
+        if (!$vendedor) {
+            abort(404, 'Vendedor no encontrado');
+        }
+
+        return view('vendedor.perfil.edit', compact('vendedor'));
+    }
+
+    /**
+     * Actualizar perfil del vendedor
+     */
+    public function updateProfile(Request $request)
+    {
+        $empleadoId = (int) session('user_id', 0);
+        abort_if($empleadoId <= 0, 403, 'Sesión de vendedor inválida.');
+
+        $vendedor = Empleado::findOrFail($empleadoId);
+
+        $data = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'telefono' => 'nullable|string|max:20',
+            'dni' => 'nullable|string|max:20',
+            'foto' => 'nullable|image|max:2048',
+            'password' => 'nullable|string|min:6|confirmed',
+        ]);
+
+        if ($request->has('eliminar_foto') && !$request->hasFile('foto')) {
+            if ($vendedor->foto) {
+                $oldPath = str_replace('storage/', '', $vendedor->foto);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+            $vendedor->foto = null;
+        } elseif ($request->hasFile('foto')) {
+            if ($vendedor->foto) {
+                $oldPath = str_replace('storage/', '', $vendedor->foto);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+            $path = $request->file('foto')->store('vendedores', 'public');
+            $vendedor->foto = 'storage/' . $path;
+        }
+
+        $vendedor->nombre = $data['nombre'];
+        $vendedor->telefono = $data['telefono'] ?? null;
+        $vendedor->dni = $data['dni'] ?? null;
+
+        if (!empty($data['password'])) {
+            $vendedor->password = bcrypt($data['password']);
+        }
+
+        $vendedor->save();
+
+        return redirect()->route('vendedor.dashboard')->with('success', 'Perfil actualizado exitosamente.');
+    }
 }

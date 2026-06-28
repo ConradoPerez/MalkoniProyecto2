@@ -125,4 +125,71 @@ class SupervisorDashboardController extends Controller
             default => '#6B7280'
         };
     }
+
+    /**
+     * Mostrar formulario para editar perfil del supervisor
+     */
+    public function editProfile(Request $request)
+    {
+        $supervisorId = (int) session('user_id', 0);
+        abort_if($supervisorId <= 0, 403, 'Sesión de supervisor inválida.');
+
+        $supervisor = Empleado::with('rol')
+            ->whereHas('rol', function($q) {
+                $q->where('nombre', 'supervisor');
+            })
+            ->find($supervisorId);
+
+        if (!$supervisor) {
+            abort(404, 'Supervisor no encontrado');
+        }
+
+        return view('supervisor.perfil.edit', compact('supervisor'));
+    }
+
+    /**
+     * Actualizar perfil del supervisor
+     */
+    public function updateProfile(Request $request)
+    {
+        $supervisorId = (int) session('user_id', 0);
+        abort_if($supervisorId <= 0, 403, 'Sesión de supervisor inválida.');
+
+        $supervisor = Empleado::findOrFail($supervisorId);
+
+        $data = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'telefono' => 'nullable|string|max:20',
+            'dni' => 'nullable|string|max:20',
+            'foto' => 'nullable|image|max:2048',
+            'password' => 'nullable|string|min:6|confirmed',
+        ]);
+
+        if ($request->has('eliminar_foto') && !$request->hasFile('foto')) {
+            if ($supervisor->foto) {
+                $oldPath = str_replace('storage/', '', $supervisor->foto);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+            $supervisor->foto = null;
+        } elseif ($request->hasFile('foto')) {
+            if ($supervisor->foto) {
+                $oldPath = str_replace('storage/', '', $supervisor->foto);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+            $path = $request->file('foto')->store('supervisores', 'public');
+            $supervisor->foto = 'storage/' . $path;
+        }
+
+        $supervisor->nombre = $data['nombre'];
+        $supervisor->telefono = $data['telefono'] ?? null;
+        $supervisor->dni = $data['dni'] ?? null;
+
+        if (!empty($data['password'])) {
+            $supervisor->password = bcrypt($data['password']);
+        }
+
+        $supervisor->save();
+
+        return redirect()->route('dashboard')->with('success', 'Perfil actualizado exitosamente.');
+    }
 }

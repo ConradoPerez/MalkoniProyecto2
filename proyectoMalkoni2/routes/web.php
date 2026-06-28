@@ -28,11 +28,20 @@ Route::get('/register', function () {
 // Dashboard Supervisor
 Route::middleware('role:supervisor')->group(function () {
     Route::get('/supervisor/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
+    
+    // Perfil del supervisor
+    Route::get('/supervisor/perfil', [SupervisorDashboardController::class, 'editProfile'])->name('supervisor.perfil.edit');
+    Route::put('/supervisor/perfil', [SupervisorDashboardController::class, 'updateProfile'])->name('supervisor.perfil.update');
 });
 
 // Dashboard y API Vendedor
 Route::middleware('role:vendedor')->group(function () {
     Route::get('/vendedor/dashboard', [VendedorDashboardController::class, 'index'])->name('vendedor.dashboard');
+    
+    // Perfil del vendedor
+    Route::get('/vendedor/perfil', [VendedorDashboardController::class, 'editProfile'])->name('vendedor.perfil.edit');
+    Route::put('/vendedor/perfil', [VendedorDashboardController::class, 'updateProfile'])->name('vendedor.perfil.update');
+
     Route::prefix('vendedor/api')->name('vendedor.api.')->group(function () {
         Route::get('/cotizaciones-chart', [VendedorDashboardController::class, 'getCotizacionesBarChart'])->name('cotizaciones.chart');
     });
@@ -60,6 +69,7 @@ Route::middleware('role:supervisor')->prefix('supervisor/productos')->name('prod
     Route::get('/{id}', [SupervisorProductoController::class, 'show'])->name('show');
     Route::get('/{id}/edit', [SupervisorProductoController::class, 'edit'])->name('edit');
     Route::put('/{id}/update', [SupervisorProductoController::class, 'update'])->name('update');
+    Route::delete('/{id}', [SupervisorProductoController::class, 'destroy'])->name('destroy');
 
     Route::get('/{id}/estadisticas', [SupervisorProductoController::class, 'estadisticas'])->name('estadisticas');
 

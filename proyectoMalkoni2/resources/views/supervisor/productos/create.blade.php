@@ -97,7 +97,24 @@
                         <!-- Foto del Producto -->
                         <div class="md:col-span-2">
                             <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Foto del Producto</label>
-                            <input type="file" name="foto" accept="image/*"
+                            
+                            <!-- Vista previa dinámica para nuevo archivo cargado -->
+                            <div id="new-image-preview-container" class="hidden mb-3 items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100 max-w-sm transition-all duration-300">
+                                <div class="flex items-center gap-3">
+                                    <img id="new-image-preview" src="#" class="w-16 h-16 object-cover rounded-lg border border-blue-200 shrink-0" alt="Nueva vista previa">
+                                    <div>
+                                        <span class="text-xs text-blue-700 font-bold block">Nueva imagen seleccionada</span>
+                                        <span id="new-image-name" class="text-[10px] text-blue-500 truncate block max-w-[150px]">Nombre de archivo</span>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="clearNewImage()" class="p-2 text-red-600 hover:text-red-800 hover:bg-red-100/50 rounded-full transition-colors" title="Quitar imagen">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <input type="file" name="foto" id="foto-input" accept="image/*" onchange="previewNewImage(event)"
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429] transition-all bg-gray-50 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#166379] file:text-white hover:file:opacity-90">
                             <p class="text-xs text-gray-500 mt-1">Formatos permitidos: JPG, PNG, WEBP. Máximo 2MB.</p>
                         </div>
@@ -132,4 +149,36 @@
         </div>
     </main>
 </div>
+
+<script>
+function previewNewImage(event) {
+    const input = event.target;
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            document.getElementById('new-image-preview').src = e.target.result;
+            document.getElementById('new-image-name').textContent = file.name;
+            
+            const container = document.getElementById('new-image-preview-container');
+            container.classList.remove('hidden');
+            container.classList.add('flex');
+        }
+        
+        reader.readAsDataURL(file);
+    }
+}
+
+function clearNewImage() {
+    const input = document.getElementById('foto-input');
+    if (input) input.value = '';
+    
+    const container = document.getElementById('new-image-preview-container');
+    if (container) {
+        container.classList.add('hidden');
+        container.classList.remove('flex');
+    }
+}
+</script>
 @endsection

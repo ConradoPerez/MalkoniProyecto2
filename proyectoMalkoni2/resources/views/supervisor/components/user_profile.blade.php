@@ -1,10 +1,15 @@
+@php
+    $supervisorId = (int) session('user_id', 0);
+    $supervisor = $supervisorId ? \App\Models\Empleado::find($supervisorId) : null;
+@endphp
+
 <div class="relative inline-block text-left" id="userDropdownContainer">
     <!-- Trigger Button -->
     <button id="userDropdownTrigger" class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-2 hover:bg-gray-50 transition-colors focus:outline-none select-none text-left shadow-sm">
-        <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden border border-gray-200">
+        <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden border border-gray-200 shrink-0">
             @if(isset($supervisor) && $supervisor->foto)
                 <img class="w-10 h-10 rounded-full object-cover" 
-                     src="{{ asset('storage/' . $supervisor->foto) }}" 
+                     src="{{ asset($supervisor->foto) }}" 
                      alt="{{ $supervisor->nombre }}">
             @else
                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,6 +31,15 @@
 
     <!-- Dropdown Menu -->
     <div id="userDropdownMenu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg py-2 hidden z-30 transition-all duration-200 transform scale-95 origin-top-right">
+        <a href="{{ route('supervisor.perfil.edit') }}" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 font-semibold transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            Editar Perfil
+        </a>
+
+        <div class="h-px bg-gray-100 my-1"></div>
+
         <form action="{{ route('logout') }}" method="POST" class="m-0">
             @csrf
             <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 font-semibold transition-colors flex items-center gap-2">

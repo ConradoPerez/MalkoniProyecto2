@@ -257,6 +257,30 @@ class SupervisorProductoController extends Controller
         return redirect()->route('productos.index')->with('success', 'Producto actualizado exitosamente.');
     }
 
+    /**
+     * Eliminar producto existente
+     */
+    public function destroy($id, Request $request)
+    {
+        $supervisor = $this->getSupervisorActual($request);
+        abort_if(!$supervisor, 403, 'Supervisor no autorizado.');
+
+        $producto = Producto::where('id_producto', $id)->firstOrFail();
+
+        try {
+            // Eliminar foto física si existe
+            if ($producto->foto) {
+                $filePath = str_replace('storage/', '', $producto->foto);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($filePath);
+            }
+
+            $producto->delete();
+            return redirect()->route('productos.index')->with('success', 'Producto eliminado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('productos.index')->with('error', 'No se puede eliminar el producto porque está asociado a cotizaciones existentes.');
+        }
+    }
+
     
     /**
      * Obtener supervisor actual
