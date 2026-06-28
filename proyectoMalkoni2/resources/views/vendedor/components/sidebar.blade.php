@@ -2,9 +2,9 @@
 <aside class="w-56 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto z-30 desktop-sidebar flex flex-col">
 
     <!-- Logo -->
-    <div class="mb-8">
+    <div class="mb-8 px-2">
         <div class="flex items-center justify-center">
-            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-12 w-auto">
+            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="max-h-12 max-w-full object-contain">
         </div>
     </div>
 
@@ -134,7 +134,7 @@
     <!-- Close Button -->
     <div class="flex items-center justify-between mb-8">
         <div class="flex items-center">
-            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-10 w-auto">
+            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="max-h-10 max-w-[120px] object-contain">
         </div>
         <button id="close-mobile-menu" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

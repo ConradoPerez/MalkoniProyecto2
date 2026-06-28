@@ -52,10 +52,14 @@ Route::middleware('role:supervisor')->prefix('supervisor/vendedor')->name('vende
 Route::middleware('role:supervisor')->prefix('supervisor/productos')->name('productos.')->group(function () {
 
     Route::get('/', [SupervisorProductoController::class, 'index'])->name('index');
-
     Route::get('/search', [SupervisorProductoController::class, 'search'])->name('search');
 
+    Route::get('/create', [SupervisorProductoController::class, 'create'])->name('create');
+    Route::post('/store', [SupervisorProductoController::class, 'store'])->name('store');
+
     Route::get('/{id}', [SupervisorProductoController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [SupervisorProductoController::class, 'edit'])->name('edit');
+    Route::put('/{id}/update', [SupervisorProductoController::class, 'update'])->name('update');
 
     Route::get('/{id}/estadisticas', [SupervisorProductoController::class, 'estadisticas'])->name('estadisticas');
 

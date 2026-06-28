@@ -122,11 +122,19 @@
                 <!-- Productos Table -->
                 <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
                     <div class="p-6 border-b border-gray-200">
-                        <div class="flex justify-between items-center">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <h2 class="text-lg font-syncopate font-bold text-gray-900">
-                                    PRODUCTOS ENCONTRADOS
-                                </h2>
+                                <div class="flex items-center gap-3">
+                                    <h2 class="text-lg font-syncopate font-bold text-gray-900">
+                                        PRODUCTOS ENCONTRADOS
+                                    </h2>
+                                    <a href="{{ route('productos.create') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-[#D88429] hover:bg-[#c7731f] rounded-lg transition-all shadow-sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                        Crear Producto
+                                    </a>
+                                </div>
                                 <p class="text-sm text-gray-600 mt-1">
                                     @if(isset($productos))
                                         Mostrando {{ $productos->firstItem() }} al {{ $productos->lastItem() }} de {{ $productos->total() }} productos registrados
@@ -170,6 +178,9 @@
                                     <th class="text-left py-3 px-6 font-semibold text-gray-700">
                                         Ranking
                                     </th>
+                                    <th class="text-center py-3 px-6 font-semibold text-gray-700">
+                                        Acciones
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -200,11 +211,19 @@
                                                     {{ $rankingIndex }}
                                                 </span>
                                             </td>
+                                            <td class="py-4 px-6 text-center">
+                                                <a href="{{ route('productos.edit', ['id' => $producto->id_producto]) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#166379] hover:opacity-90 text-white rounded-lg transition-all shadow-sm active:scale-95">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                    </svg>
+                                                    Editar
+                                                </a>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="5" class="py-8 px-6 text-center text-gray-500">
+                                        <td colspan="6" class="py-8 px-6 text-center text-gray-500">
                                             @if(request('codigo') || request('nombre'))
                                                 No se encontraron productos que coincidan con los criterios de búsqueda.
                                             @else

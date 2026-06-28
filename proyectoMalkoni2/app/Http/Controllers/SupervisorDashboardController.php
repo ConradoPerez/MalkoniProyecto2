@@ -24,6 +24,9 @@ class SupervisorDashboardController extends Controller
             })
             ->find($supervisorId);
         
+        // Sincronizar cant_cotizaciones en la tabla productos desde los items registrados
+        DB::statement('UPDATE productos SET cant_cotizaciones = (SELECT COUNT(*) FROM items WHERE items.id_Producto = productos.id_producto)');
+
         if (!$supervisor) {
             abort(403, 'Supervisor no autorizado.');
         }

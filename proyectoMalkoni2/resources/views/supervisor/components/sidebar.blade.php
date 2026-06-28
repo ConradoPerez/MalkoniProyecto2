@@ -1,9 +1,9 @@
 <!-- Desktop Sidebar -->
 <aside class="w-56 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto z-30 desktop-sidebar flex flex-col">
     <!-- Logo -->
-    <div class="mb-8">
+    <div class="mb-8 px-2">
         <div class="flex items-center justify-center">
-            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-12 w-auto">
+            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="max-h-12 max-w-full object-contain">
         </div>
     </div>
 
@@ -22,7 +22,7 @@
         <a href="{{ route('vendedor.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedores.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedores.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
             </svg>
             <span>Vendedores</span>
         </a>
@@ -48,7 +48,7 @@
     <!-- Close Button -->
     <div class="flex items-center justify-between mb-8">
         <div class="flex items-center">
-            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-10 w-auto">
+            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="max-h-10 max-w-[120px] object-contain">
         </div>
         <button id="close-mobile-menu" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,7 +72,7 @@
         <a href="{{ route('vendedor.index') }}" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium {{ request()->routeIs('vendedores.*') ? 'text-white' : 'text-gray-900 hover:bg-gray-50' }} transition-colors"
            style="{{ request()->routeIs('vendedores.*') ? 'background-color: #D88429;' : '' }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
             </svg>
             <span>Vendedores</span>
         </a>

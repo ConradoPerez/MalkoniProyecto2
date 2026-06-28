@@ -47,7 +47,8 @@
                             </svg>
                         </div>
                         <input type="email" name="email" value="{{ old('email') }}" required 
-                               class="w-full h-12 pl-11 pr-4 rounded-xl border border-gray-800 bg-[#252528] text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429] focus:bg-[#2c2c30] transition-all" 
+                               class="w-full h-12 pl-12 pr-4 rounded-xl border border-gray-800 bg-[#252528] text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429] focus:bg-[#2c2c30] transition-all" 
+                               style="padding-left: 2.25rem;"
                                placeholder="asesor@malkonihnos.com">
                     </div>
                 </div>
@@ -61,7 +62,8 @@
                             </svg>
                         </div>
                         <input type="password" name="password" required 
-                               class="w-full h-12 pl-11 pr-4 rounded-xl border border-gray-800 bg-[#252528] text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429] focus:bg-[#2c2c30] transition-all" 
+                               class="w-full h-12 pl-12 pr-4 rounded-xl border border-gray-800 bg-[#252528] text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#D88429]/20 focus:border-[#D88429] focus:bg-[#2c2c30] transition-all" 
+                               style="padding-left: 2.25rem;"
                                placeholder="••••••••">
                     </div>
                 </div>

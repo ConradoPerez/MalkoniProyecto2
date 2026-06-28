@@ -19,9 +19,9 @@
 <aside class="hidden lg:block w-56 bg-white border-r border-gray-200 p-6 fixed left-0 top-0 h-screen overflow-y-auto flex flex-col">
 
     <!-- Logo -->
-    <div class="mb-8">
+    <div class="mb-8 px-2">
         <div class="flex items-center justify-center">
-            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-12 w-auto">
+            <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="max-h-12 max-w-full object-contain">
         </div>
     </div>
 
