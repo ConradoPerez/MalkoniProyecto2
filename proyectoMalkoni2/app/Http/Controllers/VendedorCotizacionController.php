@@ -252,7 +252,7 @@ class VendedorCotizacionController extends Controller
         abort_unless($response->successful(), 404);
 
         $filename = 'plano-opt-' . $cotizacion->pedido_opt_id . '.pdf';
-        $contentType = $response->header('Content-Type', 'application/pdf');
+        $contentType = $response->header('Content-Type') ?: 'application/pdf';
 
         return response()->streamDownload(function () use ($response) {
             echo $response->body();

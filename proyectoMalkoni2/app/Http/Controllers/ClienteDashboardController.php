@@ -10,6 +10,7 @@ use App\Models\Producto;
 use App\Models\Item; 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ClienteDashboardController extends Controller
 {
@@ -317,7 +318,7 @@ class ClienteDashboardController extends Controller
                            ->with('success', $mensajeSuccess);
                            
         } catch (\Exception $e) {
-            \Log::error('Error al crear cotización: ' . $e->getMessage());
+            Log::error('Error al crear cotización: ' . $e->getMessage());
             return back()->with('error', 'Error al crear la cotización: ' . $e->getMessage())->withInput();
         }
     }
@@ -377,7 +378,7 @@ class ClienteDashboardController extends Controller
         abort_unless($response->successful(), 404);
 
         $filename = 'plano-opt-' . $cotizacion->pedido_opt_id . '.pdf';
-        $contentType = $response->header('Content-Type', 'application/pdf');
+        $contentType = $response->header('Content-Type') ?: 'application/pdf';
 
         return response()->streamDownload(function () use ($response) {
             echo $response->body();
@@ -755,7 +756,7 @@ class ClienteDashboardController extends Controller
                            ->with('success', $mensajeSuccess);
 
         } catch (\Exception $e) {
-            \Log::error('Error al confirmar cotización: ' . $e->getMessage());
+            Log::error('Error al confirmar cotización: ' . $e->getMessage());
             return redirect()->route('cliente.nueva_cotizacion')->with('error', 'Error al confirmar la cotización: ' . $e->getMessage());
         }
     }
