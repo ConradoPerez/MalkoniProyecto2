@@ -227,14 +227,14 @@
 </div>
 
 {{-- Modal para crear grupo MEJORADO --}}
-<div id="createGroupModal" class="fixed inset-0 bg-gradient-to-br from-white/10 via-gray-100/20 to-orange-100/30 backdrop-blur-md hidden z-50">
+<div id="createGroupModal" class="fixed inset-0 bg-linear-to-br from-white/10 via-gray-100/20 to-orange-100/30 backdrop-blur-md hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all border border-gray-200/50 ring-1 ring-gray-300/30">
             <form id="createGroupForm" action="{{ route('vendedor.app.grupos.store') }}" method="POST">
                 @csrf
                 
                 <!-- Encabezado del modal -->
-                <div class="p-6 border-b border-gray-200/50 bg-gradient-to-r from-orange-50/80 to-orange-100/60 backdrop-blur-sm rounded-t-2xl">
+                <div class="p-6 border-b border-gray-200/50 bg-linear-to-r from-orange-50/80 to-orange-100/60 backdrop-blur-sm rounded-t-2xl">
                     <div class="flex items-center justify-between">
                         <h3 class="text-xl font-semibold text-gray-900">Crear Nuevo Grupo</h3>
                         <button type="button" onclick="hideCreateGroupModal()" 
@@ -327,10 +327,10 @@
 </div>
 
 {{-- Modal para agregar empresa --}}
-<div id="addEmpresaModal" class="fixed inset-0 bg-gradient-to-br from-white/10 via-gray-100/20 to-orange-100/30 backdrop-blur-md hidden z-50">
+<div id="addEmpresaModal" class="fixed inset-0 bg-linear-to-br from-white/10 via-gray-100/20 to-orange-100/30 backdrop-blur-md hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl max-w-lg w-full transform transition-all border border-gray-200/50 ring-1 ring-gray-300/30">
-            <div class="p-6 border-b border-gray-200/50 bg-gradient-to-r from-orange-50/80 to-orange-100/60 backdrop-blur-sm rounded-t-2xl">
+            <div class="p-6 border-b border-gray-200/50 bg-linear-to-r from-orange-50/80 to-orange-100/60 backdrop-blur-sm rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <h3 class="text-xl font-semibold text-gray-900">Agregar Empresas al Grupo</h3>
                     <button type="button" onclick="hideAddEmpresaModal()" 

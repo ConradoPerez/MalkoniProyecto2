@@ -54,7 +54,7 @@
         <!-- Cotizaciones -->
         <div class="border border-gray-200 rounded-xl p-4 bg-white">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-blue-50 grid place-items-center flex-shrink-0">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 grid place-items-center shrink-0">
                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -70,7 +70,7 @@
         <!-- Mensajes sin leer -->
         <div class="border rounded-xl p-4 {{ $mensajesSinLeer > 0 ? 'border-orange-300 bg-orange-50' : 'border-gray-200 bg-white' }}">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg {{ $mensajesSinLeer > 0 ? 'bg-orange-100' : 'bg-gray-50' }} grid place-items-center flex-shrink-0 relative">
+                <div class="w-10 h-10 rounded-lg {{ $mensajesSinLeer > 0 ? 'bg-orange-100' : 'bg-gray-50' }} grid place-items-center shrink-0 relative">
                     <svg class="w-5 h-5 {{ $mensajesSinLeer > 0 ? 'text-orange-500' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                               d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
@@ -95,7 +95,7 @@
         <!-- Cliente -->
         <div class="border border-gray-200 rounded-xl p-4 bg-gray-50">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-gray-200 grid place-items-center flex-shrink-0">
+                <div class="w-10 h-10 rounded-lg bg-gray-200 grid place-items-center shrink-0">
                     <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                               d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -177,7 +177,7 @@
         <!-- Cotizaciones -->
         <div class="border border-gray-200 rounded-xl p-4 bg-white">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-blue-50 grid place-items-center flex-shrink-0">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 grid place-items-center shrink-0">
                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -193,7 +193,7 @@
         <!-- Mensajes sin leer -->
         <div class="border rounded-xl p-4 {{ $mensajesSinLeer > 0 ? 'border-orange-300 bg-orange-50' : 'border-gray-200 bg-white' }}">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg {{ $mensajesSinLeer > 0 ? 'bg-orange-100' : 'bg-gray-50' }} grid place-items-center flex-shrink-0 relative">
+                <div class="w-10 h-10 rounded-lg {{ $mensajesSinLeer > 0 ? 'bg-orange-100' : 'bg-gray-50' }} grid place-items-center shrink-0 relative">
                     <svg class="w-5 h-5 {{ $mensajesSinLeer > 0 ? 'text-orange-500' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                               d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
@@ -218,7 +218,7 @@
         <!-- Cliente -->
         <div class="border border-gray-200 rounded-xl p-4 bg-gray-50">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-gray-200 grid place-items-center flex-shrink-0">
+                <div class="w-10 h-10 rounded-lg bg-gray-200 grid place-items-center shrink-0">
                     <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                               d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>

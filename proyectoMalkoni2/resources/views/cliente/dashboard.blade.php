@@ -56,7 +56,7 @@
                     @php
                         $existente = session('warning_cotizacion_existente');
                     @endphp
-                    <div id="modal-cotizacion-existente" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs transition-opacity duration-300">
+                    <div id="modal-cotizacion-existente" class="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-xs transition-opacity duration-300">
                         <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl border border-gray-100 flex flex-col items-center text-center transform scale-100 transition-all duration-300">
                             <!-- Icono de Advertencia -->
                             <div class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-6">

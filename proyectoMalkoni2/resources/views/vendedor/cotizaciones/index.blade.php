@@ -263,7 +263,7 @@
                             </p>
                             @if(request()->hasAny(['nropedido', 'cliente', 'doc', 'estado']))
                                 <a href="{{ route('vendedor.app.cotizaciones.index') }}"
-                                   class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all">
+                                   class="inline-flex items-center px-4 py-2 bg-linear-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all">
                                     Ver todas las cotizaciones
                                 </a>
                             @endif
