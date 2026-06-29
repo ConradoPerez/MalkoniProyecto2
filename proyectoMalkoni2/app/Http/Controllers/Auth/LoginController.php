@@ -105,6 +105,20 @@ class LoginController extends Controller
                 ->where('id_personas', $persona->id_persona)
                 ->firstOrFail();
 
+            // Si la cotización está cancelada, se reactiva automáticamente cambiándola a estado Nuevo y reseteando el vendedor
+            if ($cotizacion->estado === 'Cancelada') {
+                $estadoNuevo = \App\Models\Estado::where('nombre', 'Nuevo')->first();
+                if ($estadoNuevo) {
+                    \App\Models\Cambio::create([
+                        'fyH' => now(),
+                        'id_cotizaciones' => $cotizacion->id,
+                        'id_estado' => $estadoNuevo->id_estado,
+                    ]);
+                }
+                $cotizacion->update(['id_empleados' => null]);
+                $cotizacion->refresh();
+            }
+
             // Si la cotización ya tiene vendedor asignado o ya no está en estado "Nuevo",
             // redirigir al dashboard del cliente con una advertencia en la sesión.
             if ($cotizacion->id_empleados !== null || $cotizacion->estado !== 'Nuevo') {

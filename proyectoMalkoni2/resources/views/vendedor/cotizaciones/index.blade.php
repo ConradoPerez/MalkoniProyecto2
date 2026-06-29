@@ -136,6 +136,7 @@
                                             'Abierto' => 'bg-yellow-100 text-yellow-800',
                                             'Cotizado' => 'bg-green-100 text-green-800',
                                             'En entrega' => 'bg-purple-100 text-purple-800',
+                                            'Cancelada' => 'bg-red-100 text-red-800',
                                         ];
                                     @endphp
                                     

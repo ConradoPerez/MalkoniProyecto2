@@ -38,9 +38,10 @@ class ClienteDashboardController extends Controller
         $fechaDesde = $request->get('fecha_desde');
         $fechaHasta = $request->get('fecha_hasta');
 
-        // Query base para las cotizaciones del cliente
+        // Query base para las cotizaciones del cliente (solo las confirmadas, que tienen vendedor asignado)
         $query = Cotizacion::with(['empresa', 'empleado'])
-            ->where('id_personas', $personaId);
+            ->where('id_personas', $personaId)
+            ->whereNotNull('id_empleados');
 
         // Aplicar filtros de búsqueda
         if ($search) {
@@ -83,8 +84,8 @@ class ClienteDashboardController extends Controller
             });
         }
         
-        // Ordenar por prioridad de estado: Nuevo > Abierto > Cotizado > En entrega
-        $ordenEstados = ['Nuevo' => 1, 'Abierto' => 2, 'Cotizado' => 3, 'En entrega' => 4];
+        // Ordenar por prioridad de estado: Nuevo > Abierto > Cotizado > En entrega > Cancelada
+        $ordenEstados = ['Nuevo' => 1, 'Abierto' => 2, 'Cotizado' => 3, 'En entrega' => 4, 'Cancelada' => 5];
         $cotizacionesOrdenadas = $todasCotizaciones->sortBy([
             fn($a, $b) => ($ordenEstados[$a->estado_actual->nombre ?? 'Nuevo'] ?? 5) <=> ($ordenEstados[$b->estado_actual->nombre ?? 'Nuevo'] ?? 5),
             fn($a, $b) => $b->fyh <=> $a->fyh
@@ -192,37 +193,21 @@ class ClienteDashboardController extends Controller
             'cotizacion_id' => 'nullable|integer|exists:cotizaciones,id',
         ]);
 
-        if (!empty($validated['cotizacion_id'])) {
-            $cotizacion = Cotizacion::where('id', $validated['cotizacion_id'])
-                ->where('id_personas', $personaId)
-                ->findOrFail($validated['cotizacion_id']);
-
-            $cotizacion->update([
-                'id_empleados' => $validated['id_empleados'],
-            ]);
-
-            return redirect()->route('cliente.cotizacion.agregar_productos', [
-                'id' => $cotizacion->id,
-            ])->with('success', 'Vendedor asignado correctamente. Ya podés agregar productos a la cotización importada.');
-        }
-        
         session([
             'nueva_cotizacion' => [
                 'id_empleados' => $validated['id_empleados'],
                 'mensaje_inicial' => $validated['mensaje_inicial'],
                 'numero_pedido' => $validated['numero_pedido'],
                 'persona_id' => $personaId,
+                'cotizacion_id' => $validated['cotizacion_id'] ?? null,
                 'fecha' => now()
             ]
         ]);
-        
+
         return redirect()->route('cliente.cotizacion.productos')
-                         ->with('success', 'Datos guardados. ¡Podés seleccionar productos opcionales o guardarla directamente!');
+                         ->with('success', 'Vendedor seleccionado. ¡Podés agregar productos opcionales o confirmar la cotización!');
     }
 
-    /**
-     * Muestra la vista para seleccionar productos para una nueva cotización.
-     */
     public function selectProducts(Request $request)
     {
         $personaId = (int) session('user_id', 0);
@@ -238,19 +223,33 @@ class ClienteDashboardController extends Controller
             'subcategorias.productos.subtipo.tipo'
         ])->get();
         
-        $cotizacion = (object) [
-            'id' => null, 
-            'numero_cotizacion' => $datosCotizacion['numero_pedido'],
-            'estado_actual' => 'Preparando',
-            'cliente_nombre' => 'Cotización en preparación'
-        ];
+        $cotizacionId = $datosCotizacion['cotizacion_id'] ?? null;
+        $cotizacion = null;
+        $itemsAgregados = collect([]);
+
+        if ($cotizacionId) {
+            $cotizacion = Cotizacion::with(['empresa', 'persona.empresa'])->where('id_personas', $personaId)->find($cotizacionId);
+            if ($cotizacion) {
+                $itemsAgregados = $cotizacion->items()->with('producto')->get();
+            }
+        }
+
+        if (!$cotizacion) {
+            $cotizacion = (object) [
+                'id' => null, 
+                'numero_cotizacion' => $datosCotizacion['numero_pedido'],
+                'estado_actual' => 'Preparando',
+                'cliente_nombre' => 'Cotización en preparación',
+                'id_empleados' => null
+            ];
+        }
         
         return view('cliente.cotizaciones.agregar_productos', compact(
             'cotizacion',
             'categorias',
             'personaId'
         ))->with([
-            'itemsAgregados' => collect([]),
+            'itemsAgregados' => $itemsAgregados,
             'esNuevaCotizacion' => true
         ]);
     }
@@ -552,5 +551,212 @@ class ClienteDashboardController extends Controller
 
         // Redirección directa aplicando el sistema de Auto-Login por Token en producción
         return redirect()->away($baseUrl . '/public/Dashboard/opt.php?token=' . $persona->token_opt); 
+    }
+
+    /**
+     * Cancela una cotización si está en estado Nuevo o Abierto.
+     */
+    public function cancelQuotation(Request $request, $id)
+    {
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
+
+        $cotizacion = Cotizacion::where('id_personas', $personaId)->findOrFail($id);
+
+        // Obtener el estado actual
+        $ultimoCambio = \App\Models\Cambio::where('id_cotizaciones', $cotizacion->id)
+            ->with('estado')
+            ->latest('fyH')
+            ->first();
+        
+        $estadoActual = $ultimoCambio ? ($ultimoCambio->estado->nombre ?? 'Nuevo') : 'Nuevo';
+
+        if (!in_array($estadoActual, ['Nuevo', 'Abierto'])) {
+            return back()->with('error', 'Solo podés cancelar cotizaciones en estado Nuevo o Abierto.');
+        }
+
+        try {
+            DB::transaction(function () use ($cotizacion) {
+                // Obtener o crear el estado Cancelada
+                $estadoCancelada = \App\Models\Estado::firstOrCreate(
+                    ['nombre' => 'Cancelada'],
+                    [
+                        'descripcion' => 'Cotización cancelada por el cliente',
+                        'fecha_hora' => now()
+                    ]
+                );
+
+                // Crear el cambio de estado
+                \App\Models\Cambio::create([
+                    'fyH' => now(),
+                    'id_cotizaciones' => $cotizacion->id,
+                    'id_estado' => $estadoCancelada->id_estado,
+                ]);
+            });
+
+            return redirect()->route('cliente.dashboard')->with('success', 'La cotización #' . $cotizacion->numero . ' ha sido cancelada correctamente.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al cancelar la cotización: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Muestra la vista de resumen de confirmación antes de la creación física.
+     */
+    public function showSummary(Request $request)
+    {
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
+
+        $datosCotizacion = session('nueva_cotizacion');
+        if (!$datosCotizacion) {
+            return redirect()->route('cliente.nueva_cotizacion')->with('error', 'Sesión expirada. Inicie una nueva cotización.');
+        }
+
+        // Obtener el vendedor asignado
+        $vendedor = Empleado::find($datosCotizacion['id_empleados']);
+
+        // Obtener productos seleccionados del request
+        $productosData = $request->input('productos', []);
+        $productosSeleccionados = [];
+        
+        foreach ($productosData as $prod) {
+            $cantidad = (int) ($prod['cantidad'] ?? 0);
+            if ($cantidad > 0) {
+                $producto = Producto::find($prod['id_producto']);
+                if ($producto) {
+                    $productosSeleccionados[] = [
+                        'producto' => $producto,
+                        'cantidad' => $cantidad
+                    ];
+                }
+            }
+        }
+
+        // Si es una cotización importada del OPT, cargar los items que ya tenía precargados (el plano)
+        $itemsExistentes = collect([]);
+        $cotizacionId = $datosCotizacion['cotizacion_id'] ?? null;
+        $cotizacionExistente = null;
+        if ($cotizacionId) {
+            $cotizacionExistente = Cotizacion::where('id_personas', $personaId)->find($cotizacionId);
+            if ($cotizacionExistente) {
+                $itemsExistentes = $cotizacionExistente->items()->with('producto')->get();
+            }
+        }
+
+        // Guardar la selección temporal de productos en la sesión para el siguiente paso
+        session([
+            'productos_seleccionados' => array_map(function($p) {
+                return [
+                    'id_producto' => $p['producto']->id_producto,
+                    'cantidad' => $p['cantidad']
+                ];
+            }, $productosSeleccionados)
+        ]);
+
+        return view('cliente.cotizaciones.resumen', compact('datosCotizacion', 'vendedor', 'productosSeleccionados', 'itemsExistentes', 'cotizacionExistente', 'personaId'));
+    }
+
+    /**
+     * Confirma y crea físicamente la cotización y sus items en la base de datos.
+     */
+    public function confirmAndCreateQuotation(Request $request)
+    {
+        $personaId = (int) session('user_id', 0);
+        abort_if($personaId <= 0, 403, 'Sesión de cliente inválida.');
+
+        $datosCotizacion = session('nueva_cotizacion');
+        $productosSeleccionados = session('productos_seleccionados', []);
+
+        if (!$datosCotizacion) {
+            return redirect()->route('cliente.nueva_cotizacion')->with('error', 'Sesión expirada. Inicie una nueva cotización.');
+        }
+
+        try {
+            $cotizacion = DB::transaction(function () use ($datosCotizacion, $productosSeleccionados, $personaId) {
+                $cotizacionId = $datosCotizacion['cotizacion_id'] ?? null;
+
+                if ($cotizacionId) {
+                    // Es una cotización existente del OPT (la actualizamos)
+                    $cotizacion = Cotizacion::where('id_personas', $personaId)->findOrFail($cotizacionId);
+                    $cotizacion->update([
+                        'id_empleados' => $datosCotizacion['id_empleados'],
+                    ]);
+                } else {
+                    // Es una cotización nueva
+                    $cotizacion = Cotizacion::create([
+                        'titulo' => 'Cotización #' . $datosCotizacion['numero_pedido'],
+                        'numero' => $datosCotizacion['numero_pedido'],
+                        'fyh' => now(),
+                        'precio_total' => 0,
+                        'id_empleados' => $datosCotizacion['id_empleados'],
+                        'id_personas' => $personaId,
+                    ]);
+                }
+
+                // Guardar los productos seleccionados
+                $precioTotal = 0;
+                
+                // Si es del OPT, sumamos también los items preexistentes al precio total
+                $itemsExistentes = $cotizacion->items()->with('producto')->get();
+                foreach ($itemsExistentes as $item) {
+                    if ($item->producto) {
+                        $precioTotal += ($item->producto->precio_final ?? 0) * $item->cantidad;
+                    }
+                }
+
+                foreach ($productosSeleccionados as $prodData) {
+                    $producto = Producto::find($prodData['id_producto']);
+                    if ($producto) {
+                        Item::create([
+                            'id_Producto' => $prodData['id_producto'],
+                            'cantidad' => $prodData['cantidad'],
+                            'id_cotizaciones' => $cotizacion->id,
+                        ]);
+                        $precioTotal += ($producto->precio_final ?? 0) * $prodData['cantidad'];
+                    }
+                }
+
+                $cotizacion->update(['precio_total' => $precioTotal]);
+
+                // Registrar el mensaje inicial si fue provisto
+                if (!empty($datosCotizacion['mensaje_inicial'])) {
+                    \App\Models\MensajeCotizacion::create([
+                        'id_cotizacion' => $cotizacion->id,
+                        'sender_type'   => 'cliente',
+                        'sender_id'     => $personaId,
+                        'mensaje'       => trim($datosCotizacion['mensaje_inicial']),
+                        'leido'         => false,
+                    ]);
+                }
+
+                // Registrar cambio de estado inicial a "Nuevo"
+                $estadoNuevo = \App\Models\Estado::where('nombre', 'Nuevo')->first();
+                if ($estadoNuevo) {
+                    \App\Models\Cambio::create([
+                        'fyH' => now(),
+                        'id_cotizaciones' => $cotizacion->id,
+                        'id_estado' => $estadoNuevo->id_estado,
+                    ]);
+                }
+
+                return $cotizacion;
+            });
+
+            // Limpiar sesión
+            session()->forget(['nueva_cotizacion', 'productos_seleccionados']);
+
+            $mensajeSuccess = count($productosSeleccionados) > 0 
+                ? 'Cotización creada exitosamente con ' . count($productosSeleccionados) . ' productos adicionales.'
+                : 'Cotización creada exitosamente.';
+
+            return redirect()->route('cliente.cotizacion.ver', ['id' => $cotizacion->id])
+                           ->with('success', $mensajeSuccess);
+
+        } catch (\Exception $e) {
+            \Log::error('Error al confirmar cotización: ' . $e->getMessage());
+            return redirect()->route('cliente.nueva_cotizacion')->with('error', 'Error al confirmar la cotización: ' . $e->getMessage());
+        }
     }
 }

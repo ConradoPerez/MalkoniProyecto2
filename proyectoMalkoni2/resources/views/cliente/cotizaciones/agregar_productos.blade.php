@@ -7,7 +7,30 @@
     <div class="flex">
         @include('cliente.components.sidebar')
 
-        <main class="flex-1 overflow-y-auto md:ml-64 transition-all duration-300">
+        <main class="flex-1 overflow-y-auto lg:ml-56 transition-all duration-300">
+            <!-- Mobile Header -->
+            <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center">
+                        <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-8 w-auto">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-medium text-gray-900">Productos</span>
+                        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="p-4 lg:p-8">
 
 
@@ -34,6 +57,41 @@
                         </li>
                     </ol>
                 </nav>
+
+                @if(isset($esNuevaCotizacion) && $esNuevaCotizacion)
+                <!-- Pasos del Wizard -->
+                <div class="mb-8 max-w-3xl mx-auto">
+                    <div class="flex items-center justify-between">
+                        <!-- Paso 1 -->
+                        <div class="flex flex-col items-center flex-1">
+                            <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold shadow-md">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-xs font-semibold text-gray-600 mt-2">1. Vendedor</span>
+                        </div>
+                        <div class="h-1 bg-green-500 flex-1 -mt-5"></div>
+
+                        <!-- Paso 2 -->
+                        <div class="flex flex-col items-center flex-1">
+                            <div class="w-10 h-10 rounded-full bg-[#D88429] text-white flex items-center justify-center font-bold shadow-md">
+                                2
+                            </div>
+                            <span class="text-xs font-bold text-gray-800 mt-2">2. Catálogo</span>
+                        </div>
+                        <div class="h-1 bg-gray-200 flex-1 -mt-5"></div>
+
+                        <!-- Paso 3 -->
+                        <div class="flex flex-col items-center flex-1">
+                            <div class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">
+                                3
+                            </div>
+                            <span class="text-xs font-semibold text-gray-500 mt-2">3. Confirmar</span>
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 <div class="mb-8">
                     <h2 class="text-2xl font-syncopate font-bold text-gray-800 text-center mb-2">{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? 'SELECCIONAR PRODUCTOS' : 'AGREGAR PRODUCTOS' }}</h2>
@@ -66,7 +124,7 @@
                     </div>
                 @endif
 
-                <form action="{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? route('cliente.cotizacion.crear_con_productos') : route('cliente.cotizacion.guardar_productos', ['id' => $cotizacion->id ?? 0]) }}" method="POST" id="formProductos">
+                <form action="{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? route('cliente.cotizacion.mostrar_resumen') : route('cliente.cotizacion.guardar_productos', ['id' => $cotizacion->id ?? 0]) }}" method="POST" id="formProductos">
                     @csrf
                     
                     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -207,41 +265,29 @@
                         <!-- Sidebar: Resumen de Cotización (Sticky) - 1 columna -->
                         <div class="lg:col-span-1">
                             <div class="lg:sticky lg:top-8">
-                                <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+                                <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                                     <div class="p-6">
                                         <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
                                             <svg class="w-5 h-5 mr-2 text-[#D88429]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 00-2 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                             </svg>
                                             Resumen de Cotización
                                         </h3>
 
                                         <div class="space-y-3 mb-6 pb-4 border-b border-gray-100">
-                                            <div class="flex items-start justify-between text-sm">
-                                                <span class="text-gray-600">Cliente:</span>
-                                                <span class="font-medium text-gray-900 text-right max-w-[140px]">{{ $cotizacion->empresa->razon_social ?? $cotizacion->empresa->nombre ?? $cotizacion->cliente_nombre ?? 'Sin empresa' }}</span>
+                                            <div class="flex items-start justify-between text-sm gap-2">
+                                                <span class="text-gray-500 font-medium shrink-0">Cliente:</span>
+                                                <span class="font-bold text-gray-950 text-right">{{ $cotizacion->empresa->razon_social ?? $cotizacion->empresa->nombre ?? $cotizacion->cliente_nombre ?? 'Sin empresa' }}</span>
                                             </div>
                                             @if(isset($cotizacion->pedido_opt_id) && $cotizacion->pedido_opt_id && $cotizacion->pdf_url)
-                                            <div class="pt-2 border-t border-gray-100">
-                                                <a href="{{ $cotizacion->pdf_url }}" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-gray-700 hover:text-[#D88429] transition-colors">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                                                    Ver Plano Adjunto
+                                            <div class="pt-3 mt-1 border-t border-gray-100 flex items-center justify-between text-sm">
+                                                <span class="text-gray-500 font-medium">Plano OPT:</span>
+                                                <a href="{{ $cotizacion->pdf_url }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#D88429]/10 text-[#D88429] hover:bg-[#D88429] hover:text-white rounded-lg text-xs font-bold transition-all shadow-xs">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                                    Ver PDF
                                                 </a>
                                             </div>
                                             @endif
-                                            <div class="flex items-center justify-between text-sm">
-                                                <span class="text-gray-600">Código:</span>
-                                                <span class="font-mono text-gray-900">{{ $cotizacion->numero_cotizacion }}</span>
-                                            </div>
-                                            <div class="flex items-center justify-between text-sm">
-                                                <span class="text-gray-600">Estado:</span>
-                                                <span class="px-2 py-1 rounded-full text-xs font-medium
-                                                    {{ $cotizacion->estado_actual === 'Nuevo' ? 'bg-blue-100 text-blue-800' : 
-                                                       ($cotizacion->estado_actual === 'Abierto' ? 'bg-yellow-100 text-yellow-800' : 
-                                                       ($cotizacion->estado_actual === 'Cerrado' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800')) }}">
-                                                    {{ $cotizacion->estado_actual }}
-                                                </span>
-                                            </div>
                                         </div>
 
                                         <div class="mb-4">
@@ -289,7 +335,7 @@
                                 @foreach($itemsAgregados as $item)
                                     <div class="flex justify-between items-center bg-white p-4 rounded-lg border border-blue-100 shadow-sm">
                                         <div class="flex-1">
-                                            <span class="font-medium text-gray-900 block">{{ $item->producto->nombre ?? 'Producto eliminado' }}</span>
+                                            <span class="font-medium text-gray-900 block">{{ $item->producto->nombre ?? $item->descripcion ?? 'Producto' }}</span>
                                             <span class="text-sm text-gray-600">Cantidad: <span class="font-semibold">{{ $item->cantidad }}</span></span>
                                         </div>
                                         @if(!isset($esNuevaCotizacion) || !$esNuevaCotizacion)
@@ -327,6 +373,8 @@
         const btnGuardar = document.getElementById('btnGuardar');
         const formProductos = document.getElementById('formProductos');
 
+        const textoOriginalBoton = "{{ isset($esNuevaCotizacion) && $esNuevaCotizacion ? 'Crear Cotización' : 'Agregar Productos' }}";
+
         let productosEnResumen = {};
         let terminoBusqueda = '';
 
@@ -361,7 +409,24 @@
 
             totalProductos.textContent = totalCount;
             actualizarListaResumen();
-            // El botón no se deshabilita para permitir continuar sin agregar productos adicionales
+            
+            // Cambiar dinámicamente texto e icono del botón
+            if (totalCount > 0) {
+                btnGuardar.innerHTML = `
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    ${textoOriginalBoton}
+                `;
+            } else {
+                btnGuardar.innerHTML = `
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                    Continuar sin agregar Productos
+                `;
+            }
+            
             btnGuardar.disabled = false;
         }
 

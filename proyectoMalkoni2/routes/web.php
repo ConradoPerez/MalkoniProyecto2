@@ -125,6 +125,10 @@ Route::middleware('role:cliente')->prefix('cliente')->name('cliente.')->group(fu
     Route::get('/nueva-cotizacion/productos', [ClienteDashboardController::class, 'selectProducts'])->name('cotizacion.productos');
     // 3. Crea cotización y guarda productos (POST)
     Route::post('/cotizacion/crear-con-productos', [ClienteDashboardController::class, 'createQuotationWithProducts'])->name('cotizacion.crear_con_productos');
+    // 3b. Muestra el resumen de confirmación antes de crear la cotización (POST)
+    Route::post('/cotizacion/mostrar-resumen', [ClienteDashboardController::class, 'showSummary'])->name('cotizacion.mostrar_resumen');
+    // 3c. Confirma y crea físicamente la cotización en la base de datos (POST)
+    Route::post('/cotizacion/confirmar-creacion', [ClienteDashboardController::class, 'confirmAndCreateQuotation'])->name('cotizacion.confirmar_creacion');
     // 4. Vista para agregar productos a cotización existente
     Route::get('/cotizacion/{id}/productos', [ClienteDashboardController::class, 'addProductsToQuotation'])->name('cotizacion.agregar_productos');
     // 5. Guarda productos adicionales a una cotización existente (POST)
@@ -144,8 +148,9 @@ Route::middleware('role:cliente')->prefix('cliente')->name('cliente.')->group(fu
     Route::get('/pedidos-sin-cotizar', [ClienteDashboardController::class, 'unquotedOrders'])->name('pedidos_sin_cotizar');
     Route::get('/pedidos-en-entrega', [ClienteDashboardController::class, 'deliveryOrders'])->name('pedidos_en_entrega');
 
-    // Rutas de Acción de la Tabla (Ver Cotización)
+    // Rutas de Acción de la Tabla (Ver Cotización y Cancelar)
     Route::get('/cotizacion/{id}/ver', [ClienteDashboardController::class, 'viewQuotation'])->name('cotizacion.ver');
+    Route::post('/cotizacion/{id}/cancelar', [ClienteDashboardController::class, 'cancelQuotation'])->name('cotizacion.cancelar');
 
     // Chat por cotización (cliente)
     Route::get('/cotizacion/{id}/mensajes', [MensajeCotizacionController::class, 'index'])->name('cotizacion.mensajes.index');

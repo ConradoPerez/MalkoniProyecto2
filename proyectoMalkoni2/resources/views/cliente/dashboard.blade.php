@@ -7,10 +7,50 @@
     <div class="flex">
         @include('cliente.components.sidebar')
 
-        <main class="flex-1 overflow-y-auto md:ml-64 transition-all duration-300">
+        <main class="flex-1 overflow-y-auto lg:ml-56 transition-all duration-300">
+            <!-- Mobile Header -->
+            <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center">
+                        <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-8 w-auto">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-medium text-gray-900">Cliente</span>
+                        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div class="p-4 lg:p-8">
                 @include('cliente.components.header')
+
+                @if(session('success'))
+                    <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-800 rounded-xl flex items-center gap-3">
+                        <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="font-medium text-sm">{{ session('success') }}</span>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-xl flex items-center gap-3">
+                        <svg class="w-5 h-5 text-red-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="font-medium text-sm">{{ session('error') }}</span>
+                    </div>
+                @endif
 
                 @if(session('warning_cotizacion_existente'))
                     @php
@@ -49,14 +89,14 @@
                 @endif
 
                 <!-- Botones de acción principales -->
-                <div class="flex justify-center gap-6 mt-8 mb-8">
-                    <a href="{{ route('cliente.nueva_cotizacion') }}" class="inline-flex items-center px-12 py-6 bg-[#D88429] text-white text-xl font-bold rounded-xl shadow-lg hover:bg-[#c7731f] hover:shadow-xl transition-all transform hover:scale-105">
+                <div class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-6 mb-8">
+                    <a href="{{ route('cliente.nueva_cotizacion') }}" class="inline-flex items-center justify-center px-6 sm:px-12 py-4 sm:py-6 bg-[#D88429] text-white text-lg sm:text-xl font-bold rounded-xl shadow-lg hover:bg-[#c7731f] hover:shadow-xl transition-all transform hover:scale-102 sm:hover:scale-105">
                         <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                         Nueva Cotización
                     </a>
-                    <a href="{{ $cliente?->token_opt ? 'https://online.malkoni.com.ar/public/Dashboard/opt.php?token=' . urlencode($cliente->token_opt) : 'https://online.malkoni.com.ar/public/login.php' }}" class="inline-flex items-center px-12 py-6 bg-gray-600 text-white text-xl font-bold rounded-xl shadow-lg hover:bg-gray-700 hover:shadow-xl transition-all transform hover:scale-105">
+                    <a href="{{ $cliente?->token_opt ? 'https://online.malkoni.com.ar/public/Dashboard/opt.php?token=' . urlencode($cliente->token_opt) : 'https://online.malkoni.com.ar/public/login.php' }}" class="inline-flex items-center justify-center px-6 sm:px-12 py-4 sm:py-6 bg-gray-600 text-white text-lg sm:text-xl font-bold rounded-xl shadow-lg hover:bg-gray-700 hover:shadow-xl transition-all transform hover:scale-102 sm:hover:scale-105">
                         <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
@@ -109,6 +149,7 @@
                                             <option value="Abierto" {{ request('estado') == 'Abierto' ? 'selected' : '' }} data-color="#ecee80ff">🟡 Abierto</option>
                                             <option value="Cotizado" {{ request('estado') == 'Cotizado' ? 'selected' : '' }} data-color="#72d89bff">🟢 Cotizado</option>
                                             <option value="En entrega" {{ request('estado') == 'En entrega' ? 'selected' : '' }} data-color="#ae74dadc">🟣 En entrega</option>
+                                            <option value="Cancelada" {{ request('estado') == 'Cancelada' ? 'selected' : '' }} data-color="#f87171">🔴 Cancelada</option>
                                         </select>
                                     </div>
                                     
@@ -187,6 +228,7 @@
                                             'Abierto' => 'bg-yellow-100 text-yellow-800',
                                             'Cotizado' => 'bg-green-100 text-green-800',
                                             'En entrega' => 'bg-purple-100 text-purple-800',
+                                            'Cancelada' => 'bg-red-100 text-red-800',
                                         ];
                                     @endphp
                                     @foreach($cotizaciones as $cotizacion)
@@ -225,6 +267,18 @@
                                                         </svg>
                                                         Ver detalle
                                                     </a>
+
+                                                    @if(in_array($estadoActual, ['Nuevo', 'Abierto']))
+                                                        <form action="{{ route('cliente.cotizacion.cancelar', ['id' => $cotizacion->id]) }}" method="POST" class="inline m-0" onsubmit="return confirm('¿Seguro que desea cancelar la cotización #{{ $cotizacion->numero }}? Esta acción no se puede deshacer.');">
+                                                            @csrf
+                                                            <button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors">
+                                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                                Cancelar
+                                                            </button>
+                                                        </form>
+                                                    @endif
 
                                                     @php
                                                         $tienePlanoOpt = !empty($cotizacion->pedido_opt_id) && !empty($cotizacion->pdf_url);

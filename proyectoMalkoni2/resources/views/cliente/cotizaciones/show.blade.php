@@ -7,7 +7,29 @@
     <div class="flex">
         @include('cliente.components.sidebar')
 
-        <main class="flex-1 overflow-y-auto md:ml-64 transition-all duration-300">
+        <main class="flex-1 overflow-y-auto lg:ml-56 transition-all duration-300">
+            <!-- Mobile Header -->
+            <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center">
+                        <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-8 w-auto">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-medium text-gray-900">Cotización</span>
+                        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div class="p-4 lg:p-8">
 
@@ -51,6 +73,23 @@
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                             Imprimir
                         </button>
+                        <a href="{{ route('cliente.dashboard') }}" class="inline-flex items-center px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-all shadow-md">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            </svg>
+                            Ir al Panel Principal
+                        </a>
+                        @if(in_array($cotizacion->estado, ['Nuevo', 'Abierto']))
+                            <form action="{{ route('cliente.cotizacion.cancelar', ['id' => $cotizacion->id]) }}" method="POST" class="inline m-0" onsubmit="return confirm('¿Seguro que desea cancelar esta cotización? Esta acción no se puede deshacer.');">
+                                @csrf
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-all shadow-md shadow-red-200">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Cancelar Cotización
+                                </button>
+                            </form>
+                        @endif
                     </div>
                 </div>
 
@@ -107,7 +146,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="px-6 py-4 text-center">
-                                                    @if(!$esCotizado && $item->producto)
+                                                    @if(!$esCotizado && $estadoNombre !== 'Cancelada' && $item->producto)
                                                         <div class="flex items-center justify-center gap-1.5">
                                                             <!-- Decrementar (-) -->
                                                             <form action="{{ route('cliente.cotizacion.actualizar_cantidad', ['cotizacionId' => $cotizacion->id, 'itemId' => $item->id_item]) }}" method="POST" class="inline m-0">
@@ -180,7 +219,7 @@
                                 </table>
                             </div>
                             
-                            @if(!$esCotizado)
+                            @if(!$esCotizado && $estadoNombre !== 'Cancelada')
                             <div class="bg-gray-50 px-6 py-3 border-t border-gray-100">
                                 <a href="{{ route('cliente.cotizacion.agregar_productos', ['id' => $cotizacion->id]) }}" class="text-sm font-medium text-[#166379] hover:text-[#0e4555] hover:underline flex items-center justify-center sm:justify-start">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -251,6 +290,18 @@
                                     'label'  => 'En entrega',
                                     'msg'    => 'Tu pedido está en proceso de entrega.',
                                     'svgPath'=> 'M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8l1 12a2 2 0 002 2h8a2 2 0 002-2L19 8M10 12v4m4-4v4',
+                                ],
+                                'Cancelada'   => [
+                                    'card'   => 'bg-red-50 border-red-200',
+                                    'header' => 'bg-red-100 border-red-200',
+                                    'title'  => 'text-red-900',
+                                    'icon'   => 'bg-red-200',
+                                    'iconColor' => 'text-red-600',
+                                    'badge'  => 'text-red-900',
+                                    'desc'   => 'text-red-700',
+                                    'label'  => 'Cotización Cancelada',
+                                    'msg'    => 'Esta cotización ha sido cancelada y no será presupuestada.',
+                                    'svgPath'=> 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z',
                                 ],
                                 default       => [
                                     'card'   => 'bg-yellow-50 border-yellow-200',
@@ -670,6 +721,10 @@
         try {
             const res  = await fetch(URL_INDEX, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             const data = await res.json();
+
+            if (data.mensajes.length === 0 && empty) {
+                empty.textContent = "No hay mensajes en esta cotización";
+            }
 
             const nuevos = data.mensajes.filter(m => m.id > lastId);
             if (nuevos.length === 0) return;

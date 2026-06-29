@@ -7,7 +7,29 @@
     <div class="flex">
         @include('cliente.components.sidebar')
 
-        <main class="flex-1 overflow-y-auto md:ml-64 transition-all duration-300">
+        <main class="flex-1 overflow-y-auto lg:ml-56 transition-all duration-300">
+            <!-- Mobile Header -->
+            <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center">
+                        <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-8 w-auto">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-medium text-gray-900">Nueva Cotización</span>
+                        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div class="p-4 lg:p-8">
 
@@ -29,6 +51,37 @@
                     </ol>
                 </nav>
 
+                <!-- Pasos del Wizard -->
+                <div class="mb-8 max-w-3xl mx-auto">
+                    <div class="flex items-center justify-between">
+                        <!-- Paso 1 -->
+                        <div class="flex flex-col items-center flex-1">
+                            <div class="w-10 h-10 rounded-full bg-[#D88429] text-white flex items-center justify-center font-bold shadow-md">
+                                1
+                            </div>
+                            <span class="text-xs font-bold text-gray-800 mt-2">1. Vendedor</span>
+                        </div>
+                        <div class="h-1 bg-gray-200 flex-1 -mt-5"></div>
+
+                        <!-- Paso 2 -->
+                        <div class="flex flex-col items-center flex-1">
+                            <div class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">
+                                2
+                            </div>
+                            <span class="text-xs font-semibold text-gray-500 mt-2">2. Catálogo</span>
+                        </div>
+                        <div class="h-1 bg-gray-200 flex-1 -mt-5"></div>
+
+                        <!-- Paso 3 -->
+                        <div class="flex flex-col items-center flex-1">
+                            <div class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold">
+                                3
+                            </div>
+                            <span class="text-xs font-semibold text-gray-500 mt-2">3. Confirmar</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="max-w-5xl mx-auto">
                     
                     <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
@@ -37,28 +90,28 @@
                             <p class="text-gray-500 mt-1 font-medium">Completa los datos para iniciar el proceso de cotización.</p>
                         </div>
                         
-                        <div class="bg-white px-5 py-3 rounded-lg border border-gray-200 shadow-sm flex flex-wrap gap-4 md:gap-6 text-sm items-center">
+                        <div class="bg-white w-full px-5 py-3 rounded-lg border border-gray-200 shadow-sm flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-6 text-sm sm:items-center">
                             <div>
                                 <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Fecha</span>
                                 <span class="font-mono font-medium text-gray-700">{{ now()->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y') }}</span>
                             </div>
-                            <div class="border-l border-gray-200 pl-4 md:pl-6">
+                            <div class="border-t pt-2 border-gray-200 sm:border-t-0 sm:pt-0 sm:border-l sm:pl-4 md:pl-6">
                                 <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Nº Pedido</span>
                                 <span class="font-mono font-medium text-[#D88429]">{{ $numero_pedido ?? '---' }}</span>
                             </div>
                             @if(isset($cotizacion) && $cotizacion && $cotizacion->pedido_opt_id)
-                                <div class="border-l border-gray-200 pl-4 md:pl-6">
+                                <div class="border-t pt-2 border-gray-200 sm:border-t-0 sm:pt-0 sm:border-l sm:pl-4 md:pl-6">
                                     <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Cliente</span>
                                     <span class="font-medium text-gray-700">{{ trim(($cotizacion->persona->nombre ?? '') . ' ' . ($cotizacion->persona->apellido ?? '')) ?: 'Sin datos' }}</span>
                                 </div>
                                 @if($cotizacion->empresa && $cotizacion->empresa->cod_cond_iva !== 'CF')
-                                    <div class="border-l border-gray-200 pl-4 md:pl-6">
+                                    <div class="border-t pt-2 border-gray-200 sm:border-t-0 sm:pt-0 sm:border-l sm:pl-4 md:pl-6">
                                         <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">Empresa Activa</span>
                                         <span class="font-medium text-gray-700">{{ $cotizacion->empresa->razon_social ?? $cotizacion->empresa->nombre ?? 'Sin empresa' }}</span>
                                     </div>
                                 @endif
                                 @if($cotizacion->empresa && $cotizacion->empresa->cuit)
-                                    <div class="border-l border-gray-200 pl-4 md:pl-6">
+                                    <div class="border-t pt-2 border-gray-200 sm:border-t-0 sm:pt-0 sm:border-l sm:pl-4 md:pl-6">
                                         <span class="block text-xs text-gray-400 uppercase font-bold tracking-wider">{{ $cotizacion->empresa->cod_cond_iva === 'CF' ? 'CUIL' : 'CUIT' }}</span>
                                         <span class="font-mono font-medium text-gray-700">{{ $cotizacion->empresa->cuit }}</span>
                                     </div>
@@ -79,7 +132,7 @@
                             </div>
 
                             <div class="p-6 md:p-8">
-                                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
                                     @forelse($vendedores as $vendedor)
                                         <label class="relative cursor-pointer group">
                                             <input type="radio" name="id_empleados" value="{{ $vendedor->id_empleado }}" class="peer sr-only" required {{ (int) old('id_empleados', $cotizacion->id_empleados ?? 0) === (int) $vendedor->id_empleado ? 'checked' : '' }}>

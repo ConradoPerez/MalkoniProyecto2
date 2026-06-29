@@ -40,6 +40,7 @@ class Estado extends Model
             'aprobado' => 'bg-green-100 text-green-800',
             'rechazado' => 'bg-gray-400',
             'pendiente' => 'bg-orange-500',
+            'cancelada' => 'bg-red-100 text-red-800',
             default => 'bg-gray-400'
         };
     }
@@ -54,6 +55,7 @@ class Estado extends Model
             'aprobado' => '',
             'rechazado' => 'background-color: #B1B7BB;',
             'pendiente' => 'background-color: #D88429;',
+            'cancelada' => 'background-color: #ef4444;',
             default => 'background-color: #B1B7BB;'
         };
     }

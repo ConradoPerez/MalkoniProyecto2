@@ -6,8 +6,30 @@
         {{-- Sidebar fijo --}}
         @include('vendedor.components.sidebar')
 
-        {{-- Contenido principal --}}
-        <main class="flex-1 overflow-y-auto ml-56">
+        <main class="flex-1 overflow-y-auto lg:ml-56 transition-all duration-300">
+            <!-- Mobile Header -->
+            <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <button id="mobile-menu-button" class="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center">
+                        <img src="{{ asset('logo/logo negro.png') }}" alt="Malkoni Logo" class="h-8 w-auto">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-medium text-gray-900">Cotización</span>
+                        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="p-4 lg:p-8">
 
                 {{-- Header --}}
@@ -72,6 +94,20 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             <p class="text-green-800 font-medium">{{ session('success') }}</p>
+                        </div>
+                    </div>
+                @endif
+
+                @if(($cotizacion->estado_actual->nombre ?? '') === 'Cancelada')
+                    <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl shadow-xs">
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 text-red-500 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold text-red-800 uppercase tracking-wider">Cotización Cancelada</p>
+                                <p class="text-sm text-red-700 mt-1">El cliente ha cancelado esta cotización. No se deben ingresar precios ni realizar modificaciones.</p>
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -465,6 +501,10 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const res  = await fetch(URL_INDEX, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             const data = await res.json();
+
+            if (data.mensajes.length === 0 && empty) {
+                empty.textContent = "No hay mensajes en esta cotización";
+            }
 
             const nuevos = data.mensajes.filter(m => m.id > lastId);
             if (nuevos.length === 0) return;
